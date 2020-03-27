@@ -1,22 +1,26 @@
 package com.ultimate.workflow.camunda;
 
+import java.util.Map;
+
 public class CorrelationData {
-    private String messageType;
-    private String businessKeyExpression;
+    private String businessKey;
 
-    public String getMessageType() {
-        return messageType;
+    private Map<String, Object> inputVaribles;
+
+    public String getBusinessKey() {
+        return businessKey;
     }
 
-    public void setMessageType(String messageType) {
-        this.messageType = messageType;
+    public void setBusinessKey(String businessKey) {
+        this.businessKey = businessKey;
     }
 
-    public String getBusinessKeyExpression() {
-        return businessKeyExpression;
+    public Map<String, Object> getInputVaribles() {
+        return inputVaribles;
     }
 
-    public void setBusinessKeyExpression(String businessKeyExpression) {
-        this.businessKeyExpression = businessKeyExpression;
+    public void setInputVaribles(Map<String, Object> inputVaribles) {
+        this.inputVaribles = inputVaribles;
     }
+
 }

@@ -2,8 +2,9 @@ package com.ultimate.workflow.camunda;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.JsonNode;
 
-public class GenericMessage<T> {
+public class GenericMessage {
     private static final String ZERO_UUID = "";
 
     @JsonProperty("id")
@@ -17,7 +18,7 @@ public class GenericMessage<T> {
 
     @JsonProperty("body")
     @JsonRawValue
-    private T body;
+    private JsonNode body;
 
     public String getId() {
         return id;
@@ -31,7 +32,7 @@ public class GenericMessage<T> {
         return messageType;
     }
 
-    public T getBody() {
+    public JsonNode getBody() {
         return body;
     }
 }

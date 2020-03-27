@@ -1,7 +1,29 @@
-camunda.bpm:
-  admin-user:
-    id: kermit
-    password: dafrog
-    firstName: Kermit
-  filter:
-    create: All tasks
+camunda:
+  bpm:
+    admin-user:
+      id: kermit
+      password: dafrog
+      firstName: Kermit
+    filter:
+      create: Al
+spring:
+  cloud:
+    stream:
+      bindings:
+        input:
+          destination: poc
+          content-type: application/json
+          group: workflow
+        output:
+          destination: poc-out
+          content-type: application/json
+      kafka:
+        binder:
+          zkNodes: localhost:2181
+          brokers: localhost:9092
+        streams:
+          binder:
+            configuration:
+              commit:
+                interval:
+                  ms: 1000

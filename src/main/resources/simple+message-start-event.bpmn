@@ -11,6 +11,11 @@
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="SequenceFlow_0m3ouor" sourceRef="StartEvent_09k3zhp" targetRef="Task_0p73u1w" />
     <bpmn:startEvent id="StartEvent_09k3zhp">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="ultimate.workflow.business-process-key" value="$.checkNumber" />
+        </camunda:properties>
+      </bpmn:extensionElements>
       <bpmn:outgoing>SequenceFlow_0m3ouor</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_1se5gjn" messageRef="Message_060ixtc" />
     </bpmn:startEvent>
