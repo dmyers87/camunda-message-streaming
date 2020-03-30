@@ -92,12 +92,11 @@ public class CorrelatingMessageListener {
         return results;
     }
 
-    private String buildBusinessKey(GenericMessage genericMessage, MessageTypeExtensionData messageTypeExtensionData) {
-        DocumentContext parsedBody = JsonPath.parse(genericMessage.getBody());
+    private String buildBusinessKey(DocumentContext documentContext, MessageTypeExtensionData messageTypeExtensionData) {
         try {
             // Since we are using JacksonJsonNodeJsonProvider we need to convert
             // the result of the JsonPath into the value we need
-            String businessKey = ((JsonNode)parsedBody.read(messageTypeExtensionData.getBusinessKeyExpression())).textValue();
+            String businessKey = ((JsonNode) documentContext.read(messageTypeExtensionData.getBusinessKeyExpression())).textValue();
             return businessKey;
         } catch (Exception ex) {
             LOGGER.warning(ex.toString());
@@ -107,7 +106,11 @@ public class CorrelatingMessageListener {
 
     private CorrelationData buildCorrelationData(GenericMessage genericMessage, MessageTypeExtensionData messageTypeExtensionData) {
         CorrelationData correlationData = new CorrelationData();
-        correlationData.setBusinessKey(buildBusinessKey(genericMessage, messageTypeExtensionData));
+        correlationData.setTenantId(genericMessage.getTenantId());
+
+        // Correlation data parsed from the document
+        DocumentContext documentContext = JsonPath.parse(genericMessage.getBody());
+        correlationData.setBusinessKey(buildBusinessKey(documentContext, messageTypeExtensionData));
         return correlationData;
     }
 

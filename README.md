@@ -11,11 +11,14 @@ docker-compose up -d
 
 Exec into the container
 
-`docker exec -it c3843156e0f7 bash`
+`docker exec -it poc_kafka_1 bash`
 
+Create a request directory
+
+`mkdir requests && cd requests`
 Open VI
 
-`vi topic-input.txt`
+`vi pay-check-paid.txt`
 
 Paste the payload
 
@@ -25,4 +28,5 @@ Save and Exit
 
 Run the following to publish the payload
 
-`$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic poc < topic-input.txt`
+`$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic poc < pay-check-paid.txt`
+~~~~

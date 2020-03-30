@@ -6,7 +6,6 @@ import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
-import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +23,13 @@ public class CamundaMessagingApplication {
      * using the messaging specification, queue a message into Kafka
      * read that message from topic in Camunda and change the state of a BPMN
      *
+     * Todos:
+     *   Versioning of the message types
+     *   Notifications BPMN example
+     *   Multi-Tenant BPMNs
+     *   Parsing of extension data
+     *   Multiple topics per Message Type
+     *   Kakfa cluster (aggregate or local) per Message Type
      *
      * @param args
      */
@@ -59,6 +65,23 @@ public class CamundaMessagingApplication {
         messageTypeExtensionData.setMessageType("payment.employee-pay-check.paid");
         messageTypeExtensionData.setBusinessKeyExpression("$.checkNumber");
         mapper.add(messageTypeExtensionData);
+
+        messageTypeExtensionData = new MessageTypeExtensionData();
+        messageTypeExtensionData.setMessageType("naas.delivery.DeliveryCreatedEvent");
+        messageTypeExtensionData.setBusinessKeyExpression("$.deliveryId");
+        mapper.add(messageTypeExtensionData);
+
+        messageTypeExtensionData = new MessageTypeExtensionData();
+        messageTypeExtensionData.setMessageType("naas.message-router.EmailNotificationCreatedEvent");
+        messageTypeExtensionData.setBusinessKeyExpression("$.headers.deliveryId");
+        mapper.add(messageTypeExtensionData);
+
+        messageTypeExtensionData = new MessageTypeExtensionData();
+        messageTypeExtensionData.setMessageType("naas.message-router.SmsNotificationCreatedEvent");
+        messageTypeExtensionData.setBusinessKeyExpression("$.headers.deliveryId");
+        mapper.add(messageTypeExtensionData);
+
         return mapper;
     }
+
 }
