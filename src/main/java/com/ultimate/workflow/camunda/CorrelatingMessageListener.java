@@ -20,6 +20,8 @@ import org.springframework.cloud.stream.messaging.Sink;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static com.ultimate.workflow.camunda.Constants.ZERO_UUID;
+
 @Component
 @EnableBinding(Sink.class)
 public class CorrelatingMessageListener {
@@ -41,20 +43,20 @@ public class CorrelatingMessageListener {
     public void handleMessage(String messageJson) throws JsonProcessingException {
         GenericMessage genericMessage = parseMessageJson(messageJson);
 
-        Iterable<MessageTypeExtensionData> correlationDataList = retrieveCorrelationData(genericMessage.getMessageType());
+        Iterable<MessageTypeExtensionData> correlationDataList = retrieveCorrelationData(genericMessage.getMessageType(), genericMessage.getTenantId());
 
         for (MessageTypeExtensionData messageTypeExtensionData : correlationDataList) {
             CorrelationData correlationData = buildCorrelationData(genericMessage, messageTypeExtensionData);
 
             // Determine if any instances are interested in this message
             List<MessageCorrelationResult> results =
-                    executeCorrelation(genericMessage.getMessageType(), correlationData);
+                    executeCorrelation(correlationData);
 
-            logResults(genericMessage.getMessageType(), results);
+            logResults(genericMessage.getTenantId(), genericMessage.getMessageType(), results);
         }
     }
 
-    private void logResults(String messageType, List<MessageCorrelationResult> results) {
+    private void logResults(String tenantId, String messageType, List<MessageCorrelationResult> results) {
         try {
             for (MessageCorrelationResult result : results) {
                 String identifier;
@@ -73,6 +75,7 @@ public class CorrelatingMessageListener {
 
                 LOGGER.info("\n\n  ... Correlated"
                         + " message type \"" + messageType + "\""
+                        + " for tenant \"" + tenantId + "\""
                         + " to a \"" + result.getResultType().name() + "\""
                         + " with process instance identifier \"" + identifier + "\""
                         + " for definition \"" + definitionId + "\""
@@ -83,11 +86,20 @@ public class CorrelatingMessageListener {
         }
     }
 
-    private List<MessageCorrelationResult> executeCorrelation(String messageType, CorrelationData correlationData) {
-        List<MessageCorrelationResult> results = camunda.getRuntimeService()
-                .createMessageCorrelation(messageType)
-                .processInstanceBusinessKey(correlationData.getBusinessKey())
-                .correlateAllWithResult();
+    private List<MessageCorrelationResult> executeCorrelation(CorrelationData correlationData) {
+        List<MessageCorrelationResult> results = null;
+        if (ZERO_UUID.equals(correlationData.getTenantId())) {
+            results = camunda.getRuntimeService()
+                    .createMessageCorrelation(correlationData.getMessageType())
+                    .processInstanceBusinessKey(correlationData.getBusinessKey())
+                    .correlateAllWithResult();
+        } else {
+            results = camunda.getRuntimeService()
+                    .createMessageCorrelation(correlationData.getMessageType())
+                    .tenantId(correlationData.getTenantId())
+                    .processInstanceBusinessKey(correlationData.getBusinessKey())
+                    .correlateAllWithResult();
+        }
 
         return results;
     }
@@ -106,16 +118,18 @@ public class CorrelatingMessageListener {
 
     private CorrelationData buildCorrelationData(GenericMessage genericMessage, MessageTypeExtensionData messageTypeExtensionData) {
         CorrelationData correlationData = new CorrelationData();
+        correlationData.setMessageType(genericMessage.getMessageType());
         correlationData.setTenantId(genericMessage.getTenantId());
 
         // Correlation data parsed from the document
         DocumentContext documentContext = JsonPath.parse(genericMessage.getBody());
         correlationData.setBusinessKey(buildBusinessKey(documentContext, messageTypeExtensionData));
+
         return correlationData;
     }
 
-    private Iterable<MessageTypeExtensionData> retrieveCorrelationData(String messageType) {
-        return messageTypeMapper.find(messageType);
+    private Iterable<MessageTypeExtensionData> retrieveCorrelationData(String messageType, String tenantId) {
+        return messageTypeMapper.find(messageType, tenantId);
     }
 
     private GenericMessage parseMessageJson(String messageJson) throws JsonProcessingException {

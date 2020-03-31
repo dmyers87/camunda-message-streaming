@@ -3,9 +3,18 @@ package com.ultimate.workflow.camunda;
 import java.util.Map;
 
 public class CorrelationData {
+    private String messageType;
     private String tenantId;
     private String businessKey;
     private Map<String, Object> inputVaribles;
+
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
 
     public String getTenantId() {
         return this.tenantId;
