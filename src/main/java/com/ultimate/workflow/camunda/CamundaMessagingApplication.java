@@ -23,10 +23,13 @@ public class CamundaMessagingApplication {
      * using the messaging specification, queue a message into Kafka
      * read that message from topic in Camunda and change the state of a BPMN
      *
+     * Completed:
+     *   Correlation of messages based on message type
+     *   Correlation of messages based on business key (defined as expression)
+     *
      * Todos:
      *   Versioning of the message types
-     *   Notifications BPMN example
-     *   Multi-Tenant BPMNs
+     *   Multi-Tenant BPMNs (https://docs.camunda.org/manual/7.5/user-guide/process-engine/multi-tenancy/)
      *   Parsing of extension data
      *   Multiple topics per Message Type
      *   Kakfa cluster (aggregate or local) per Message Type
