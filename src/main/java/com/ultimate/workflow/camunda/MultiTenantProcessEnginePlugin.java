@@ -1,10 +1,10 @@
-package com.ultimate.workflow.camunda.config;
+package com.ultimate.workflow.camunda;
 
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.cfg.AbstractProcessEnginePlugin;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -13,8 +13,8 @@ import java.util.List;
 import static com.ultimate.workflow.camunda.Constants.TENANT_1;
 import static com.ultimate.workflow.camunda.Constants.TENANT_2;
 
-@Configuration
-public class MultiTenantProcessEngineConfiguration extends AbstractProcessEnginePlugin {
+@Component
+public class MultiTenantProcessEnginePlugin extends AbstractProcessEnginePlugin {
 
     @Override
     public void postProcessEngineBuild(ProcessEngine processEngine) {

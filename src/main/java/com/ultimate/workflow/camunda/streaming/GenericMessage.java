@@ -1,4 +1,4 @@
-package com.ultimate.workflow.camunda;
+package com.ultimate.workflow.camunda.streaming;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;

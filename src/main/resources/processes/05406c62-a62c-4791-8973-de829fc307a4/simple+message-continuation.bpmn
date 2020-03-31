@@ -14,6 +14,11 @@
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="SequenceFlow_1yxr9wr" sourceRef="StartEvent_09k3zhp" targetRef="IntermediateThrowEvent_01q0yhz" />
     <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_01q0yhz">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="ultimate.workflow.business-process-key" value="$.checkNumber" />
+        </camunda:properties>
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1yxr9wr</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0by3erj</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_0411cyw" messageRef="Message_060ixtc" />

@@ -6,18 +6,12 @@ import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
-import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 import java.util.EnumSet;
 import java.util.Set;
 
-import static com.ultimate.workflow.camunda.Constants.TENANT_1;
-import static com.ultimate.workflow.camunda.Constants.TENANT_2;
-
-@EnableProcessApplication
 @SpringBootApplication
 public class CamundaMessagingApplication {
 
@@ -28,7 +22,7 @@ public class CamundaMessagingApplication {
      * using the messaging specification, queue a message into Kafka
      * read that message from topic in Camunda and change the state of a BPMN
      *
-     * Todos:
+     * TODO:
      *   [X] Correlation of messages based on message type
      *   [X] Correlation of messages based on business key (defined as expression)
      *   [ ] Versioning of the message types
@@ -63,55 +57,6 @@ public class CamundaMessagingApplication {
         });
 
         SpringApplication.run(CamundaMessagingApplication.class, args);
-    }
-
-    @Bean
-    MessageTypeMapper getMapper() {
-        MessageTypeMapper mapper = new MessageTypeMapper();
-
-        // Tenant 1 Mappings
-        MessageTypeExtensionData messageTypeExtensionData = new MessageTypeExtensionData();
-        messageTypeExtensionData.setMessageType("payment.employee-pay-check.paid");
-        messageTypeExtensionData.setBusinessKeyExpression("$.checkNumber");
-        mapper.add(TENANT_1, messageTypeExtensionData);
-
-        messageTypeExtensionData = new MessageTypeExtensionData();
-        messageTypeExtensionData.setMessageType("naas.delivery.DeliveryCreatedEvent");
-        messageTypeExtensionData.setBusinessKeyExpression("$.deliveryId");
-        mapper.add(TENANT_1, messageTypeExtensionData);
-
-        messageTypeExtensionData = new MessageTypeExtensionData();
-        messageTypeExtensionData.setMessageType("naas.message-router.EmailNotificationCreatedEvent");
-        messageTypeExtensionData.setBusinessKeyExpression("$.headers.deliveryId");
-        mapper.add(TENANT_1, messageTypeExtensionData);
-
-        messageTypeExtensionData = new MessageTypeExtensionData();
-        messageTypeExtensionData.setMessageType("naas.message-router.SmsNotificationCreatedEvent");
-        messageTypeExtensionData.setBusinessKeyExpression("$.headers.deliveryId");
-        mapper.add(TENANT_1, messageTypeExtensionData);
-
-        // Tenant 2 Mappings
-        messageTypeExtensionData = new MessageTypeExtensionData();
-        messageTypeExtensionData.setMessageType("payment.employee-pay-check.paid");
-        messageTypeExtensionData.setBusinessKeyExpression("$.checkNumber");
-        mapper.add(TENANT_2, messageTypeExtensionData);
-
-        messageTypeExtensionData = new MessageTypeExtensionData();
-        messageTypeExtensionData.setMessageType("naas.delivery.DeliveryCreatedEvent");
-        messageTypeExtensionData.setBusinessKeyExpression("$.correlationId");
-        mapper.add(TENANT_2, messageTypeExtensionData);
-
-        messageTypeExtensionData = new MessageTypeExtensionData();
-        messageTypeExtensionData.setMessageType("naas.message-router.EmailNotificationCreatedEvent");
-        messageTypeExtensionData.setBusinessKeyExpression("$.headers.deliveryId");
-        mapper.add(TENANT_2, messageTypeExtensionData);
-
-        messageTypeExtensionData = new MessageTypeExtensionData();
-        messageTypeExtensionData.setMessageType("naas.message-router.SmsNotificationCreatedEvent");
-        messageTypeExtensionData.setBusinessKeyExpression("$.headers.deliveryId");
-        mapper.add(TENANT_2, messageTypeExtensionData);
-
-        return mapper;
     }
 
 }

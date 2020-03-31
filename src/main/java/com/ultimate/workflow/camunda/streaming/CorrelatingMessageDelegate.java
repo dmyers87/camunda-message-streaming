@@ -1,4 +1,4 @@
-package com.ultimate.workflow.camunda;
+package com.ultimate.workflow.camunda.streaming;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;

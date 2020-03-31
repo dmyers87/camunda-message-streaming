@@ -1,4 +1,4 @@
-package com.ultimate.workflow.camunda;
+package com.ultimate.workflow.camunda.streaming;
 
 import java.util.Map;
 

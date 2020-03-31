@@ -1,4 +1,4 @@
-package com.ultimate.workflow.camunda;
+package com.ultimate.workflow.camunda.streaming;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -43,10 +43,12 @@ public class CorrelatingMessageListener {
     public void handleMessage(String messageJson) throws JsonProcessingException {
         GenericMessage genericMessage = parseMessageJson(messageJson);
 
-        Iterable<MessageTypeExtensionData> correlationDataList = retrieveCorrelationData(genericMessage.getMessageType(), genericMessage.getTenantId());
+        Iterable<MessageTypeExtensionData> correlationDataList =
+                retrieveCorrelationData(genericMessage.getTenantId(), genericMessage.getMessageType());
 
         for (MessageTypeExtensionData messageTypeExtensionData : correlationDataList) {
-            CorrelationData correlationData = buildCorrelationData(genericMessage, messageTypeExtensionData);
+            CorrelationData correlationData =
+                    buildCorrelationData(genericMessage, messageTypeExtensionData);
 
             // Determine if any instances are interested in this message
             List<MessageCorrelationResult> results =
@@ -104,12 +106,20 @@ public class CorrelatingMessageListener {
         return results;
     }
 
-    private String buildBusinessKey(DocumentContext documentContext, MessageTypeExtensionData messageTypeExtensionData) {
+    private String buildBusinessKey(String tenantId, DocumentContext documentContext, MessageTypeExtensionData messageTypeExtensionData) {
         try {
             // Since we are using JacksonJsonNodeJsonProvider we need to convert
             // the result of the JsonPath into the value we need
-            String businessKey = ((JsonNode) documentContext.read(messageTypeExtensionData.getBusinessKeyExpression())).textValue();
-            return businessKey;
+            JsonNode businessKeyNode = documentContext.read(messageTypeExtensionData.getBusinessKeyExpression());
+            if (businessKeyNode == null) {
+                LOGGER.warning("Could not find business key for"
+                        + " tenant id=\"" + tenantId + "\""
+                        + " message type=" + messageTypeExtensionData.getMessageType() + "\""
+                        + " and business key expresssion \"" + messageTypeExtensionData.getBusinessKeyExpression() + "\"");
+                return null;
+            }
+
+            return businessKeyNode.textValue();
         } catch (Exception ex) {
             LOGGER.warning(ex.toString());
             throw ex;
@@ -117,19 +127,21 @@ public class CorrelatingMessageListener {
     }
 
     private CorrelationData buildCorrelationData(GenericMessage genericMessage, MessageTypeExtensionData messageTypeExtensionData) {
+        String tenantId = genericMessage.getTenantId();
+
         CorrelationData correlationData = new CorrelationData();
         correlationData.setMessageType(genericMessage.getMessageType());
-        correlationData.setTenantId(genericMessage.getTenantId());
+        correlationData.setTenantId(tenantId);
 
         // Correlation data parsed from the document
         DocumentContext documentContext = JsonPath.parse(genericMessage.getBody());
-        correlationData.setBusinessKey(buildBusinessKey(documentContext, messageTypeExtensionData));
+        correlationData.setBusinessKey(buildBusinessKey(tenantId, documentContext, messageTypeExtensionData));
 
         return correlationData;
     }
 
-    private Iterable<MessageTypeExtensionData> retrieveCorrelationData(String messageType, String tenantId) {
-        return messageTypeMapper.find(messageType, tenantId);
+    private Iterable<MessageTypeExtensionData> retrieveCorrelationData(String tenantId, String messageType) {
+        return messageTypeMapper.find(tenantId, messageType);
     }
 
     private GenericMessage parseMessageJson(String messageJson) throws JsonProcessingException {
