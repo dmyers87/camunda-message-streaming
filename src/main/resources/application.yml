@@ -7,14 +7,9 @@ camunda:
     filter:
       create: Al
     auto-deployment-enabled: false
-    enabled: false
+#    enabled: false
 #    history-level: audit
 spring:
-  datasource:
-    url: jdbc:h2:mem:camunda;DB_CLOSE_DELAY=-1
-    username: sa
-    password: sa
-    driver-class-name: org.h2.Driver
   cloud:
     stream:
       bindings:

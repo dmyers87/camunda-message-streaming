@@ -5,14 +5,14 @@ import com.ultimate.workflow.camunda.Constants;
 import java.util.*;
 
 public class MessageTypeMapper {
-    private Dictionary<String, List<MessageTypeExtensionData>> mappings = new Hashtable<>();
+    private Dictionary<String, Set<MessageTypeExtensionData>> mappings = new Hashtable<>();
 
     public void add(String tenantId, MessageTypeExtensionData messageTypeExtensionData) {
         String messageType = messageTypeExtensionData.getMessageType();
 
-        List<MessageTypeExtensionData> data = mappings.get(buildKey(tenantId, messageType));
+        Set<MessageTypeExtensionData> data = mappings.get(buildKey(tenantId, messageType));
         if (data == null) {
-            data = new ArrayList<>();
+            data = new HashSet<>();
             data.add(messageTypeExtensionData);
             mappings.put(buildKey(tenantId, messageType), data);
         } else {

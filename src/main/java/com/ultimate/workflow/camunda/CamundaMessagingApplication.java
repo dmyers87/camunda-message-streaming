@@ -6,6 +6,7 @@ import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
+import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -13,6 +14,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 @SpringBootApplication
+@EnableProcessApplication
 public class CamundaMessagingApplication {
 
     /**
@@ -27,7 +29,7 @@ public class CamundaMessagingApplication {
      *   [X] Correlation of messages based on business key (defined as expression)
      *   [ ] Versioning of the message types
      *   [X] Multi-Tenant BPMNs (https://docs.camunda.org/manual/7.5/user-guide/process-engine/multi-tenancy/)
-     *   [ ] Parsing of extension data
+     *   [X] Parsing of extension data
      *   [ ] Multiple topics per Message Type
      *   [ ] Kakfa cluster (aggregate or local) per Message Type
      *   [ ] Redeployment of BPMN and updating mappings
