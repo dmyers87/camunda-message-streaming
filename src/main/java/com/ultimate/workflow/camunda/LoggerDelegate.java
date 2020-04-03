@@ -11,17 +11,18 @@ public class LoggerDelegate implements JavaDelegate {
 
     public void execute(DelegateExecution execution) throws Exception {
 
-        LOGGER.info("\n\n  ... LoggerDelegate invoked by "
-                + "processDefinitionId=" + execution.getProcessDefinitionId()
-                + ", tenantId=" + execution.getTenantId()
-                + ", activityId=" + execution.getCurrentActivityId()
-                + ", activityName='" + execution.getCurrentActivityName().replaceAll("\n", " ") + "'"
-                + ", processInstanceId=" + execution.getProcessInstanceId()
-                + ", businessKey=" + execution.getProcessBusinessKey()
-                + ", executionId=" + execution.getId()
-                + ", modelName=" + execution.getBpmnModelInstance().getModel().getModelName()
-                + ", elementId" + execution.getBpmnModelElementInstance().getId()
-                + " \n\n");
+        LOGGER.info("\n\nLoggerDelegate invoked by {"
+                + "\n processDefinitionId=" + execution.getProcessDefinitionId() + ","
+                + "\n tenantId=" + execution.getTenantId() + ","
+                //+ "\n activityId=" + execution.getCurrentActivityId()
+                //+ "\n activityName='" + execution.getCurrentActivityName().replaceAll("\n", " ") + "'"
+                + "\n processInstanceId=" + execution.getProcessInstanceId() + ","
+                + "\n businessKey=" + execution.getProcessBusinessKey() + ","
+                + "\n executionId=" + execution.getId() + ","
+                //+ "\n modelName=" + execution.getBpmnModelInstance().getModel().getModelName() + ","
+                //+ "\n elementId" + execution.getBpmnModelElementInstance().getId() + ","
+                + "\n variables=" + execution.getVariables().toString().replaceAll("\n", "\n ")
+                + "\n} \n\n");
 
     }
 

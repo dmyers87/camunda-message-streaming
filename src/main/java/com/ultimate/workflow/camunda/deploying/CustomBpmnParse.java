@@ -56,7 +56,7 @@ public class CustomBpmnParse extends BpmnParse {
                 MessageTypeExtensionData.builder(messageType);
         for (Element propertyElement : propertiesElement.elementsNS(CAMUNDA_BPMN_EXTENSIONS_NS, "property")) {
             if (attributeNameStartsWith(propertyElement, "name", "ultimate.workflow.")) {
-                createMessageMapping(processDefinition, messageEventDefinition, propertyElement, builder);
+                createMessageMapping(processDefinition, propertyElement, builder);
             }
         }
         mapper.add(tenantId, builder.build());
@@ -67,7 +67,7 @@ public class CustomBpmnParse extends BpmnParse {
         return value != null ? value.startsWith(startsWith) : false;
     }
 
-    private void createMessageMapping(ProcessDefinitionEntity processDefinition, Element messageEventDefinition, Element propertyElement, MessageTypeExtensionData.MessageTypeExtensionDataBuilder builder) {
+    private void createMessageMapping(ProcessDefinitionEntity processDefinition, Element propertyElement, MessageTypeExtensionData.MessageTypeExtensionDataBuilder builder) {
         String name = propertyElement.attribute("name");
         String value = propertyElement.attribute("value");
 
@@ -87,10 +87,15 @@ public class CustomBpmnParse extends BpmnParse {
             case "business-process-key":
                 builder.withBusinessKeyExpression(value);
                 break;
+            case "match-var":
+                // match variable mappings
+                String matchVariableName = parts[3];
+                builder.withMatchVariable(matchVariableName, value);
+                break;
             case "input-var":
-                // input variable mappings
-                String variableName = parts[3];
-                builder.withVariable(variableName, value);
+                // match variable mappings
+                String inputVariableName = parts[3];
+                builder.withInputVariable(inputVariableName, value);
                 break;
             default:
                 throw new IllegalArgumentException("unknown token \"" + token + "\"");

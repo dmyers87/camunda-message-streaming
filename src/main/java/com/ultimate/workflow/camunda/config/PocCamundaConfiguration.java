@@ -22,7 +22,7 @@ public class PocCamundaConfiguration {
         SpringProcessEngineConfiguration config =
                 CamundaSpringBootUtil.initCustomFields(new CustomSpringProcessEngineConfiguration(getMapper()));
         config.getProcessEnginePlugins().add(new CompositeProcessEnginePlugin(processEnginePlugins));
-        // TODO: need to check if this is comming in on the list above
+        // TODO: need to check if this is coming in on the list above
         config.getProcessEnginePlugins().add(multiTenantProcessPlugin());
         return config;
     }

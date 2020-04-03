@@ -1,42 +1,51 @@
 package com.ultimate.workflow.camunda.streaming;
 
+import java.util.HashMap;
 import java.util.Map;
 
-public class CorrelationData {
+class CorrelationData {
     private String messageType;
     private String tenantId;
     private String businessKey;
-    private Map<String, Object> inputVaribles;
+    private Map<String, String> matchVariables;
+    private Map<String, String> inputVariables;
+
+    public CorrelationData(String messageType, String businessKey) {
+        this.messageType = messageType;
+        this.businessKey = businessKey;
+        this.matchVariables = new HashMap<>();
+        this.inputVariables = new HashMap<>();
+    }
 
     public String getMessageType() {
         return messageType;
-    }
-
-    public void setMessageType(String messageType) {
-        this.messageType = messageType;
-    }
-
-    public String getTenantId() {
-        return this.tenantId;
-    }
-
-    public void setTenantId(String tenantId) {
-        this.tenantId = tenantId;
     }
 
     public String getBusinessKey() {
         return businessKey;
     }
 
-    public void setBusinessKey(String businessKey) {
-        this.businessKey = businessKey;
+    public String getTenantId() {
+        return this.tenantId;
     }
 
-    public Map<String, Object> getInputVaribles() {
-        return inputVaribles;
+    public void setTenantId(String value) {
+        this.tenantId = value;
     }
 
-    public void setInputVaribles(Map<String, Object> inputVaribles) {
-        this.inputVaribles = inputVaribles;
+    public Map<String, String> getMatchVariables() {
+        return matchVariables;
+    }
+
+    public void setMatchVariables(Map<String, String> value) {
+        this.matchVariables = new HashMap<>(value);
+    }
+
+    public Map<String, String> getInputVariables() {
+        return inputVariables;
+    }
+
+    public void setInputVariables(Map<String, String> value) {
+        this.inputVariables = new HashMap<>(value);
     }
 }

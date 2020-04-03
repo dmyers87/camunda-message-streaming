@@ -6,7 +6,8 @@ import java.util.Map;
 public class MessageTypeExtensionData {
     private String messageType;
     private String businessKeyExpression;
-    private Map<String, Object> variables;
+    private Map<String, String> matchVariableExpressions;
+    private Map<String, String> inputVariableExpressions;
 
     public static MessageTypeExtensionDataBuilder builder(String messageType) {
         return new MessageTypeExtensionDataBuilder(messageType);
@@ -15,7 +16,8 @@ public class MessageTypeExtensionData {
     public MessageTypeExtensionData(String messageType, String businessKeyExpression) {
         this.messageType = messageType;
         this.businessKeyExpression = businessKeyExpression;
-        this.variables = new HashMap<>();
+        this.matchVariableExpressions = new HashMap<>();
+        this.inputVariableExpressions = new HashMap<>();
     }
 
     public String getMessageType() {
@@ -26,8 +28,12 @@ public class MessageTypeExtensionData {
         return businessKeyExpression;
     }
 
-    public Map<String, Object> getVariables() {
-        return this.variables;
+    public Map<String, String> getMatchVariableExpressions() {
+        return this.matchVariableExpressions;
+    }
+
+    public Map<String, String> getInputVariableExpressions() {
+        return this.inputVariableExpressions;
     }
 
     @Override
@@ -39,25 +45,29 @@ public class MessageTypeExtensionData {
 
         if (!messageType.equals(that.messageType)) return false;
         if (!businessKeyExpression.equals(that.businessKeyExpression)) return false;
-        return variables.equals(that.variables);
+        if (!matchVariableExpressions.equals(that.matchVariableExpressions)) return false;
+        return inputVariableExpressions.equals(that.inputVariableExpressions);
     }
 
     @Override
     public int hashCode() {
         int result = messageType.hashCode();
         result = 31 * result + businessKeyExpression.hashCode();
-        result = 31 * result + variables.hashCode();
+        result = 31 * result + matchVariableExpressions.hashCode();
+        result = 31 * result + inputVariableExpressions.hashCode();
         return result;
     }
 
     public static class MessageTypeExtensionDataBuilder {
         private String messageType;
         private String businessKeyExpression;
-        private Map<String, Object> variables;
+        private Map<String, String> matchVariableExpressions;
+        private Map<String, String> inputVariableExpressions;
 
         public MessageTypeExtensionDataBuilder(String messageType) {
             this.messageType = messageType;
-            this.variables = new HashMap<>();
+            this.matchVariableExpressions = new HashMap<>();
+            this.inputVariableExpressions = new HashMap<>();
         }
 
         public MessageTypeExtensionDataBuilder withBusinessKeyExpression(String businessKeyExpression) {
@@ -65,8 +75,13 @@ public class MessageTypeExtensionData {
             return this;
         }
 
-        public MessageTypeExtensionDataBuilder withVariable(String name, Object value) {
-            this.variables.put(name, value);
+        public MessageTypeExtensionDataBuilder withMatchVariable(String name, String expression) {
+            this.matchVariableExpressions.put(name, expression);
+            return this;
+        }
+
+        public MessageTypeExtensionDataBuilder withInputVariable(String name, String expression) {
+            this.inputVariableExpressions.put(name, expression);
             return this;
         }
 
@@ -76,7 +91,8 @@ public class MessageTypeExtensionData {
             }
 
             MessageTypeExtensionData data = new MessageTypeExtensionData(messageType, businessKeyExpression);
-            data.getVariables().putAll(variables);
+            data.getMatchVariableExpressions().putAll(matchVariableExpressions);
+            data.getInputVariableExpressions().putAll(inputVariableExpressions);
             return data;
         }
     }
