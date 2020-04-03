@@ -7,14 +7,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.runtime.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Sink;
+import org.springframework.kafka.listener.MessageListener;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,8 +26,7 @@ import java.util.logging.Logger;
 import static com.ultimate.workflow.camunda.Constants.ZERO_UUID;
 
 @Component
-@EnableBinding(Sink.class)
-public class CorrelatingMessageListener {
+public class CorrelatingMessageListener implements MessageListener<String, String> {
 
     private final Logger LOGGER = Logger.getLogger(CorrelatingMessageListener.class.getName());
 
@@ -35,14 +36,26 @@ public class CorrelatingMessageListener {
     @Autowired
     private GenericMessageCorrelator correlator;
 
-    @StreamListener(target = Sink.INPUT)
     @Transactional
-    public void handleMessage(String messageJson) throws JsonProcessingException {
-        GenericMessage genericMessage = parseMessageJson(messageJson);
+    @Override
+    public void onMessage(ConsumerRecord<String, String> record) {
+        onMessage(record.value());
+    }
 
-        List<MessageCorrelationResult> results = correlator.correlate(genericMessage);
+    private void onMessage(String messageJson) {
+        try {
+            GenericMessage genericMessage = parseMessageJson(messageJson);
 
-        //logResults(genericMessage.getTenantId(), genericMessage.getMessageType(), results);
+            List<MessageCorrelationResult> results = correlator.correlate(genericMessage);
+
+            //logResults(genericMessage.getTenantId(), genericMessage.getMessageType(), results);
+        } catch(RuntimeException ex) {
+            LOGGER.warning(ex.toString());
+            throw ex;
+        } catch(Throwable ex2) {
+            LOGGER.warning(ex2.toString());
+            throw new RuntimeException("Converting to runtime exception", ex2);
+        }
     }
 
     private GenericMessage parseMessageJson(String messageJson) throws JsonProcessingException {
@@ -80,5 +93,4 @@ public class CorrelatingMessageListener {
             LOGGER.warning(ex.toString());
         }
     }
-
 }

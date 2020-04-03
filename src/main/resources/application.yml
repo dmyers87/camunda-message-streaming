@@ -12,18 +12,19 @@ camunda:
 spring:
   cloud:
     stream:
-      bindings:
-        input:
-          destination: poc
-          content-type: application/json
-          group: workflow
-        output:
-          destination: poc-out
-          content-type: application/json
+#      bindings:
+#        input:
+#          destination: poc
+#          content-type: application/json
+#          group: workflow
+#        output:
+#          destination: poc-out
+#          content-type: application/json
       kafka:
         binder:
           zkNodes: localhost:2181
           brokers: localhost:9092
+          auto-create-topics: false
         streams:
           binder:
             configuration:

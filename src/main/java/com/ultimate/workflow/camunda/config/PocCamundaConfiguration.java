@@ -22,9 +22,11 @@ public class PocCamundaConfiguration {
         // This was helpful https://github.com/camunda/camunda-bpm-platform/blob/3028aa69381b7f55868ba66063774ae73207341c/spring-boot-starter/starter/src/main/java/org/camunda/bpm/spring/boot/starter/CamundaBpmConfiguration.java
         SpringProcessEngineConfiguration config =
                 CamundaSpringBootUtil.initCustomFields(new CustomSpringProcessEngineConfiguration(getMapper()));
-        config.getProcessEnginePlugins().add(new CompositeProcessEnginePlugin(processEnginePlugins));
+
         // TODO: need to check if this is coming in on the list above
-        config.getProcessEnginePlugins().add(multiTenantProcessPlugin());
+        processEnginePlugins.add(multiTenantProcessPlugin());
+
+        config.getProcessEnginePlugins().add(new CompositeProcessEnginePlugin(processEnginePlugins));
         return config;
     }
 
