@@ -1,6 +1,5 @@
 package com.ultimate.workflow.camunda;
 
-import com.ultimate.workflow.camunda.deploying.CustomBpmnDeployer;
 import com.ultimate.workflow.camunda.deploying.CustomBpmnParseFactory;
 import com.ultimate.workflow.camunda.streaming.MessageTypeMapper;
 import org.camunda.bpm.engine.impl.bpmn.deployer.BpmnDeployer;
@@ -18,7 +17,7 @@ public class CustomSpringProcessEngineConfiguration extends SpringProcessEngineC
     @Override
     protected BpmnDeployer getBpmnDeployer() {
         // Copied from org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl
-        BpmnDeployer bpmnDeployer = new CustomBpmnDeployer();
+        BpmnDeployer bpmnDeployer = new BpmnDeployer();
         bpmnDeployer.setExpressionManager(expressionManager);
         bpmnDeployer.setIdGenerator(idGenerator);
 

@@ -29,10 +29,16 @@ public class CamundaMessagingApplication {
      *   [X] Parsing of extension data
      *   [X] Allow correlation on match variables
      *   [X] Allow correlation to set BP variables
+     *   [X] Support both 3 and 4 part for business-process-key
      *   [ ] Multiple topics per Message Type
      *   [ ] Kakfa cluster (aggregate or local) per Message Type
      *   [ ] Versioning of the message types
      *   [ ] Redeployment of BPMN and updating mappings
+     *   [ ] Refactor all strings into constants
+     *
+     * BUGS:
+     *   [X] Extentions of type "match-var" should not be allowed on start events
+     *   [X] Messaging mapping can cause additional correlations if not specific enough
      *
      * @param args
      */

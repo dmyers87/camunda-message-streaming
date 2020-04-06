@@ -17,6 +17,7 @@
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="ultimate.workflow.business-process-key" value="$.checkNumber" />
+          <camunda:property name="ultimate.workflow.match-var.pay-date" value="$.payDate" />
         </camunda:properties>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1yxr9wr</bpmn:incoming>

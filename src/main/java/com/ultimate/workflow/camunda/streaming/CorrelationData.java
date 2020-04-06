@@ -7,6 +7,8 @@ class CorrelationData {
     private String messageType;
     private String tenantId;
     private String businessKey;
+    private String processDefinitionKey;
+    private boolean isStartEvent;
     private Map<String, String> matchVariables;
     private Map<String, String> inputVariables;
 
@@ -33,6 +35,14 @@ class CorrelationData {
         this.tenantId = value;
     }
 
+    public void setProcessDefinitionKey(String processDefinitionKey) {
+        this.processDefinitionKey = processDefinitionKey;
+    }
+
+    public String getProcessDefinitionKey() {
+        return this.processDefinitionKey;
+    }
+
     public Map<String, String> getMatchVariables() {
         return matchVariables;
     }
@@ -47,5 +57,13 @@ class CorrelationData {
 
     public void setInputVariables(Map<String, String> value) {
         this.inputVariables = new HashMap<>(value);
+    }
+
+    public boolean isStartEvent() {
+        return isStartEvent;
+    }
+
+    public void setStartEvent(boolean startEvent) {
+        isStartEvent = startEvent;
     }
 }

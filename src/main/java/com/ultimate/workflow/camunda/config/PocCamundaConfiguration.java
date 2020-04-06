@@ -2,6 +2,7 @@ package com.ultimate.workflow.camunda.config;
 
 import com.ultimate.workflow.camunda.CustomSpringProcessEngineConfiguration;
 import com.ultimate.workflow.camunda.MultiTenantProcessEnginePlugin;
+import com.ultimate.workflow.camunda.streaming.MemoryMessageTypeMapper;
 import com.ultimate.workflow.camunda.streaming.MessageTypeMapper;
 import org.camunda.bpm.engine.impl.cfg.CompositeProcessEnginePlugin;
 import org.camunda.bpm.engine.impl.cfg.ProcessEnginePlugin;
@@ -34,7 +35,7 @@ public class PocCamundaConfiguration {
 
     @Bean
     public MessageTypeMapper getMapper() {
-        return new MessageTypeMapper();
+        return new MemoryMessageTypeMapper();
     }
 
 }
