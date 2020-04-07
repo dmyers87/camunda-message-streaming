@@ -30,21 +30,19 @@ public class GenericMessageCorrelator {
     private MessageTypeMapper messageTypeMapper;
 
     public List<MessageCorrelationResult> correlate(GenericMessage genericMessage) {
-        Iterable<MessageTypeExtensionData> correlationDataList =
+        Iterable<MessageTypeExtensionData> messageTypeExtensionDataList =
                 retrieveMessageTypeExtensionData(genericMessage.getTenantId(), genericMessage.getMessageType());
 
-        for (MessageTypeExtensionData messageTypeExtensionData : correlationDataList) {
+        List<MessageCorrelationResult> results = new ArrayList<>();
+        for (MessageTypeExtensionData messageTypeExtensionData : messageTypeExtensionDataList) {
             CorrelationData correlationData =
                     buildCorrelationData(genericMessage, messageTypeExtensionData);
 
             // Determine if any instances are interested in this message
-            List<MessageCorrelationResult> results =
-                    executeCorrelation(correlationData);
-
-            return results;
+            results.addAll(executeCorrelation(correlationData));
         }
 
-        return null;
+        return results;
     }
 
     private Iterable<MessageTypeExtensionData> retrieveMessageTypeExtensionData(String tenantId, String messageType) {
@@ -60,7 +58,7 @@ public class GenericMessageCorrelator {
         CorrelationData correlationData =
                 new CorrelationData(
                         genericMessage.getMessageType(),
-                        evaluateBusinessKeyExpression(tenantId, documentContext, messageTypeExtensionData));
+                        evaluateExpression(documentContext, messageTypeExtensionData.getBusinessKeyExpression()));
         correlationData.setTenantId(tenantId);
         correlationData.setStartEvent(messageTypeExtensionData.isStartEvent());
         correlationData.setProcessDefinitionKey(messageTypeExtensionData.getProcessDefinitionKey());
@@ -101,10 +99,11 @@ public class GenericMessageCorrelator {
             messageCorrelationBuilder.setVariable(k, v);
         });
 
+        // Limit to start events if the correlation data is for start event
+        messageCorrelationBuilder.startMessageOnly();
+
         // execute the correlation
         try{
-            // Limit to start events if the correlation data is for start event
-            messageCorrelationBuilder.startMessageOnly();
             return Arrays.asList(messageCorrelationBuilder.correlateWithResult());
         } catch (Exception ex) {
             LOGGER.warning(ex.toString());
@@ -128,9 +127,15 @@ public class GenericMessageCorrelator {
         ExecutionQuery executionQuery = camunda.getRuntimeService()
                 .createExecutionQuery()
                 .messageEventSubscriptionName(correlationData.getMessageType())
-                .processInstanceBusinessKey(correlationData.getBusinessKey())
-                .tenantIdIn(correlationData.getTenantId());
+                .processInstanceBusinessKey(correlationData.getBusinessKey());
 
+
+        // assign tenant id
+        if (!ZERO_UUID.equals(correlationData.getTenantId())) {
+            executionQuery.tenantIdIn(correlationData.getTenantId());
+        }
+
+        // search using match variables
         correlationData.getMatchVariables().forEach((k, v) -> {
             executionQuery.processVariableValueEquals(k, v);
         });
@@ -144,7 +149,7 @@ public class GenericMessageCorrelator {
                         .createMessageCorrelation(correlationData.getMessageType())
                         .processInstanceId(execution.getProcessInstanceId());
 
-        // assign variable inputs
+        // assign input variables
         correlationData.getInputVariables().forEach((k, v) -> {
             messageCorrelationBuilder.setVariable(k, v);
         });
@@ -152,24 +157,6 @@ public class GenericMessageCorrelator {
         // execute the correlation
         try{
             return Arrays.asList(messageCorrelationBuilder.correlateWithResult());
-        } catch (Exception ex) {
-            LOGGER.warning(ex.toString());
-            throw ex;
-        }
-    }
-
-    private String evaluateBusinessKeyExpression(String tenantId, DocumentContext documentContext, MessageTypeExtensionData messageTypeExtensionData) {
-        try {
-            String businessKey = evaluateExpression(documentContext, messageTypeExtensionData.getBusinessKeyExpression());
-            if (businessKey == null) {
-                LOGGER.warning("Could not find business key for"
-                        + " tenant id=\"" + tenantId + "\""
-                        + " message type=" + messageTypeExtensionData.getMessageType() + "\""
-                        + " and business key expresssion \"" + messageTypeExtensionData.getBusinessKeyExpression() + "\"");
-                return null;
-            }
-
-            return businessKey;
         } catch (Exception ex) {
             LOGGER.warning(ex.toString());
             throw ex;

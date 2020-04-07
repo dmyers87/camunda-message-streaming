@@ -30,6 +30,9 @@ spring:
               commit:
                 interval:
                   ms: 1000
+  h2:
+    console:
+      enabled: true
 #logging:
 #  level:
 #    org.camunda.bpm.example: DEBUG
