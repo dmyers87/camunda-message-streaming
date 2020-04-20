@@ -60,6 +60,7 @@ public class CamundaMessagingApplication implements ApplicationListener<Applicat
      *   [ ] Versioning of the message types
      *   [ ] Redeployment of BPMN and updating mappings
      *   [ ] Refactor all strings into constants
+     *   [ ] Ensure BP matching includes cluster + topic + tenant + message_type + message_version
      *
      * BUGS:
      *   [X] Extensions of type "match-var" should not be allowed on start events

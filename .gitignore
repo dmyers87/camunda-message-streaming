@@ -19,6 +19,9 @@ target/
 *.iml
 *.ipr
 
+### H2 ###
+/jdbc:h2:tcp:/
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -29,3 +32,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### MacOS ###
+.DS_Store

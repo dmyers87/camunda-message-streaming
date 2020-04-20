@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0kicdg7" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.5.0">
-  <bpmn:process id="SimpleMessageContinuation" isExecutable="true">
+  <bpmn:process id="SimpleIntermediateCatchMessage" isExecutable="true">
     <bpmn:endEvent id="EndEvent_09arwkt">
       <bpmn:incoming>SequenceFlow_1548pcy</bpmn:incoming>
     </bpmn:endEvent>
@@ -28,7 +28,7 @@
   </bpmn:process>
   <bpmn:message id="Message_060ixtc" name="payment.employee-pay-check.paid" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="SimpleMessageContinuation">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="SimpleIntermediateCatchMessage">
       <bpmndi:BPMNShape id="EndEvent_09arwkt_di" bpmnElement="EndEvent_09arwkt">
         <dc:Bounds x="552" y="99" width="36" height="36" />
       </bpmndi:BPMNShape>
