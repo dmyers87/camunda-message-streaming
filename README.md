@@ -13,6 +13,9 @@ The following Message Events are supported:
 
 The following extension semantics are currently supported
 ====== 
+Using the modeler you can assign extensions to the message catch
+![Extension Sample](docs/images/extension-example.png "Extension Sample")
+
 ##### {prefix}.business-process-key={json-path}
 Note: can also be declared as {prefix}.match-var.business-process-key={json-path}
 Assigns the business process key that will be used to start a new process or match on a currently running process
