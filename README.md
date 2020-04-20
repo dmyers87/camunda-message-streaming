@@ -8,7 +8,7 @@ The following Message Events are supported:
 #### Intermediate Catch Events
 ![Intermediate Catch Message](docs/images/intermediate-catch.png "Intermediate Catch Message")
 
-####Interrupting & Non-interrupting Boundary Catch Events
+#### Interrupting & Non-interrupting Boundary Catch Events
 ![Interupting Boundary Message](docs/images/interupting-boundary.png "Interupting Boundary Message")
 
 The following extension semantics are currently supported
