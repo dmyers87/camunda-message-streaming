@@ -3,7 +3,7 @@ package com.ultimatesoftware.workflow.messaging;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ExecutionQuery;
 import org.camunda.bpm.engine.runtime.MessageCorrelationBuilder;
@@ -20,12 +20,12 @@ public class GenericMessageCorrelator {
 
     private final Logger LOGGER = Logger.getLogger(GenericMessageCorrelator.class.getName());
 
-    private final ProcessEngine processEngine;
+    private final RuntimeService runtimeService;
 
     private final MessageTypeMapper messageTypeMapper;
 
-    public GenericMessageCorrelator(ProcessEngine processEngine, MessageTypeMapper messageTypeMapper) {
-        this.processEngine = processEngine;
+    public GenericMessageCorrelator(RuntimeService runtimeService, MessageTypeMapper messageTypeMapper) {
+        this.runtimeService = runtimeService;
         this.messageTypeMapper = messageTypeMapper;
     }
 
@@ -84,7 +84,7 @@ public class GenericMessageCorrelator {
 
     private List<MessageCorrelationResult> executeStartMessageEventCorrelation(CorrelationData correlationData) {
         MessageCorrelationBuilder messageCorrelationBuilder =
-                processEngine.getRuntimeService()
+                this.runtimeService
                         .createMessageCorrelation(correlationData.getMessageType())
                         .processInstanceBusinessKey(correlationData.getBusinessKey());
 
@@ -124,7 +124,7 @@ public class GenericMessageCorrelator {
     }
 
     private List<Execution> determineCorrelatableProcessesInstances(CorrelationData correlationData) {
-        ExecutionQuery executionQuery = processEngine.getRuntimeService()
+        ExecutionQuery executionQuery = this.runtimeService
                 .createExecutionQuery()
                 .messageEventSubscriptionName(correlationData.getMessageType())
                 .processInstanceBusinessKey(correlationData.getBusinessKey());
@@ -145,7 +145,7 @@ public class GenericMessageCorrelator {
 
     private List<MessageCorrelationResult> executeCatchMessageEventCorrelationByExecution(CorrelationData correlationData, Execution execution) {
         MessageCorrelationBuilder messageCorrelationBuilder =
-                processEngine.getRuntimeService()
+                this.runtimeService
                         .createMessageCorrelation(correlationData.getMessageType())
                         .processInstanceId(execution.getProcessInstanceId());
 

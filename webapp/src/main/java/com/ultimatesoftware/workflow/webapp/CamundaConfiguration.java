@@ -1,8 +1,10 @@
 package com.ultimatesoftware.workflow.webapp;
 
 import com.ultimatesoftware.workflow.messaging.MessageTypeMapper;
+import com.ultimatesoftware.workflow.messaging.MessagingProperties;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.camunda.bpm.engine.impl.cfg.BpmnParseFactory;
 import org.camunda.bpm.engine.impl.cfg.CompositeProcessEnginePlugin;
 import org.camunda.bpm.engine.impl.cfg.ProcessEnginePlugin;
 import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
@@ -25,7 +27,7 @@ import java.util.Map;
 public class CamundaConfiguration {
 
     @Autowired
-    private MessageTypeMapper messageTypeMapper;
+    public BpmnParseFactory bpmnParseFactory;
 
     @Bean
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
@@ -59,7 +61,8 @@ public class CamundaConfiguration {
     public SpringProcessEngineConfiguration processEngineConfiguration(List<ProcessEnginePlugin> processEnginePlugins) throws IOException {
         // This was helpful https://github.com/camunda/camunda-bpm-platform/blob/3028aa69381b7f55868ba66063774ae73207341c/spring-boot-starter/starter/src/main/java/org/camunda/bpm/spring/boot/starter/CamundaBpmConfiguration.java
         SpringProcessEngineConfiguration config =
-                CamundaSpringBootUtil.initCustomFields(new CustomSpringProcessEngineConfiguration(messageTypeMapper));
+                CamundaSpringBootUtil.initCustomFields(
+                        new CustomSpringProcessEngineConfiguration(bpmnParseFactory));
 
         // TODO: need to check if this is coming in on the list above
         processEnginePlugins.add(multiTenantProcessPlugin());

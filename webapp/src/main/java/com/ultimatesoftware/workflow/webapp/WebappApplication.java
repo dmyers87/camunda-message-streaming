@@ -7,7 +7,7 @@ import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import com.ultimatesoftware.workflow.messaging.CorrelatingMessageListener;
-import com.ultimatesoftware.workflow.messaging.KafkaTopicContainerManager;
+import com.ultimatesoftware.workflow.messaging.TopicContainerManager;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class WebappApplication implements ApplicationListener<ApplicationReadyEv
     CorrelatingMessageListener listener;
 
     @Autowired
-    KafkaTopicContainerManager containerManager;
+    TopicContainerManager topicContainerManager;
 
     @Autowired
     KafkaBinderConfigurationProperties binderConfigurationProperties;
@@ -95,8 +95,8 @@ public class WebappApplication implements ApplicationListener<ApplicationReadyEv
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        containerManager.createOrStartConsumer("poc1", listener, consumerConfig());
-        containerManager.createOrStartConsumer("poc2", listener, consumerConfig());
+        topicContainerManager.createOrStartConsumer("poc1", listener, consumerConfig());
+        topicContainerManager.createOrStartConsumer("poc2", listener, consumerConfig());
     }
 
     private Map<String, Object> consumerConfig() {

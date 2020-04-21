@@ -1,7 +1,5 @@
 package com.ultimatesoftware.workflow.messaging;
 
-import com.ultimatesoftware.workflow.messaging.MessageTypeExtensionData;
-import com.ultimatesoftware.workflow.messaging.MessageTypeMapper;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParser;
 import org.camunda.bpm.engine.impl.bpmn.parser.MessageDefinition;
@@ -12,10 +10,12 @@ import org.camunda.bpm.engine.impl.util.xml.Element;
 
 public class MessageExtensionBpmnParse extends BpmnParse {
     private final MessageTypeMapper mapper;
+    private final String extensionPrefix;
 
-    public MessageExtensionBpmnParse(BpmnParser bpmnParser, MessageTypeMapper mapper) {
+    public MessageExtensionBpmnParse(BpmnParser bpmnParser, MessageTypeMapper mapper, String extensionPrefix) {
         super(bpmnParser);
         this.mapper = mapper;
+        this.extensionPrefix = extensionPrefix;
     }
 
     @Override
@@ -100,7 +100,7 @@ public class MessageExtensionBpmnParse extends BpmnParse {
         builder.setStartEvent(isStarteEvent);
 
         for (Element propertyElement : propertiesElement.elementsNS(CAMUNDA_BPMN_EXTENSIONS_NS, "property")) {
-            if (attributeNameStartsWith(propertyElement, "name", "ultimate.workflow.")) {
+            if (attributeNameStartsWith(propertyElement, "name", this.extensionPrefix + ".")) {
                 createMessageMapping(processDefinition, propertyElement, builder);
             }
         }
