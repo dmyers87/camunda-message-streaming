@@ -1,9 +1,9 @@
 camunda:
   bpm:
-    admin-user:
-      id: kermit
-      password: dafrog
-      firstName: Kermit
+#    admin-user:
+#      id: <admin_username>
+#      password: <admin_password>
+#      firstName: <admin_first_name>
     filter:
       create: Al
     auto-deployment-enabled: false
@@ -12,14 +12,6 @@ camunda:
 spring:
   cloud:
     stream:
-#      bindings:
-#        input:
-#          destination: poc
-#          content-type: application/json
-#          group: workflow
-#        output:
-#          destination: poc-out
-#          content-type: application/json
       kafka:
         binder:
           zkNodes: localhost:2181
@@ -31,12 +23,6 @@ spring:
               commit:
                 interval:
                   ms: 1000
-  h2:
-    console:
-      enabled: true
-#logging:
-#  level:
-#    org.camunda.bpm.example: DEBUG
-#    org.camunda.bpm: INFO
-#    org.springframework: INFO
-
+#  h2:
+#    console:
+#      enabled: true

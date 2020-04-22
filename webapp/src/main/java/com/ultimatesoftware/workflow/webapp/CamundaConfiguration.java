@@ -1,7 +1,5 @@
 package com.ultimatesoftware.workflow.webapp;
 
-import com.ultimatesoftware.workflow.messaging.MessageTypeMapper;
-import com.ultimatesoftware.workflow.messaging.MessagingProperties;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.camunda.bpm.engine.impl.cfg.BpmnParseFactory;

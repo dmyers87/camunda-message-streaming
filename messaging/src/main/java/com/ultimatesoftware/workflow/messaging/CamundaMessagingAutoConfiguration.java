@@ -1,7 +1,5 @@
 package com.ultimatesoftware.workflow.messaging;
 
-import com.ultimatesoftware.workflow.messaging.*;
-import com.ultimatesoftware.workflow.messaging.KafkaTopicContainerManager;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.impl.cfg.BpmnParseFactory;
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration;
@@ -18,30 +16,30 @@ public class CamundaMessagingAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean({MessageTypeMapper.class})
-    public MessageTypeMapper getMessageTypeMapper() {
+    public MessageTypeMapper messageTypeMapper() {
         return new MemoryMessageTypeMapper();
     }
 
     @Bean
-    public GenericMessageCorrelator getGenericMessageCorrelator(RuntimeService runtimeService, MessageTypeMapper messageTypeMapper) {
+    public GenericMessageCorrelator genericMessageCorrelator(RuntimeService runtimeService, MessageTypeMapper messageTypeMapper) {
         return new GenericMessageCorrelator(runtimeService, messageTypeMapper);
     }
 
     @Bean
     @ConditionalOnMissingBean({CorrelatingMessageListener.class})
-    public CorrelatingMessageListener getCorrelatingMessageListener(GenericMessageCorrelator messageCorrelator) {
+    public CorrelatingMessageListener correlatingMessageListener(GenericMessageCorrelator messageCorrelator) {
         return new CorrelatingMessageListener(messageCorrelator);
     }
 
     @Bean
     @ConditionalOnMissingBean({TopicContainerManager.class})
-    public TopicContainerManager getTopicContainerManager() {
+    public TopicContainerManager topicContainerManager() {
         return new KafkaTopicContainerManager();
     }
 
     @Bean
     @ConditionalOnMissingBean({BpmnParseFactory.class})
-    public BpmnParseFactory getBeanParseFactory(MessageTypeMapper mapper, MessagingProperties messagingProperties) {
+    public BpmnParseFactory beanParseFactory(MessageTypeMapper mapper, MessagingProperties messagingProperties) {
         return new MessageExtensionBpmnParseFactory(mapper, messagingProperties);
     }
 }
