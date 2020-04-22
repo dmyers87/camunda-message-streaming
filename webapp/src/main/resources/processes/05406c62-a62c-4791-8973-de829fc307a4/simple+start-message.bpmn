@@ -5,7 +5,7 @@
       <bpmn:incoming>SequenceFlow_1548pcy</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_1548pcy" sourceRef="Task_0p73u1w" targetRef="EndEvent_09arwkt" />
-    <bpmn:serviceTask id="Task_0p73u1w" name="Log" camunda:class="com.ultimate.workflow.camunda.LoggerDelegate">
+    <bpmn:serviceTask id="Task_0p73u1w" name="Log" camunda:class="com.ultimatesoftware.workflow.webapp.LoggerDelegate">
       <bpmn:incoming>SequenceFlow_0m3ouor</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1548pcy</bpmn:outgoing>
     </bpmn:serviceTask>

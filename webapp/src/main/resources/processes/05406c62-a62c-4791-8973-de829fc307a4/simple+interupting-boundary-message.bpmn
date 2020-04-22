@@ -28,7 +28,7 @@
       <bpmn:outgoing>SequenceFlow_05uzsfh</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_1xsh721" messageRef="Message_060ixtc" />
     </bpmn:boundaryEvent>
-    <bpmn:serviceTask id="Task_13u5hqq" name="Log" camunda:class="com.ultimate.workflow.camunda.LoggerDelegate">
+    <bpmn:serviceTask id="Task_13u5hqq" name="Log" camunda:class="com.ultimatesoftware.workflow.webapp.LoggerDelegate">
       <bpmn:incoming>SequenceFlow_05uzsfh</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0sk8r1l</bpmn:outgoing>
     </bpmn:serviceTask>
