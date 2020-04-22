@@ -15,11 +15,19 @@ The following extension semantics are currently supported
 ====== 
 Using the modeler you can assign extensions to the message catch
 ![Extension Sample](docs/images/extension-example.png "Extension Sample")
+> Note: {prefix} defaults to `ultimate.workflow` but can be configured via the application properties
 
 ##### {prefix}.business-process-key={json-path}
-Note: can also be declared as {prefix}.match-var.business-process-key={json-path}
 Assigns the business process key that will be used to start a new process or match on a currently running process
+> Note: This can also be declared as `{prefix}.match-var.business-process-key={json-path}`
+
 ##### {prefix}.match-var.{variable-name}={json-path}
 Creates a match requirement on a variable whose name is defined by {variable-name}
+
 ##### {prefix}.input-var.{variable-name}={json-path}
 Sets a variable, whose name is defined by {variable-name}
+
+Links
+=====
+* [Gettting Started Guide](docs/GET_STARTED.md)
+* [References](docs/REFERENCES.md)
