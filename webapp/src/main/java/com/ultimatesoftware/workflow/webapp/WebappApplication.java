@@ -41,31 +41,6 @@ public class WebappApplication implements ApplicationListener<ApplicationReadyEv
      * Goals:
      * read extension data from the BMPN in order to creating mappings between Kafka and BMPN message objects
      *
-     * using the messaging specification, queue a message into Kafka
-     * read that message from topic in Camunda and change the state of a BPMN
-     *
-     * TODO:
-     *   [X] Correlation of messages based on message type
-     *   [X] Correlation of messages based on business key (defined as expression)
-     *   [X] Multi-Tenant BPMNs (https://docs.camunda.org/manual/7.5/user-guide/process-engine/multi-tenancy/)
-     *   [X] Parsing of extension data
-     *   [X] Allow correlation on match variables (defined as expression)
-     *   [X] Allow correlation to set BP variables (defined as expression)
-     *   [X] Support both 3 and 4 part for business-process-key
-     *   [X] Create topic subscription at runtime
-     *   [ ] Acquire consumer configuration from binding configuration object (where possible)
-     *   [ ] Multiple topics per BPMN
-     *   [ ] Multiple message types per topic
-     *   [ ] Kakfa cluster (aggregate or local) per Message Type
-     *   [ ] Versioning of the message types
-     *   [ ] Redeployment of BPMN and updating mappings
-     *   [ ] Refactor all strings into constants
-     *   [ ] Ensure BP matching includes cluster + topic + tenant + message_type + message_version
-     *
-     * BUGS:
-     *   [X] Extensions of type "match-var" should not be allowed on start events
-     *   [X] Messaging mapping can cause additional correlations if not specific enough
-     *
      * @param args
      */
     public static void main(String[] args) {
