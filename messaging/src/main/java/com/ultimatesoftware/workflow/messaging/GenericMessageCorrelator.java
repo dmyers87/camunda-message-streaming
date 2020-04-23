@@ -22,17 +22,11 @@ public class GenericMessageCorrelator {
 
     private final RuntimeService runtimeService;
 
-    private final MessageTypeMapper messageTypeMapper;
-
-    public GenericMessageCorrelator(RuntimeService runtimeService, MessageTypeMapper messageTypeMapper) {
+    public GenericMessageCorrelator(RuntimeService runtimeService) {
         this.runtimeService = runtimeService;
-        this.messageTypeMapper = messageTypeMapper;
     }
 
-    public List<MessageCorrelationResult> correlate(GenericMessage genericMessage) {
-        Iterable<MessageTypeExtensionData> messageTypeExtensionDataList =
-                retrieveMessageTypeExtensionData(genericMessage.getTenantId(), genericMessage.getMessageType());
-
+    public List<MessageCorrelationResult> correlate(GenericMessage genericMessage, Iterable<MessageTypeExtensionData> messageTypeExtensionDataList) {
         List<MessageCorrelationResult> results = new ArrayList<>();
         for (MessageTypeExtensionData messageTypeExtensionData : messageTypeExtensionDataList) {
             CorrelationData correlationData =
@@ -43,10 +37,6 @@ public class GenericMessageCorrelator {
         }
 
         return results;
-    }
-
-    private Iterable<MessageTypeExtensionData> retrieveMessageTypeExtensionData(String tenantId, String messageType) {
-        return messageTypeMapper.find(tenantId, messageType);
     }
 
     private CorrelationData buildCorrelationData(GenericMessage genericMessage, MessageTypeExtensionData messageTypeExtensionData) {

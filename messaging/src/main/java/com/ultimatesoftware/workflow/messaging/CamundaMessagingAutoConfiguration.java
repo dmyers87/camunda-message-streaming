@@ -22,13 +22,13 @@ public class CamundaMessagingAutoConfiguration {
 
     @Bean
     public GenericMessageCorrelator genericMessageCorrelator(RuntimeService runtimeService, MessageTypeMapper messageTypeMapper) {
-        return new GenericMessageCorrelator(runtimeService, messageTypeMapper);
+        return new GenericMessageCorrelator(runtimeService);
     }
 
     @Bean
     @ConditionalOnMissingBean({CorrelatingMessageListener.class})
-    public CorrelatingMessageListener correlatingMessageListener(GenericMessageCorrelator messageCorrelator) {
-        return new CorrelatingMessageListener(messageCorrelator);
+    public CorrelatingMessageListener correlatingMessageListener(GenericMessageCorrelator messageCorrelator, MessageTypeMapper messageTypeMapper) {
+        return new CorrelatingMessageListener(messageCorrelator, messageTypeMapper);
     }
 
     @Bean

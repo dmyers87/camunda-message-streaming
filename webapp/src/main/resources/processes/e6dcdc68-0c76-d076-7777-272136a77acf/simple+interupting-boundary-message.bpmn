@@ -21,6 +21,7 @@
     <bpmn:boundaryEvent id="IntermediateThrowEvent_1aymib6" attachedToRef="Task_0p73u1w">
       <bpmn:extensionElements>
         <camunda:properties>
+          <camunda:property name="ultimate.workflow.topic" value="poc" />
           <camunda:property name="ultimate.workflow.business-process-key" value="$.checkNumber" />
           <camunda:property name="ultimate.workflow.input-var.pay-date" value="$.payDate" />
         </camunda:properties>

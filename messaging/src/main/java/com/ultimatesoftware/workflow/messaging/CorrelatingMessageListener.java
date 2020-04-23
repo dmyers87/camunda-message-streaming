@@ -22,21 +22,30 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
 
     private final GenericMessageCorrelator correlator;
 
-    public CorrelatingMessageListener(GenericMessageCorrelator correlator) {
+    private final MessageTypeMapper messageTypeMapper;
+
+    public CorrelatingMessageListener(GenericMessageCorrelator correlator, MessageTypeMapper messageTypeMapper) {
         this.correlator = correlator;
+        this.messageTypeMapper = messageTypeMapper;
     }
 
     @Transactional
     @Override
     public void onMessage(ConsumerRecord<String, String> record) {
-        onMessage(record.value());
+        onMessage(record.topic(), record.value());
     }
 
-    private void onMessage(String messageJson) {
+    private void onMessage(String topic, String messageJson) {
         try {
             GenericMessage genericMessage = parseMessageJson(messageJson);
 
-            List<MessageCorrelationResult> results = correlator.correlate(genericMessage);
+            String tenantId = genericMessage.getTenantId();
+            String messageType = genericMessage.getMessageType();
+
+            Iterable<MessageTypeExtensionData> messageTypeExtensionDataList =
+                    messageTypeMapper.find(topic, tenantId, messageType);
+
+            List<MessageCorrelationResult> results = correlator.correlate(genericMessage, messageTypeExtensionDataList);
 
             //logResults(genericMessage.getTenantId(), genericMessage.getMessageType(), results);
         } catch(RuntimeException ex) {

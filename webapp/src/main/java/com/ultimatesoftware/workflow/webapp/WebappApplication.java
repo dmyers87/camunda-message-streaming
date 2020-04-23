@@ -7,6 +7,8 @@ import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import com.ultimatesoftware.workflow.messaging.CorrelatingMessageListener;
+import com.ultimatesoftware.workflow.messaging.KafkaUtils;
+import com.ultimatesoftware.workflow.messaging.MessageTypeMapper;
 import com.ultimatesoftware.workflow.messaging.TopicContainerManager;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -25,8 +27,11 @@ import java.util.Map;
 import java.util.Set;
 
 @Import(KafkaBinderConfiguration.class)
-@SpringBootApplication(scanBasePackages = { "com.ultimatesoftware.workflow"})
+@SpringBootApplication
 public class WebappApplication implements ApplicationListener<ApplicationReadyEvent> {
+
+    @Autowired
+    MessageTypeMapper messageTypeMapper;
 
     @Autowired
     CorrelatingMessageListener listener;
@@ -70,8 +75,9 @@ public class WebappApplication implements ApplicationListener<ApplicationReadyEv
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        topicContainerManager.createOrStartConsumer("poc1", listener, consumerConfig());
-        topicContainerManager.createOrStartConsumer("poc2", listener, consumerConfig());
+        for (String topic : KafkaUtils.getTopics(messageTypeMapper)) {
+            topicContainerManager.createOrStartConsumer(topic, listener, consumerConfig());
+        }
     }
 
     private Map<String, Object> consumerConfig() {

@@ -132,6 +132,9 @@ public class MessageExtensionBpmnParse extends BpmnParse {
         String token = parts[2];
 
         switch (token) {
+            case "topic":
+                builder.withTopic(value);
+                break;
             case "business-process-key":
                 builder.withBusinessKeyExpression(value);
                 break;

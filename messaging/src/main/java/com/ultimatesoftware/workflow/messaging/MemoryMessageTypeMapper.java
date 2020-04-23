@@ -3,33 +3,43 @@ package com.ultimatesoftware.workflow.messaging;
 import java.util.*;
 
 public class MemoryMessageTypeMapper implements MessageTypeMapper {
-    private Dictionary<String, Set<MessageTypeExtensionData>> mappings = new Hashtable<>();
+    private Map<String, Set<MessageTypeExtensionData>> mappings = new HashMap<>();
 
     @Override
     public void add(String tenantId, MessageTypeExtensionData messageTypeExtensionData) {
+        String topic = messageTypeExtensionData.getTopic();
         String messageType = messageTypeExtensionData.getMessageType();
 
-        Set<MessageTypeExtensionData> data = mappings.get(buildKey(tenantId, messageType));
+        Set<MessageTypeExtensionData> data = mappings.get(buildKey(topic, tenantId, messageType));
         if (data == null) {
             data = new HashSet<>();
             data.add(messageTypeExtensionData);
-            mappings.put(buildKey(tenantId, messageType), data);
+            mappings.put(buildKey(topic, tenantId, messageType), data);
         } else {
             data.add(messageTypeExtensionData);
         }
     }
 
     @Override
-    public Iterable<MessageTypeExtensionData> find(String tenantId, String messageType) {
-        Iterable<MessageTypeExtensionData> result = mappings.get(buildKey(tenantId, messageType));
+    public Iterable<MessageTypeExtensionData> find(String topic, String tenantId, String messageType) {
+        Iterable<MessageTypeExtensionData> result = mappings.get(buildKey(topic, tenantId, messageType));
         if (result != null) {
             return result;
         }
         return Collections.EMPTY_LIST;
     }
 
-    private String buildKey(String tenantId, String messageType) {
-        return messageType + ":" + (tenantId == null ? Constants.ZERO_UUID : tenantId).toLowerCase();
+    @Override
+    public Iterable<MessageTypeExtensionData> getAll() {
+        Set<MessageTypeExtensionData> extensionData = new HashSet<>();
+        mappings.forEach((k, v) -> {
+            extensionData.addAll(v);
+        });
+        return extensionData;
+    }
+
+    private String buildKey(String topic, String tenantId, String messageType) {
+        return topic.toLowerCase() + ":" + messageType + ":" + (tenantId == null ? Constants.ZERO_UUID : tenantId).toLowerCase();
     }
 
 }
