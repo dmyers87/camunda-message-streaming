@@ -20,12 +20,33 @@ Using the modeler you can assign extensions to the message catch
 ##### {prefix}.business-process-key={json-path}
 Assigns the business process key that will be used to start a new process or match on a currently running process
 > Note: This can also be declared as `{prefix}.match-var.business-process-key={json-path}`
+Java equivalent:
+```
+processEngine.getRuntimeService()
+    .createMessageCorrelation("com.acme.messages.important-event")
+    .processInstanceBusinessKey("key")
+```
 
 ##### {prefix}.match-var.{variable-name}={json-path}
 Creates a match requirement on a variable whose name is defined by {variable-name}
 
+Java equivalent:
+```
+processEngine.getRuntimeService()
+    .createMessageCorrelation("com.acme.messages.important-event")
+    .processVariableValueEquals("key", "value")
+```
+
 ##### {prefix}.input-var.{variable-name}={json-path}
 Sets a variable, whose name is defined by {variable-name}
+
+Java equivalent:
+```
+processEngine.getRuntimeService()
+    .createMessageCorrelation("com.acme.messages.important-event")
+    .setVariable("key", "value")
+```
+
 
 Links
 =====
