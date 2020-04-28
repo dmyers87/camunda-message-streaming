@@ -1,7 +1,7 @@
-package com.ultimatesoftware.workflow.messaging;
+package com.ultimatesoftware.workflow.messaging.kafka;
 
+import com.ultimatesoftware.workflow.messaging.TopicContainerManager;
 import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
 
@@ -18,11 +18,42 @@ public class KafkaTopicContainerManager implements TopicContainerManager {
 
     private final Logger LOGGER = Logger.getLogger(KafkaTopicContainerManager.class.getName());
 
+    private final ConsumerFactory<String, String> factory;
+
     private final Map<String, ConcurrentMessageListenerContainer<String, String>> consumersMap =
             new HashMap<>();
 
+    public KafkaTopicContainerManager(ConsumerFactory<String, String> factory) {
+        this.factory = factory;
+    }
+
     @Override
-    public void createOrStartConsumer(String topic, Object messageListener, Map<String, Object> consumerConfig) {
+    public void createOrStartConsumers(Iterable<String> topics, Object listener) {
+        topics.forEach(t -> createOrStartConsumer(t, listener, factory.getConfigurationProperties()));
+    }
+
+    @Override
+    public void createOrStartConsumer(String topic, Object listener) {
+        createOrStartConsumer(topic, listener, factory.getConfigurationProperties());
+    }
+
+    @Override
+    public void stopConsumers(Iterable<String> topics) {
+        topics.forEach(t -> stopConsumer(t));
+    }
+
+    @Override
+    public void stopConsumer(String topic) {
+        LOGGER.fine("stopping consumer for topic \"" + topic + "\"");
+        ConcurrentMessageListenerContainer<String, String> container = consumersMap.get(topic);
+        if (container == null) {
+            return;
+        }
+        container.stop();
+        LOGGER.fine("consumer for topic \"" + topic + "\" stopped!!");
+    }
+
+    private void createOrStartConsumer(String topic, Object messageListener, Map<String, Object> consumerConfig) {
         LOGGER.fine("creating kafka consumer for topic \"" + topic + "\"");
 
         ConcurrentMessageListenerContainer<String, String> container = consumersMap.get(topic);
@@ -46,17 +77,6 @@ public class KafkaTopicContainerManager implements TopicContainerManager {
         LOGGER.fine("created and started kafka consumer for topic \"" + topic + "\"");
     }
 
-    @Override
-    public void stopConsumer(String topic) {
-        LOGGER.fine("stopping consumer for topic \"" + topic + "\"");
-        ConcurrentMessageListenerContainer<String, String> container = consumersMap.get(topic);
-        if (container == null) {
-            return;
-        }
-        container.stop();
-        LOGGER.fine("consumer for topic \"" + topic + "\" stopped!!");
-    }
-
     private ConcurrentMessageListenerContainer<String, String> createConsumer(String topic, Object messageListener, Map<String, Object> consumerConfig) {
         ConcurrentMessageListenerContainer<String, String> container;
         ContainerProperties containerProps = new ContainerProperties(topic);
@@ -66,8 +86,6 @@ public class KafkaTopicContainerManager implements TopicContainerManager {
 //        if (!enableAutoCommit) {
 //            containerProps.setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
 //        }
-
-        ConsumerFactory<String, String> factory = new DefaultKafkaConsumerFactory(consumerConfig);
 
         container = new ConcurrentMessageListenerContainer<>(factory, containerProps);
 

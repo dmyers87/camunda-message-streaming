@@ -1,4 +1,7 @@
-package com.ultimatesoftware.workflow.messaging;
+package com.ultimatesoftware.workflow.messaging.kafka;
+
+import com.ultimatesoftware.workflow.messaging.MessageTypeExtensionData;
+import com.ultimatesoftware.workflow.messaging.MessageTypeMapper;
 
 import java.util.HashSet;
 import java.util.Set;

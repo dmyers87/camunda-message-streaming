@@ -12,6 +12,9 @@ camunda:
 spring:
   cloud:
     stream:
+#      default:
+#        startOffset: earliest
+#        group: workflow
       kafka:
         binder:
           zkNodes: localhost:2181
@@ -23,6 +26,3 @@ spring:
               commit:
                 interval:
                   ms: 1000
-#  h2:
-#    console:
-#      enabled: true

@@ -1,10 +1,12 @@
 package com.ultimatesoftware.workflow.messaging;
 
-import java.util.Map;
-
 public interface TopicContainerManager {
 
-    void createOrStartConsumer(String topic, Object messageListener, Map<String, Object> consumerProperties);
+    void createOrStartConsumers(Iterable<String> topics, Object listener);
+
+    void createOrStartConsumer(String topic, Object listener);
+
+    void stopConsumers(Iterable<String> topics);
 
     void stopConsumer(String topic);
 }

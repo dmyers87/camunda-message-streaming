@@ -2,7 +2,7 @@ package com.ultimatesoftware.workflow.messaging;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("ultimate-software.workflow")
+@ConfigurationProperties("ultimate.workflow")
 public class MessagingProperties {
     private final ParserProperties parser = new ParserProperties();
 
