@@ -50,6 +50,14 @@ public class MessageExtensionBpmnParse extends BpmnParse {
         return result;
     }
 
+
+    /**
+     * Since this no singular method for boundary events, we need to loop through al
+     * of the boundary events.
+     *
+     * @param parentElement
+     * @param flowScope
+     */
     @Override
     public void parseBoundaryEvents(Element parentElement, ScopeImpl flowScope) {
         super.parseBoundaryEvents(parentElement, flowScope);
@@ -57,23 +65,32 @@ public class MessageExtensionBpmnParse extends BpmnParse {
         ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) flowScope.getProcessDefinition();
 
         for (Element boundaryEventElement : parentElement.elements("boundaryEvent")) {
-            // Is this element a message event
-            Element messageEventDefinitionElement = parentElement.element(MESSAGE_EVENT_DEFINITION);
-            if (messageEventDefinitionElement == null) {
-                return;
-            }
-
-            parseElementExtensions(processDefinition, parentElement, messageEventDefinitionElement, false);
-
+            parseBoundaryEvent(processDefinition, boundaryEventElement);
         }
+    }
+
+    /**
+     * Method to parse a singular boundary event
+     *
+     * @param processDefinition
+     * @param boundaryEventElement
+     */
+    private void parseBoundaryEvent(ProcessDefinitionEntity processDefinition, Element boundaryEventElement) {
+        // Is this element a message event
+        Element messageEventDefinitionElement = boundaryEventElement.element(MESSAGE_EVENT_DEFINITION);
+        if (messageEventDefinitionElement == null) {
+            return;
+        }
+
+        parseElementExtensions(processDefinition, boundaryEventElement, messageEventDefinitionElement, false);
     }
 
     private void parseElementExtensions(
             ProcessDefinitionEntity processDefinition,
-            Element element,
+            Element parentElement,
             Element messageEventDefinitionElement,
             boolean isStarteEvent) {
-        Element extensionsElement = element.element("extensionElements");
+        Element extensionsElement = parentElement.element("extensionElements");
         if (extensionsElement == null) {
             return;
         }
