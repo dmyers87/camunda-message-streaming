@@ -18,7 +18,7 @@ jobs:
       NAMESPACE_AIRLOCK_NAME: mia-dev
       PROJECT_NAME: camunda-message-streaming
       PIPELINE_NAME: camunda-message-streaming
-      PROJECT_DIR: messaging
+      PROJECT_DIR: ''
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
