@@ -87,6 +87,13 @@
         </dependencies>
     </dependencyManagement>
 
+    <distributionManagement>
+        <repository>
+            <id>artifactory.mia.ulti.io</id>
+            <url>https://artifactory.mia.ulti.io/artifactory/opp-workflow-dev</url>
+        </repository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <id>camunda-bpm-nexus</id>
