@@ -5,6 +5,6 @@ branches:
       - publish-library
 name: camunda-message-streaming
 parameters:
-  project-dir: messaging
+  project-dir: ''
 type: github-actions
 settings-profile: default
