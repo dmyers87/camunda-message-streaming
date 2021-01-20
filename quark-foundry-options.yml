@@ -1,0 +1,10 @@
+template: lib-gh
+branches:
+  - name: ci
+    options:
+      - publish-library
+name: camunda-message-streaming
+parameters:
+  project-dir: messaging
+type: github-actions
+settings-profile: default

@@ -1,0 +1,54 @@
+name: camunda-message-streaming-ci
+'on':
+  push:
+    branches-ignore: []
+jobs:
+  build:
+    env:
+      TEMPLATE_TYPE: lib
+      IS_PIPELINE: 'true'
+      CMD_OPTS: ''
+      SMALL_TEST_CMD_OPTS: SmallTests
+      MEDIUM_TEST_CMD_OPTS: MediumTests
+      CONTRACT_TEST_CMD_OPTS: ContractTests
+      GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      NAMESPACE: opp-workflow
+      NAMESPACE_AIRLOCK_HOST: 'https://gateway.quark-airlock.dlas1.ucloud.int/opp-workflow'
+      NAMESPACE_AIRLOCK_HASH: '${{ secrets.AIRLOCK_HASH }}'
+      NAMESPACE_AIRLOCK_NAME: mia-dev
+      PROJECT_NAME: camunda-message-streaming
+      PIPELINE_NAME: camunda-message-streaming
+      PROJECT_DIR: messaging
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: update fnd
+        run: fnd update
+      - name: started
+        run: 'fnd tanagra:status:report --pipeline_status=STARTED'
+      - name: package
+        run: |-
+          fnd tanagra:build:package \
+            --environment_json=
+      - name: publish-library
+        run: >-
+          fnd tanagra:deploy:library \
+
+          --npmrc_base64= \
+
+          --artifactory_url=https://artifactory.mia.ulti.io/artifactory \
+
+          --artifactory_username=opp-workflow \
+
+          --artifactory_password=secrets.mia-dev::artifactory/opp_workflow:password
+          \
+
+          --environment_json=
+      - name: succeeded
+        run: 'fnd tanagra:status:report --pipeline_status=SUCCEEDED'
+        if: '${{ success() }}'
+      - name: failed
+        run: 'fnd tanagra:status:report --pipeline_status=FAILED'
+        if: '${{failure() || cancelled()}}'
