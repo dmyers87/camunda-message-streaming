@@ -50,5 +50,5 @@ processEngine.getRuntimeService()
 
 Links
 =====
-* [Gettting Started Guide](docs/GET_STARTED.md)
+* [Getting Started Guide](docs/GET_STARTED.md)
 * [References](docs/REFERENCES.md)
