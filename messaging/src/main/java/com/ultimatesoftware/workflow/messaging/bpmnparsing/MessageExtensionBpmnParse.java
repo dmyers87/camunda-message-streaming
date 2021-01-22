@@ -1,5 +1,6 @@
 package com.ultimatesoftware.workflow.messaging.bpmnparsing;
 
+import com.ultimatesoftware.workflow.messaging.bpmnparsing.exceptions.ExtensionElementNotParsableException;
 import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParser;
@@ -24,14 +25,7 @@ public class MessageExtensionBpmnParse extends BpmnParse {
         super.parseProcessDefinitionStartEvent(startEventActivity, startEventElement, parentElement, scope);
 
         ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) scope.getProcessDefinition();
-
-        // Is this element a message event
-        Element messageEventDefinitionElement = startEventElement.element(MESSAGE_EVENT_DEFINITION);
-        if (messageEventDefinitionElement == null) {
-            return;
-        }
-
-        parseElementExtensions(processDefinition, startEventElement, messageEventDefinitionElement, true);
+        createMessageTypeExtensionData(processDefinition, startEventElement, true);
     }
 
     @Override
@@ -39,18 +33,10 @@ public class MessageExtensionBpmnParse extends BpmnParse {
         ActivityImpl result = super.parseIntermediateCatchEvent(intermediateEventElement, scopeElement, eventBasedGateway);
 
         ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) scopeElement.getProcessDefinition();
-
-        // Is this element a message event
-        Element messageEventDefinitionElement = intermediateEventElement.element(MESSAGE_EVENT_DEFINITION);
-        if (messageEventDefinitionElement == null) {
-            return result;
-        }
-
-        parseElementExtensions(processDefinition, intermediateEventElement, messageEventDefinitionElement, false);
+        createMessageTypeExtensionData(processDefinition, intermediateEventElement, false);
 
         return result;
     }
-
 
     /**
      * Since this no singular method for boundary events, we need to loop through al
@@ -66,117 +52,74 @@ public class MessageExtensionBpmnParse extends BpmnParse {
         ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) flowScope.getProcessDefinition();
 
         for (Element boundaryEventElement : parentElement.elements("boundaryEvent")) {
-            parseBoundaryEvent(processDefinition, boundaryEventElement);
+            createMessageTypeExtensionData(processDefinition, boundaryEventElement, false);
         }
     }
 
-    /**
-     * Method to parse a singular boundary event
-     *
-     * @param processDefinition
-     * @param boundaryEventElement
-     */
-    private void parseBoundaryEvent(ProcessDefinitionEntity processDefinition, Element boundaryEventElement) {
-        // Is this element a message event
-        Element messageEventDefinitionElement = boundaryEventElement.element(MESSAGE_EVENT_DEFINITION);
-        if (messageEventDefinitionElement == null) {
-            return;
-        }
+    private void createMessageTypeExtensionData(ProcessDefinitionEntity processDefinition,
+                                                Element parseElement,
+                                                boolean isStartedEvent) {
+        Element messageEventDefinitionElement = parseElement.element(MESSAGE_EVENT_DEFINITION);
+        Element propertiesElement = extractPropertiesElement(messageEventDefinitionElement, parseElement);
 
-        parseElementExtensions(processDefinition, boundaryEventElement, messageEventDefinitionElement, false);
+        if (propertiesElement != null) {
+            createMessageTypeExtensionData(processDefinition, messageEventDefinitionElement, propertiesElement, isStartedEvent);
+        }
     }
 
-    private void parseElementExtensions(
-            ProcessDefinitionEntity processDefinition,
-            Element parentElement,
-            Element messageEventDefinitionElement,
-            boolean isStarteEvent) {
-        Element extensionsElement = parentElement.element("extensionElements");
-        if (extensionsElement == null) {
-            return;
-        }
-
-        parseElementExtensionProperties(processDefinition, messageEventDefinitionElement, extensionsElement, isStarteEvent);
-    }
-
-    private void parseElementExtensionProperties(
-            ProcessDefinitionEntity processDefinition,
-            Element messageEventDefinition,
-            Element extensionsElement,
-            boolean isStarteEvent) {
-        Element propertiesElement = extensionsElement.elementNS(CAMUNDA_BPMN_EXTENSIONS_NS, "properties");
-        if (propertiesElement == null) {
-            return;
-        }
+    private void createMessageTypeExtensionData(ProcessDefinitionEntity processDefinition,
+                                                Element messageEventDefinition,
+                                                Element propertiesElement, boolean isStartedEvent) {
+        String tenantId = deployment.getTenantId();
 
         // property data elements
-        String tenantId = deployment.getTenantId();
-        String messageType = translateToMessageTypeName(messageEventDefinition);
+        String messageType = getMessageTypeFromElement(messageEventDefinition);
 
         MessageTypeExtensionData.MessageTypeExtensionDataBuilder builder =
                 MessageTypeExtensionData.builder(processDefinition.getKey(), messageType);
-        builder.setStartEvent(isStarteEvent);
+        builder.setStartEvent(isStartedEvent);
+
+        addMessageMappingsToBuilder(processDefinition, propertiesElement, builder);
+        mapper.add(tenantId, builder.build());
+    }
+
+    private void addMessageMappingsToBuilder(ProcessDefinitionEntity processDefinition, Element propertiesElement,
+                                             MessageTypeExtensionData.MessageTypeExtensionDataBuilder builder) {
 
         for (Element propertyElement : propertiesElement.elementsNS(CAMUNDA_BPMN_EXTENSIONS_NS, "property")) {
             if (attributeNameStartsWith(propertyElement, "name", this.extensionPrefix + ".")) {
-                createMessageMapping(processDefinition, propertyElement, builder);
+                try {
+                    builder.addFieldFromPropertyElement(processDefinition, propertyElement);
+                } catch (ExtensionElementNotParsableException ex) {
+                    addError(ex.getMessage(), propertyElement);
+                }
             }
         }
-        mapper.add(tenantId, builder.build());
+    }
+
+    private Element extractPropertiesElement(Element messageEventDefinitionElement, Element parentElement) {
+        if (isElementNotMessageEvent(messageEventDefinitionElement)) {
+            return null;
+        }
+
+        Element extensionsElement = parentElement.element("extensionElements");
+        if (extensionsElement == null) {
+            return null;
+        }
+
+        return extensionsElement.elementNS(CAMUNDA_BPMN_EXTENSIONS_NS, "properties");
+    }
+
+    private boolean isElementNotMessageEvent(Element messageEventDefinitionElement) {
+        return messageEventDefinitionElement == null;
     }
 
     private boolean attributeNameStartsWith(Element element, String attribute, String startsWith) {
         String value = element.attribute(attribute);
-        return value != null ? value.startsWith(startsWith) : false;
+        return value != null && value.startsWith(startsWith);
     }
 
-    private void createMessageMapping(
-            ProcessDefinitionEntity processDefinition,
-            Element propertyElement,
-            MessageTypeExtensionData.MessageTypeExtensionDataBuilder builder) {
-        String name = propertyElement.attribute("name");
-        String value = propertyElement.attribute("value");
-
-        if (name == null || value == null){
-            addError("Name and value cannot be null, please correct " + processDefinition.getName() + " message definition", propertyElement);
-        }
-
-        String[] parts = name.split("[.]");
-        if (parts.length < 3 || parts.length > 4) {
-            addError("Unsupported number of parts in property name \"" + name + "\"", propertyElement);
-        }
-
-        // system defined token
-        String token = parts[2];
-
-        switch (token) {
-            case "topic":
-                builder.withTopic(value);
-                break;
-            case "business-process-key":
-                builder.withBusinessKeyExpression(value);
-                break;
-            case "match-var":
-                // match variable mappings
-                String matchVariableName = parts[3];
-                if (matchVariableName.equals("business-process-key")) {
-                    // supports 3 and 4 part declarations
-                    builder.withBusinessKeyExpression(value);
-                } else {
-                    builder.withMatchVariable(matchVariableName, value);
-                }
-                break;
-            case "input-var":
-                // match variable mappings
-                String inputVariableName = parts[3];
-                builder.withInputVariable(inputVariableName, value);
-                break;
-            default:
-                addError("unknown token \"" + token + "\"", propertyElement);
-        }
-    }
-
-    private String translateToMessageTypeName(Element messageEventDefinition) {
+    private String getMessageTypeFromElement(Element messageEventDefinition) {
         String messageRef = messageEventDefinition.attribute("messageRef");
         MessageDefinition messageDefinition = messages.get(resolveName(messageRef));
         return messageDefinition.getExpression().getExpressionText();
