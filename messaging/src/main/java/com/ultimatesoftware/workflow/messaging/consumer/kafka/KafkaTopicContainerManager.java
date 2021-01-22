@@ -1,6 +1,6 @@
-package com.ultimatesoftware.workflow.messaging.kafka;
+package com.ultimatesoftware.workflow.messaging.consumer.kafka;
 
-import com.ultimatesoftware.workflow.messaging.TopicContainerManager;
+import com.ultimatesoftware.workflow.messaging.consumer.TopicContainerManager;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;

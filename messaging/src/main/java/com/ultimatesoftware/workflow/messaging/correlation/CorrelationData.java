@@ -1,4 +1,4 @@
-package com.ultimatesoftware.workflow.messaging;
+package com.ultimatesoftware.workflow.messaging.correlation;
 
 import java.util.HashMap;
 import java.util.Map;

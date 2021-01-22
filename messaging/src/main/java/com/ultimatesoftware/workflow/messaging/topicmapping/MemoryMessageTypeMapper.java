@@ -1,5 +1,7 @@
-package com.ultimatesoftware.workflow.messaging;
+package com.ultimatesoftware.workflow.messaging.topicmapping;
 
+import com.ultimatesoftware.workflow.messaging.Constants;
+import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
 import java.util.*;
 
 public class MemoryMessageTypeMapper implements MessageTypeMapper {

@@ -1,4 +1,4 @@
-package com.ultimatesoftware.workflow.messaging;
+package com.ultimatesoftware.workflow.messaging.bpmnparsing;
 
 import org.springframework.util.Assert;
 
