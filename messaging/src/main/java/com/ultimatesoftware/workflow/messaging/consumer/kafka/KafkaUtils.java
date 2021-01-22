@@ -1,7 +1,7 @@
-package com.ultimatesoftware.workflow.messaging.kafka;
+package com.ultimatesoftware.workflow.messaging.consumer.kafka;
 
-import com.ultimatesoftware.workflow.messaging.MessageTypeExtensionData;
-import com.ultimatesoftware.workflow.messaging.MessageTypeMapper;
+import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
+import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;
 
 import java.util.HashSet;
 import java.util.Set;

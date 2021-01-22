@@ -1,6 +1,13 @@
 package com.ultimatesoftware.workflow.messaging;
 
-import com.ultimatesoftware.workflow.messaging.kafka.KafkaTopicContainerManager;
+import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageExtensionBpmnParseFactory;
+import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessagingProperties;
+import com.ultimatesoftware.workflow.messaging.consumer.TopicContainerManager;
+import com.ultimatesoftware.workflow.messaging.correlation.CorrelatingMessageListener;
+import com.ultimatesoftware.workflow.messaging.correlation.GenericMessageCorrelator;
+import com.ultimatesoftware.workflow.messaging.consumer.kafka.KafkaTopicContainerManager;
+import com.ultimatesoftware.workflow.messaging.topicmapping.MemoryMessageTypeMapper;
+import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.impl.cfg.BpmnParseFactory;
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration;

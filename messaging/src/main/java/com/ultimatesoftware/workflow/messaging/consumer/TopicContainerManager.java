@@ -1,4 +1,4 @@
-package com.ultimatesoftware.workflow.messaging;
+package com.ultimatesoftware.workflow.messaging.consumer;
 
 public interface TopicContainerManager {
 

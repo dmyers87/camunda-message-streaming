@@ -1,5 +1,6 @@
-package com.ultimatesoftware.workflow.messaging;
+package com.ultimatesoftware.workflow.messaging.bpmnparsing;
 
+import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParser;
 
