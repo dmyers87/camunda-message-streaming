@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0kicdg7" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.5.0">
+  <bpmn:process id="SimpleInteruptingBoundaryCatchMessage" isExecutable="true">
+    <bpmn:endEvent id="EndEvent_09arwkt">
+      <bpmn:incoming>SequenceFlow_1548pcy</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1548pcy" sourceRef="Task_0p73u1w" targetRef="EndEvent_09arwkt" />
+    <bpmn:startEvent id="StartEvent_09k3zhp">
+      <bpmn:outgoing>SequenceFlow_1yxr9wr</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1yxr9wr" sourceRef="StartEvent_09k3zhp" targetRef="Task_0p73u1w" />
+    <bpmn:userTask id="Task_0p73u1w" name="User&#10;Task">
+      <bpmn:incoming>SequenceFlow_1yxr9wr</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1548pcy</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_05uzsfh" sourceRef="IntermediateThrowEvent_1aymib6" targetRef="Task_13u5hqq" />
+    <bpmn:endEvent id="EndEvent_005wxdu">
+      <bpmn:incoming>SequenceFlow_0sk8r1l</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0sk8r1l" sourceRef="Task_13u5hqq" targetRef="EndEvent_005wxdu" />
+    <bpmn:boundaryEvent id="IntermediateThrowEvent_1aymib6" attachedToRef="Task_0p73u1w">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="ultimate.workflow.topic" value="poc" />
+          <camunda:property name="ultimate.workflow.business-process-key" value="$.checkNumber" />
+          <camunda:property name="ultimate.workflow.input-var.pay-date" value="$.payDate" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_05uzsfh</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1xsh721" messageRef="Message_060ixtc" />
+    </bpmn:boundaryEvent>
+    <bpmn:serviceTask id="Task_13u5hqq" name="Log" camunda:class="com.ultimatesoftware.workflow.webapp.LoggerDelegate">
+      <bpmn:incoming>SequenceFlow_05uzsfh</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0sk8r1l</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmn:message id="Message_060ixtc" name="payment.employee-pay-check.paid" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="SimpleInteruptingBoundaryCatchMessage">
+      <bpmndi:BPMNShape id="EndEvent_09arwkt_di" bpmnElement="EndEvent_09arwkt">
+        <dc:Bounds x="452" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1548pcy_di" bpmnElement="SequenceFlow_1548pcy">
+        <di:waypoint x="380" y="117" />
+        <di:waypoint x="452" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="StartEvent_0nqxthf_di" bpmnElement="StartEvent_09k3zhp">
+        <dc:Bounds x="152" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1yxr9wr_di" bpmnElement="SequenceFlow_1yxr9wr">
+        <di:waypoint x="188" y="117" />
+        <di:waypoint x="280" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_1mxqlr6_di" bpmnElement="Task_0p73u1w">
+        <dc:Bounds x="280" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_05uzsfh_di" bpmnElement="SequenceFlow_05uzsfh">
+        <di:waypoint x="350" y="175" />
+        <di:waypoint x="350" y="240" />
+        <di:waypoint x="400" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_005wxdu_di" bpmnElement="EndEvent_005wxdu">
+        <dc:Bounds x="552" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0sk8r1l_di" bpmnElement="SequenceFlow_0sk8r1l">
+        <di:waypoint x="500" y="240" />
+        <di:waypoint x="552" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BoundaryEvent_0icaxaw_di" bpmnElement="IntermediateThrowEvent_1aymib6">
+        <dc:Bounds x="332" y="139" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_02k8hhl_di" bpmnElement="Task_13u5hqq">
+        <dc:Bounds x="400" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
