@@ -6,6 +6,8 @@ import org.camunda.bpm.engine.impl.util.xml.Element;
 
 public class CustomExtensionElementParseFactory {
 
+    private static final int TOKEN_INDEX = 2;
+
     public static void parseExtensionElement(ProcessDefinitionEntity processDefinition,
                                              Element propertyElement,
                                              MessageTypeExtensionData.MessageTypeExtensionDataBuilder builder) {
@@ -23,8 +25,7 @@ public class CustomExtensionElementParseFactory {
                 "Unsupported number of parts in property name \"" + name + "\"");
         }
 
-        // system defined token
-        String token = parts[2];
+        String token = parts[TOKEN_INDEX];
 
         switch (token) {
             case "topic":

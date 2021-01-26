@@ -71,8 +71,6 @@ public class MessageExtensionBpmnParse extends BpmnParse {
                                                 Element messageEventDefinition,
                                                 Element propertiesElement, boolean isStartedEvent) {
         String tenantId = deployment.getTenantId();
-
-        // property data elements
         String messageType = getMessageTypeFromElement(messageEventDefinition);
 
         MessageTypeExtensionData.MessageTypeExtensionDataBuilder builder =
