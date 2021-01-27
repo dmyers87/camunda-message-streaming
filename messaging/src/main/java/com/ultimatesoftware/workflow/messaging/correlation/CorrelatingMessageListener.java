@@ -51,12 +51,15 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
             List<MessageCorrelationResult> results = correlator.correlate(genericMessage, messageTypeExtensionDataList);
 
             //logResults(genericMessage.getTenantId(), genericMessage.getMessageType(), results);
-        } catch(RuntimeException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.warning(ex.toString());
             throw ex;
-        } catch(Throwable ex2) {
-            LOGGER.warning(ex2.toString());
-            throw new RuntimeException("Converting to runtime exception", ex2);
+        } catch (JsonProcessingException ex) {
+            LOGGER.warning(ex.toString());
+            throw new RuntimeException("Error parse message body", ex);
+        } catch (Throwable ex) {
+            LOGGER.warning(ex.toString());
+            throw new RuntimeException("Converting to runtime exception", ex);
         }
     }
 

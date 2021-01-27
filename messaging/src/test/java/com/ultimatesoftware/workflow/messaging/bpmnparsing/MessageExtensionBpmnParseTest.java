@@ -1,5 +1,7 @@
 package com.ultimatesoftware.workflow.messaging.bpmnparsing;
 
+import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_MESSAGE_TYPE;
+import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_TOPIC_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ultimatesoftware.workflow.messaging.CamundaMessagingAutoConfiguration;
@@ -53,7 +55,7 @@ public class MessageExtensionBpmnParseTest {
             .deploy();
 
         MessageTypeExtensionData messageTypeExtensionData =
-            messageTypeMapper.find("poc", tenantId, "payment.employee-pay-check.paid")
+            messageTypeMapper.find(GENERIC_TOPIC_NAME, tenantId, GENERIC_MESSAGE_TYPE)
                 .iterator().next();
 
         assertThat(messageTypeExtensionData).isNotNull();
@@ -67,7 +69,7 @@ public class MessageExtensionBpmnParseTest {
             .deploy();
 
         MessageTypeExtensionData messageTypeExtensionData =
-            messageTypeMapper.find("poc", tenantId, "payment.employee-pay-check.paid")
+            messageTypeMapper.find(GENERIC_TOPIC_NAME, tenantId, GENERIC_MESSAGE_TYPE)
                 .iterator().next();
 
         assertThat(messageTypeExtensionData).isNotNull();
@@ -81,7 +83,7 @@ public class MessageExtensionBpmnParseTest {
             .deploy();
 
         MessageTypeExtensionData messageTypeExtensionData =
-            messageTypeMapper.find("poc", tenantId, "payment.employee-pay-check.paid")
+            messageTypeMapper.find(GENERIC_TOPIC_NAME, tenantId, GENERIC_MESSAGE_TYPE)
                 .iterator().next();
 
         assertThat(messageTypeExtensionData).isNotNull();
