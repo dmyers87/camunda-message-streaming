@@ -1,0 +1,5 @@
+camunda:
+  bpm:
+    filter:
+      create: Al
+    auto-deployment-enabled: false

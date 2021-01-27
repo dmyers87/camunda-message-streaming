@@ -1,5 +1,7 @@
 package com.ultimatesoftware.workflow.messaging.bpmnparsing;
 
+import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.camunda.bpm.engine.impl.util.xml.Element;
 import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
@@ -112,6 +114,14 @@ public class MessageTypeExtensionData {
             this.messageType = messageType;
             this.matchVariableExpressions = new HashMap<>();
             this.inputVariableExpressions = new HashMap<>();
+        }
+
+        public MessageTypeExtensionDataBuilder addFieldFromPropertyElement(ProcessDefinitionEntity processDefinition, Element propertyElement) {
+            CustomExtensionElementParseFactory.parseExtensionElement(
+                processDefinition,
+                propertyElement,
+                this);
+            return this;
         }
 
         public MessageTypeExtensionDataBuilder withTopic(String value) {
