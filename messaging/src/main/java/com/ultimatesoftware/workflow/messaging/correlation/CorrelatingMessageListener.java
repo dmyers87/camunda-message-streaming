@@ -50,7 +50,7 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
 
             List<MessageCorrelationResult> results = correlator.correlate(genericMessage, messageTypeExtensionDataList);
 
-            //logResults(genericMessage.getTenantId(), genericMessage.getMessageType(), results);
+            logResults(genericMessage.getTenantId(), genericMessage.getMessageType(), results);
         } catch (RuntimeException ex) {
             LOGGER.warning(ex.toString());
             throw ex;
@@ -86,7 +86,7 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
                     businessKey = "unknown";
                 }
 
-                LOGGER.info("\n\n  ... Correlated"
+                LOGGER.fine("\n\n  ... Correlated"
                         + " message type \"" + messageType + "\""
                         + " for tenant \"" + tenantId + "\""
                         + " to a \"" + result.getResultType().name() + "\""
