@@ -75,7 +75,7 @@ public class GenericMessage {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, schemaVersion, tenantId, messageType, body);
+        return Objects.hash(id, schemaVersion, tenantId, messageType);
     }
 
     @Override

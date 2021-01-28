@@ -1,13 +1,13 @@
 package com.ultimatesoftware.workflow.messaging.consumer.kafka;
 
 import com.ultimatesoftware.workflow.messaging.consumer.TopicContainerManager;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
-import org.springframework.kafka.listener.ContainerProperties;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.springframework.context.Lifecycle;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.kafka.listener.ContainerProperties;
 
 /** Credit to Bikas Katwal
  * https://medium.com/@bikas.katwal10/start-stop-kafka-consumers-or-subscribe-to-new-topic-programmatically-using-spring-kafka-2d4fb77c9117
@@ -55,12 +55,7 @@ public class KafkaTopicContainerManager implements TopicContainerManager {
     }
 
     @Override
-    public Map<String, ConcurrentMessageListenerContainer<String, String>> getConsumers() {
-        return consumersMap;
-    }
-
-    @Override
-    public ConcurrentMessageListenerContainer<String, String> getConsumer(String topic) {
+    public Lifecycle getConsumer(String topic) {
         return consumersMap.get(topic);
     }
 

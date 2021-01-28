@@ -1,7 +1,6 @@
 package com.ultimatesoftware.workflow.messaging.consumer;
 
-import java.util.Map;
-import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.context.Lifecycle;
 
 public interface TopicContainerManager {
 
@@ -13,7 +12,5 @@ public interface TopicContainerManager {
 
     void stopConsumer(String topic);
 
-    Map<String, ConcurrentMessageListenerContainer<String, String>> getConsumers();
-
-    ConcurrentMessageListenerContainer<String, String> getConsumer(String topic);
+    Lifecycle getConsumer(String topic);
 }

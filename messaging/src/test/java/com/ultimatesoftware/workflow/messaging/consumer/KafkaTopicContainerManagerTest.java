@@ -3,10 +3,8 @@ package com.ultimatesoftware.workflow.messaging.consumer;
 import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_TOPIC_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ultimatesoftware.workflow.messaging.CamundaMessagingAutoConfiguration;
 import com.ultimatesoftware.workflow.messaging.consumer.kafka.KafkaTopicContainerManager;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -22,11 +20,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.Lifecycle;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -75,8 +72,7 @@ public class KafkaTopicContainerManagerTest {
     public void whenCreateOrStartConsumerCalled_shouldCreateNewConsumer() throws InterruptedException {
         kafkaTopicContainerManager.createOrStartConsumer(GENERIC_TOPIC_NAME, (MessageListener<String, String>) records::add);
 
-        ConcurrentMessageListenerContainer<String, String> container =
-            kafkaTopicContainerManager.getConsumer(GENERIC_TOPIC_NAME);
+        Lifecycle container = kafkaTopicContainerManager.getConsumer(GENERIC_TOPIC_NAME);
 
         assertThat(container).isNotNull();
         ContainerTestUtils.waitForAssignment(container, embeddedKafkaBroker.getPartitionsPerTopic());
@@ -94,8 +90,7 @@ public class KafkaTopicContainerManagerTest {
     public void whenCreateOrStartConsumerCalledWithExistingConsumer_shouldStartConsumer() {
         kafkaTopicContainerManager.createOrStartConsumer(GENERIC_TOPIC_NAME, (MessageListener<String, String>) records::add);
 
-        ConcurrentMessageListenerContainer<String, String> container =
-            kafkaTopicContainerManager.getConsumer(GENERIC_TOPIC_NAME);
+        Lifecycle container = kafkaTopicContainerManager.getConsumer(GENERIC_TOPIC_NAME);
 
         assertThat(container).isNotNull();
         container.stop();
@@ -103,8 +98,7 @@ public class KafkaTopicContainerManagerTest {
 
         kafkaTopicContainerManager.createOrStartConsumer(GENERIC_TOPIC_NAME, (MessageListener<String, String>) records::add);
 
-        ConcurrentMessageListenerContainer<String, String> container2 =
-            kafkaTopicContainerManager.getConsumer(GENERIC_TOPIC_NAME);
+        Lifecycle container2 = kafkaTopicContainerManager.getConsumer(GENERIC_TOPIC_NAME);
 
         assertThat(container).isEqualTo(container2);
         assertThat(container.isRunning()).isTrue();
@@ -114,8 +108,7 @@ public class KafkaTopicContainerManagerTest {
     public void whenStopConsumerCalled_shouldStopConsumer() {
         kafkaTopicContainerManager.createOrStartConsumer(GENERIC_TOPIC_NAME, (MessageListener<String, String>) records::add);
 
-        ConcurrentMessageListenerContainer<String, String> container =
-            kafkaTopicContainerManager.getConsumer(GENERIC_TOPIC_NAME);
+        Lifecycle container = kafkaTopicContainerManager.getConsumer(GENERIC_TOPIC_NAME);
 
         assertThat(container).isNotNull();
         assertThat(container.isRunning()).isTrue();
@@ -126,8 +119,7 @@ public class KafkaTopicContainerManagerTest {
 
     @Test
     public void whenStopConsumerCalled_AndConsumerDoesNotExist_shouldDoNothing() {
-        ConcurrentMessageListenerContainer<String, String> container =
-            kafkaTopicContainerManager.getConsumer(GENERIC_TOPIC_NAME);
+        Lifecycle container = kafkaTopicContainerManager.getConsumer(GENERIC_TOPIC_NAME);
 
         assertThat(container).isNull();
         kafkaTopicContainerManager.stopConsumer(GENERIC_TOPIC_NAME);
