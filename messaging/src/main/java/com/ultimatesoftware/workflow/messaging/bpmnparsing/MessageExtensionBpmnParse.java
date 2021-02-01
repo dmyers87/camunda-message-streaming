@@ -58,24 +58,24 @@ public class MessageExtensionBpmnParse extends BpmnParse {
 
     private void createMessageTypeExtensionData(ProcessDefinitionEntity processDefinition,
                                                 Element parseElement,
-                                                boolean isStartedEvent) {
+                                                boolean isStartEvent) {
         Element messageEventDefinitionElement = parseElement.element(MESSAGE_EVENT_DEFINITION);
         Element propertiesElement = extractPropertiesElement(messageEventDefinitionElement, parseElement);
 
         if (propertiesElement != null) {
-            createMessageTypeExtensionData(processDefinition, messageEventDefinitionElement, propertiesElement, isStartedEvent);
+            createMessageTypeExtensionData(processDefinition, messageEventDefinitionElement, propertiesElement, isStartEvent);
         }
     }
 
     private void createMessageTypeExtensionData(ProcessDefinitionEntity processDefinition,
                                                 Element messageEventDefinition,
-                                                Element propertiesElement, boolean isStartedEvent) {
+                                                Element propertiesElement, boolean isStartEvent) {
         String tenantId = deployment.getTenantId();
         String messageType = getMessageTypeFromElement(messageEventDefinition);
 
         MessageTypeExtensionData.MessageTypeExtensionDataBuilder builder =
                 MessageTypeExtensionData.builder(processDefinition.getKey(), messageType);
-        builder.setStartEvent(isStartedEvent);
+        builder.setStartEvent(isStartEvent);
 
         addMessageMappingsToBuilder(processDefinition, propertiesElement, builder);
         mapper.add(tenantId, builder.build());
