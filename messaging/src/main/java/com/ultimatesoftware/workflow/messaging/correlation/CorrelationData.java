@@ -19,6 +19,17 @@ class CorrelationData {
         this.inputVariables = new HashMap<>();
     }
 
+    public CorrelationData(String messageType, String tenantId, String businessKey, String processDefinitionKey, boolean isStartEvent,
+                           Map<String, String> matchVariables, Map<String, String> inputVariables) {
+        this.messageType = messageType;
+        this.tenantId = tenantId;
+        this.businessKey = businessKey;
+        this.processDefinitionKey = processDefinitionKey;
+        this.isStartEvent = isStartEvent;
+        this.matchVariables = matchVariables;
+        this.inputVariables = inputVariables;
+    }
+
     public String getMessageType() {
         return messageType;
     }

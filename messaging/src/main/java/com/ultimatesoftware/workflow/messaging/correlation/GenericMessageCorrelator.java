@@ -1,22 +1,18 @@
 package com.ultimatesoftware.workflow.messaging.correlation;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
 import com.ultimatesoftware.workflow.messaging.GenericMessage;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ExecutionQuery;
 import org.camunda.bpm.engine.runtime.MessageCorrelationBuilder;
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Logger;
-
-import static com.ultimatesoftware.workflow.messaging.Constants.ZERO_UUID;
 
 public class GenericMessageCorrelator {
 
@@ -31,135 +27,76 @@ public class GenericMessageCorrelator {
     public List<MessageCorrelationResult> correlate(GenericMessage genericMessage, Iterable<MessageTypeExtensionData> messageTypeExtensionDataList) {
         List<MessageCorrelationResult> results = new ArrayList<>();
         for (MessageTypeExtensionData messageTypeExtensionData : messageTypeExtensionDataList) {
-            CorrelationData correlationData =
-                    buildCorrelationData(genericMessage, messageTypeExtensionData);
+            CorrelationData correlationData = CorrelationDataUtils.buildCorrelationData(genericMessage, messageTypeExtensionData);
 
-            // Determine if any instances are interested in this message
             results.addAll(executeCorrelation(correlationData));
         }
 
         return results;
     }
 
-    private CorrelationData buildCorrelationData(GenericMessage genericMessage, MessageTypeExtensionData messageTypeExtensionData) {
-        String tenantId = genericMessage.getTenantId();
-
-        // Correlation data parsed from the document
-        DocumentContext documentContext = JsonPath.parse(genericMessage.getBody());
-
-        CorrelationData correlationData =
-                new CorrelationData(
-                        genericMessage.getMessageType(),
-                        evaluateExpression(documentContext, messageTypeExtensionData.getBusinessKeyExpression()));
-        correlationData.setTenantId(tenantId);
-        correlationData.setStartEvent(messageTypeExtensionData.isStartEvent());
-        correlationData.setProcessDefinitionKey(messageTypeExtensionData.getProcessDefinitionKey());
-
-        messageTypeExtensionData.getMatchVariableExpressions().forEach((e) -> {
-            correlationData.getMatchVariables().put(e.getKey(), evaluateExpression(documentContext, e.getValue()));
-        });
-
-        messageTypeExtensionData.getInputVariableExpressions().forEach((e) -> {
-            correlationData.getInputVariables().put(e.getKey(), evaluateExpression(documentContext, e.getValue()));
-        });
-
-        return correlationData;
-    }
-
     private List<MessageCorrelationResult> executeCorrelation(CorrelationData correlationData) {
         if (correlationData.isStartEvent()) {
-            return executeStartMessageEventCorrelation(correlationData);
+            return Collections.singletonList(executeStartMessageEventCorrelation(correlationData));
         } else {
             return executeCatchMessageEventCorrelation(correlationData);
         }
     }
 
-    private List<MessageCorrelationResult> executeStartMessageEventCorrelation(CorrelationData correlationData) {
+    private MessageCorrelationResult executeStartMessageEventCorrelation(CorrelationData correlationData) {
         MessageCorrelationBuilder messageCorrelationBuilder =
-                this.runtimeService
-                        .createMessageCorrelation(correlationData.getMessageType())
-                        .processInstanceBusinessKey(correlationData.getBusinessKey());
+            runtimeService.createMessageCorrelation(correlationData.getMessageType())
+                .processInstanceBusinessKey(correlationData.getBusinessKey());
 
-        // assign tenant id
-        if (!ZERO_UUID.equals(correlationData.getTenantId())) {
-            messageCorrelationBuilder
-                    .tenantId(correlationData.getTenantId());
+        if (!TenantUtils.isSystemTenant(correlationData.getTenantId())) {
+            messageCorrelationBuilder.tenantId(correlationData.getTenantId());
         }
 
-        // assign variable inputs
-        correlationData.getInputVariables().forEach((k, v) -> {
-            messageCorrelationBuilder.setVariable(k, v);
-        });
+        correlationData.getInputVariables()
+            .forEach(messageCorrelationBuilder::setVariable);
 
-        // Limit to start events if the correlation data is for start event
-        messageCorrelationBuilder.startMessageOnly();
-
-        // execute the correlation
-        try{
-            return Arrays.asList(messageCorrelationBuilder.correlateWithResult());
-        } catch (Exception ex) {
-            LOGGER.warning(ex.toString());
-            throw ex;
-        }
+        return correlate(messageCorrelationBuilder.startMessageOnly());
     }
 
     private List<MessageCorrelationResult> executeCatchMessageEventCorrelation(CorrelationData correlationData) {
-        List<Execution> executions = determineCorrelatableProcessesInstances(correlationData);
-
-        List<MessageCorrelationResult> results = new ArrayList<>();
-        executions.forEach((e) -> {
-            List<MessageCorrelationResult> r = executeCatchMessageEventCorrelationByExecution(correlationData, e);
-            results.addAll(r);
-        });
-
-        return results;
+        return determineCorrelatableProcessesInstances(correlationData)
+            .map((execution -> executeCatchMessageEventCorrelationByExecution(correlationData, execution)))
+            .collect(Collectors.toList());
     }
 
-    private List<Execution> determineCorrelatableProcessesInstances(CorrelationData correlationData) {
+    private Stream<Execution> determineCorrelatableProcessesInstances(CorrelationData correlationData) {
         ExecutionQuery executionQuery = this.runtimeService
                 .createExecutionQuery()
                 .messageEventSubscriptionName(correlationData.getMessageType())
                 .processInstanceBusinessKey(correlationData.getBusinessKey());
 
-
-        // assign tenant id
-        if (!ZERO_UUID.equals(correlationData.getTenantId())) {
+        if (!TenantUtils.isSystemTenant(correlationData.getTenantId())) {
             executionQuery.tenantIdIn(correlationData.getTenantId());
         }
 
         // search using match variables
-        correlationData.getMatchVariables().forEach((k, v) -> {
-            executionQuery.processVariableValueEquals(k, v);
-        });
+        correlationData.getMatchVariables().forEach(executionQuery::processVariableValueEquals);
 
-        return executionQuery.list();
+        return executionQuery.list().stream();
     }
 
-    private List<MessageCorrelationResult> executeCatchMessageEventCorrelationByExecution(CorrelationData correlationData, Execution execution) {
+    private MessageCorrelationResult executeCatchMessageEventCorrelationByExecution(CorrelationData correlationData, Execution execution) {
         MessageCorrelationBuilder messageCorrelationBuilder =
-                this.runtimeService
-                        .createMessageCorrelation(correlationData.getMessageType())
-                        .processInstanceId(execution.getProcessInstanceId());
+            runtimeService.createMessageCorrelation(correlationData.getMessageType())
+                .processInstanceId(execution.getProcessInstanceId());
 
-        // assign input variables
-        correlationData.getInputVariables().forEach((k, v) -> {
-            messageCorrelationBuilder.setVariable(k, v);
-        });
+        correlationData.getInputVariables()
+            .forEach(messageCorrelationBuilder::setVariable);
 
-        // execute the correlation
+        return correlate(messageCorrelationBuilder);
+    }
+
+    public MessageCorrelationResult correlate(MessageCorrelationBuilder messageCorrelationBuilder) {
         try{
-            return Arrays.asList(messageCorrelationBuilder.correlateWithResult());
+            return messageCorrelationBuilder.correlateWithResult();
         } catch (Exception ex) {
             LOGGER.warning(ex.toString());
             throw ex;
         }
     }
-
-    private static String evaluateExpression(DocumentContext documentContext, String expression) {
-        // Since we are using JacksonJsonNodeJsonProvider we need to convert
-        // the result of the JsonPath into the value we need
-        JsonNode node = documentContext.read(expression);
-        return node.textValue();
-    }
-
 }

@@ -134,8 +134,9 @@ public class MessageTypeExtensionData {
             return this;
         }
 
-        public void setStartEvent(boolean isStartEvent) {
+        public MessageTypeExtensionDataBuilder setStartEvent(boolean isStartEvent) {
             this.isStartEvent = isStartEvent;
+            return this;
         }
 
         public MessageTypeExtensionDataBuilder withMatchVariable(String name, String expression) {
