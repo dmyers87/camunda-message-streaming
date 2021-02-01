@@ -5,14 +5,18 @@ import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionD
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ExecutionQuery;
+import org.camunda.bpm.engine.runtime.MessageCorrelationBuilder;
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult;
 
 public class GenericMessageCorrelator {
+
+    private final Logger LOGGER = Logger.getLogger(GenericMessageCorrelator.class.getName());
 
     private final RuntimeService runtimeService;
 
@@ -23,7 +27,7 @@ public class GenericMessageCorrelator {
     public List<MessageCorrelationResult> correlate(GenericMessage genericMessage, Iterable<MessageTypeExtensionData> messageTypeExtensionDataList) {
         List<MessageCorrelationResult> results = new ArrayList<>();
         for (MessageTypeExtensionData messageTypeExtensionData : messageTypeExtensionDataList) {
-            CorrelationData correlationData = CorrelationData.buildCorrelationData(genericMessage, messageTypeExtensionData);
+            CorrelationData correlationData = CorrelationDataUtils.buildCorrelationData(genericMessage, messageTypeExtensionData);
 
             results.addAll(executeCorrelation(correlationData));
         }
@@ -40,16 +44,18 @@ public class GenericMessageCorrelator {
     }
 
     private MessageCorrelationResult executeStartMessageEventCorrelation(CorrelationData correlationData) {
-        GenericMessageCorrelationBuilder messageCorrelationBuilder =
-            GenericMessageCorrelationBuilder.builder(runtimeService, correlationData.getMessageType())
-                .withBusinessKey(correlationData.getBusinessKey());
+        MessageCorrelationBuilder messageCorrelationBuilder =
+            runtimeService.createMessageCorrelation(correlationData.getMessageType())
+                .processInstanceBusinessKey(correlationData.getBusinessKey());
 
-        if (correlationData.hasNonZeroTenantId()) {
-            messageCorrelationBuilder.withTenantId(correlationData.getTenantId());
+        if (TenantUtils.isNonZeroTenantId(correlationData.getTenantId())) {
+            messageCorrelationBuilder.tenantId(correlationData.getTenantId());
         }
 
-        return messageCorrelationBuilder.withVariables(correlationData.getInputVariables())
-            .correlateStartMessageOnly();
+        correlationData.getInputVariables()
+            .forEach(messageCorrelationBuilder::setVariable);
+
+        return correlate(messageCorrelationBuilder.startMessageOnly());
     }
 
     private List<MessageCorrelationResult> executeCatchMessageEventCorrelation(CorrelationData correlationData) {
@@ -64,7 +70,7 @@ public class GenericMessageCorrelator {
                 .messageEventSubscriptionName(correlationData.getMessageType())
                 .processInstanceBusinessKey(correlationData.getBusinessKey());
 
-        if (correlationData.hasNonZeroTenantId()) {
+        if (TenantUtils.isNonZeroTenantId(correlationData.getTenantId())) {
             executionQuery.tenantIdIn(correlationData.getTenantId());
         }
 
@@ -75,10 +81,22 @@ public class GenericMessageCorrelator {
     }
 
     private MessageCorrelationResult executeCatchMessageEventCorrelationByExecution(CorrelationData correlationData, Execution execution) {
-       return GenericMessageCorrelationBuilder.builder(runtimeService, correlationData.getMessageType())
-           .withProcessInstanceId(execution.getProcessInstanceId())
-           .withVariables(correlationData.getInputVariables())
-           .correlate();
+        MessageCorrelationBuilder messageCorrelationBuilder =
+            runtimeService.createMessageCorrelation(correlationData.getMessageType())
+                .processInstanceId(execution.getProcessInstanceId());
+
+        correlationData.getInputVariables()
+            .forEach(messageCorrelationBuilder::setVariable);
+
+        return correlate(messageCorrelationBuilder);
     }
 
+    public MessageCorrelationResult correlate(MessageCorrelationBuilder messageCorrelationBuilder) {
+        try{
+            return messageCorrelationBuilder.correlateWithResult();
+        } catch (Exception ex) {
+            LOGGER.warning(ex.toString());
+            throw ex;
+        }
+    }
 }
