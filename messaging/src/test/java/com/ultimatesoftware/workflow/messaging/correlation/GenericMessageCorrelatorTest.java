@@ -68,7 +68,7 @@ public class GenericMessageCorrelatorTest {
     @Test
     public void whenCorrelateCalledForStartEvent_withZeroTenantId_shouldCallRuntimeServiceToCorrelate() {
         GenericMessage genericMessage = new GenericMessageBuilder()
-            .withZeroTenantId()
+            .withSystemTenant()
             .build();
 
         MessageTypeExtensionData data = new MessageTypeExtensionDataBuilder()
@@ -115,7 +115,7 @@ public class GenericMessageCorrelatorTest {
     @Test
     public void whenCorrelateCalledForCatchEvent_withZeroTenantId_shouldCallRuntimeServiceToCorrelate() {
         GenericMessage genericMessage = new GenericMessageBuilder()
-            .withZeroTenantId()
+            .withSystemTenant()
             .build();
 
         MessageTypeExtensionData data = new MessageTypeExtensionDataBuilder()

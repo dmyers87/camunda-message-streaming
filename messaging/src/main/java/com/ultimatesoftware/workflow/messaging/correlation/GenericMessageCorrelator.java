@@ -48,7 +48,7 @@ public class GenericMessageCorrelator {
             runtimeService.createMessageCorrelation(correlationData.getMessageType())
                 .processInstanceBusinessKey(correlationData.getBusinessKey());
 
-        if (TenantUtils.isNonZeroTenantId(correlationData.getTenantId())) {
+        if (!TenantUtils.isSystemTenant(correlationData.getTenantId())) {
             messageCorrelationBuilder.tenantId(correlationData.getTenantId());
         }
 
@@ -70,7 +70,7 @@ public class GenericMessageCorrelator {
                 .messageEventSubscriptionName(correlationData.getMessageType())
                 .processInstanceBusinessKey(correlationData.getBusinessKey());
 
-        if (TenantUtils.isNonZeroTenantId(correlationData.getTenantId())) {
+        if (!TenantUtils.isSystemTenant(correlationData.getTenantId())) {
             executionQuery.tenantIdIn(correlationData.getTenantId());
         }
 

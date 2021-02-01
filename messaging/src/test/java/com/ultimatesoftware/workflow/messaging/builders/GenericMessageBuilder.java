@@ -21,7 +21,7 @@ public class GenericMessageBuilder {
         .put(GENERIC_BUSINESS_PROCESS_KEY_FIELD, GENERIC_BUSINESS_PROCESS_KEY_VALUE)
         .put("name", "name");
 
-    public GenericMessageBuilder withZeroTenantId() {
+    public GenericMessageBuilder withSystemTenant() {
         this.tenantId = ZERO_UUID;
         return this;
     }

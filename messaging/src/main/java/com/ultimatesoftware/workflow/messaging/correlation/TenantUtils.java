@@ -6,7 +6,7 @@ public final class TenantUtils {
 
     private TenantUtils() {}
 
-    public static boolean isNonZeroTenantId(String tenantId) {
-        return !ZERO_UUID.equals(tenantId);
+    public static boolean isSystemTenant(String tenantId) {
+        return ZERO_UUID.equals(tenantId);
     }
 }
