@@ -74,7 +74,7 @@ public class KafkaTopicContainerManager implements TopicContainerManager {
         try {
             container.start();
         } catch (Exception e) {
-            LOGGER.warning("There was a problem starting a consumer for topic: \"" + topic + "\" Exception: " + e);
+            LOGGER.warning("There was a problem starting a consumer for topic: \"" + topic + "\". Exception: " + e);
             return;
         }
 
