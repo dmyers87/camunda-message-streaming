@@ -35,6 +35,10 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
     @Transactional
     @Override
     public void onMessage(ConsumerRecord<String, String> record) {
+        if (record.value().isEmpty()) {
+            LOGGER.warning("Consumer received an empty record from topic: " + record.topic());
+            return;
+        }
         onMessage(record.topic(), record.value());
     }
 

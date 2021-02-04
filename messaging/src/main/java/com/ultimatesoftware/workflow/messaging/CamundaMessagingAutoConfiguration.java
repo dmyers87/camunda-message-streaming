@@ -48,7 +48,7 @@ public class CamundaMessagingAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean({BpmnParseFactory.class})
-    public BpmnParseFactory beanParseFactory(MessageTypeMapper mapper, MessagingProperties messagingProperties) {
+    public BpmnParseFactory bpmnParseFactory(MessageTypeMapper mapper, MessagingProperties messagingProperties) {
         return new MessageExtensionBpmnParseFactory(mapper, messagingProperties);
     }
 
