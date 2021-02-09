@@ -88,4 +88,18 @@ public class MessageExtensionBpmnParseTest {
 
         assertThat(messageTypeExtensionData).isNotNull();
     }
+
+    @Test
+    public void parseReceiveTask() {
+        deployment = repositoryService.createDeployment()
+            .tenantId(tenantId)
+            .addClasspathResource("processes/simple+receive-task.bpmn")
+            .deploy();
+
+        MessageTypeExtensionData messageTypeExtensionData =
+            messageTypeMapper.find(GENERIC_TOPIC_NAME, tenantId, GENERIC_MESSAGE_TYPE)
+                .iterator().next();
+
+        assertThat(messageTypeExtensionData).isNotNull();
+    }
 }

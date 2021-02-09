@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0kicdg7" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="SimpleReceiveTask" isExecutable="true">
+    <bpmn:endEvent id="EndEvent_09arwkt">
+      <bpmn:incoming>SequenceFlow_1548pcy</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1548pcy" sourceRef="Task_0p73u1w" targetRef="EndEvent_09arwkt" />
+    <bpmn:serviceTask id="Task_0p73u1w" name="Log" camunda:class="com.ultimatesoftware.workflow.webapp.LoggerDelegate">
+      <bpmn:incoming>Flow_0qyi1da</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1548pcy</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:startEvent id="StartEvent_09k3zhp">
+      <bpmn:outgoing>Flow_0uxmyvx</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:receiveTask id="Activity_17qnicp" name="Receive Task" messageRef="Message_060ixtc">
+    	<bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="ultimate.workflow.topic" value="poc" />
+          <camunda:property name="ultimate.workflow.business-process-key" value="$.checkNumber" />
+          <camunda:property name="ultimate.workflow.match-var.pay-date" value="$.payDate" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0uxmyvx</bpmn:incoming>
+      <bpmn:outgoing>Flow_0qyi1da</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:sequenceFlow id="Flow_0uxmyvx" sourceRef="StartEvent_09k3zhp" targetRef="Activity_17qnicp" />
+    <bpmn:sequenceFlow id="Flow_0qyi1da" sourceRef="Activity_17qnicp" targetRef="Task_0p73u1w" />
+  </bpmn:process>
+  <bpmn:message id="Message_060ixtc" name="payment.employee-pay-check.paid" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="SimpleReceiveTask">
+      <bpmndi:BPMNEdge id="SequenceFlow_1548pcy_di" bpmnElement="SequenceFlow_1548pcy">
+        <di:waypoint x="480" y="117" />
+        <di:waypoint x="552" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0uxmyvx_di" bpmnElement="Flow_0uxmyvx">
+        <di:waypoint x="188" y="117" />
+        <di:waypoint x="250" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qyi1da_di" bpmnElement="Flow_0qyi1da">
+        <di:waypoint x="350" y="117" />
+        <di:waypoint x="380" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_09arwkt_di" bpmnElement="EndEvent_09arwkt">
+        <dc:Bounds x="552" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_0f4vptd_di" bpmnElement="Task_0p73u1w">
+        <dc:Bounds x="380" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_0nqxthf_di" bpmnElement="StartEvent_09k3zhp">
+        <dc:Bounds x="152" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1evguoi_di" bpmnElement="Activity_17qnicp">
+        <dc:Bounds x="250" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

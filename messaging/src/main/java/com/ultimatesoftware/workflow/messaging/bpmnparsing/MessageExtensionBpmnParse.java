@@ -56,20 +56,48 @@ public class MessageExtensionBpmnParse extends BpmnParse {
         }
     }
 
+    @Override
+    public ActivityImpl parseReceiveTask(Element receiveTaskElement, ScopeImpl scopeElement) {
+        ActivityImpl result = super.parseReceiveTask(receiveTaskElement, scopeElement);
+
+        ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) scopeElement.getProcessDefinition();
+
+        createMessageTypeExtensionData(processDefinition, receiveTaskElement, receiveTaskElement, false);
+        return result;
+    }
+
+    private Element getMessageEventDefinitionElement(Element parseElement) {
+        Element messageEventDefinitionElement = parseElement.element(MESSAGE_EVENT_DEFINITION);
+
+        if (isElementNotMessageEvent(messageEventDefinitionElement)) {
+            return null;
+        }
+
+        return messageEventDefinitionElement;
+    }
+
     private void createMessageTypeExtensionData(ProcessDefinitionEntity processDefinition,
                                                 Element parseElement,
                                                 boolean isStartEvent) {
-        Element messageEventDefinitionElement = parseElement.element(MESSAGE_EVENT_DEFINITION);
-        Element propertiesElement = extractPropertiesElement(messageEventDefinitionElement, parseElement);
 
-        if (propertiesElement != null) {
-            createMessageTypeExtensionData(processDefinition, messageEventDefinitionElement, propertiesElement, isStartEvent);
+        Element messageEventDefinitionElement = getMessageEventDefinitionElement(parseElement);
+
+        if (messageEventDefinitionElement != null) {
+            createMessageTypeExtensionData(processDefinition, parseElement, messageEventDefinitionElement, isStartEvent);
         }
     }
 
     private void createMessageTypeExtensionData(ProcessDefinitionEntity processDefinition,
+                                                Element parseElement,
                                                 Element messageEventDefinition,
-                                                Element propertiesElement, boolean isStartEvent) {
+                                                boolean isStartEvent) {
+
+        Element propertiesElement = extractPropertiesElement(parseElement);
+
+        if (propertiesElement == null) {
+            return;
+        }
+
         String tenantId = deployment.getTenantId();
         String messageType = getMessageTypeFromElement(messageEventDefinition);
 
@@ -95,11 +123,7 @@ public class MessageExtensionBpmnParse extends BpmnParse {
         }
     }
 
-    private Element extractPropertiesElement(Element messageEventDefinitionElement, Element parentElement) {
-        if (isElementNotMessageEvent(messageEventDefinitionElement)) {
-            return null;
-        }
-
+    private Element extractPropertiesElement(Element parentElement) {
         Element extensionsElement = parentElement.element("extensionElements");
         if (extensionsElement == null) {
             return null;
