@@ -1,7 +1,7 @@
 package com.ultimatesoftware.workflow.messaging.topicmapping.repositories;
 
-import org.springframework.data.repository.CrudRepository;
 import com.ultimatesoftware.workflow.messaging.topicmapping.entities.ExtensionData;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

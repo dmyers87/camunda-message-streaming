@@ -2,7 +2,12 @@ package com.ultimatesoftware.workflow.messaging.topicmapping;
 
 import com.ultimatesoftware.workflow.messaging.Constants;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
-import java.util.*;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class MemoryMessageTypeMapper implements MessageTypeMapper {
     private Map<String, Set<MessageTypeExtensionData>> mappings = new HashMap<>();
