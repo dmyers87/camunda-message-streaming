@@ -1,7 +1,7 @@
-name: camunda-message-streaming-ci
+name: camunda-message-streaming-develop
 'on':
   push:
-    branches-ignore:
+    branches:
       - develop
 jobs:
   build:
@@ -33,6 +33,20 @@ jobs:
         run: |-
           fnd tanagra:build:package \
             --environment_json=
+      - name: publish-library
+        run: >-
+          fnd tanagra:deploy:library \
+
+          --npmrc_base64= \
+
+          --artifactory_url=https://artifactory.mia.ulti.io/artifactory \
+
+          --artifactory_username=opp-workflow \
+
+          --artifactory_password=secrets.mia-dev::artifactory/opp_workflow:password
+          \
+
+          --environment_json=
       - name: succeeded
         run: 'fnd tanagra:status:report --pipeline_status=SUCCEEDED'
         if: '${{ success() }}'
