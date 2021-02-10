@@ -2,6 +2,9 @@ template: lib-gh
 branches:
   - name: ci
     options:
+      - package
+  - name: develop
+    options:
       - publish-library
 name: camunda-message-streaming
 parameters:
