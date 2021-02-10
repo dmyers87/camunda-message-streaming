@@ -154,8 +154,8 @@ public class MessageTypeExtensionData {
             return this;
         }
 
-        public MessageTypeExtensionDataBuilder withInputVariables(Map<String, String> matchVariableExpressions) {
-            this.inputVariableExpressions.putAll(matchVariableExpressions);
+        public MessageTypeExtensionDataBuilder withInputVariables(Map<String, String> inputVariableExpressions) {
+            this.inputVariableExpressions.putAll(inputVariableExpressions);
             return this;
         }
 
