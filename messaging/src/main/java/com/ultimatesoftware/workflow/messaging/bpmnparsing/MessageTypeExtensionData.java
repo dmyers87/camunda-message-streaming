@@ -14,8 +14,8 @@ public class MessageTypeExtensionData {
     private final String topic;
     private final String businessKeyExpression;
     private final boolean isStartEvent;
-    private final Map<String, String> matchVariableExpressions = new HashMap<>();;
-    private final Map<String, String> inputVariableExpressions = new HashMap<>();;
+    private final Map<String, String> matchVariableExpressions = new HashMap<>();
+    private final Map<String, String> inputVariableExpressions = new HashMap<>();
 
     public static MessageTypeExtensionDataBuilder builder(String processDefinitionKey, String messageType) {
         return new MessageTypeExtensionDataBuilder(processDefinitionKey, messageType);
@@ -144,8 +144,18 @@ public class MessageTypeExtensionData {
             return this;
         }
 
+        public MessageTypeExtensionDataBuilder withMatchVariables(Map<String, String> matchVariableExpressions) {
+            this.matchVariableExpressions.putAll(matchVariableExpressions);
+            return this;
+        }
+
         public MessageTypeExtensionDataBuilder withInputVariable(String name, String expression) {
             this.inputVariableExpressions.put(name, expression);
+            return this;
+        }
+
+        public MessageTypeExtensionDataBuilder withInputVariables(Map<String, String> inputVariableExpressions) {
+            this.inputVariableExpressions.putAll(inputVariableExpressions);
             return this;
         }
 

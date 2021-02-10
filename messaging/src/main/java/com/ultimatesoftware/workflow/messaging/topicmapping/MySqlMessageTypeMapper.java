@@ -5,7 +5,8 @@ import com.ultimatesoftware.workflow.messaging.topicmapping.entities.ExtensionDa
 import com.ultimatesoftware.workflow.messaging.topicmapping.repositories.ExtensionDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MySqlMessageTypeMapper implements MessageTypeMapper {
 
@@ -36,6 +37,8 @@ public class MySqlMessageTypeMapper implements MessageTypeMapper {
                             .withBusinessKeyExpression(e.getBusinessKeyExpression())
                             .withTopic(e.getTopic())
                             .setStartEvent(e.getStartEvent())
+                            .withInputVariables(e.getInputVariableExpressions())
+                            .withMatchVariables(e.getMatchVariableExpressions())
                             .build();
             messageTypeExtensionDataSet.add(messageTypeExtensionData);
         });
