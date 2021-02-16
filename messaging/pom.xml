@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.ultimatesoftware.workflow</groupId>
 		<artifactId>camunda-message-streaming</artifactId>
-		<version>0.3.4-SNAPSHOT</version>
+		<version>0.3.5-SNAPSHOT</version>
 		<relativePath>..</relativePath> <!-- lookup parent from repository -->
 	</parent>
 

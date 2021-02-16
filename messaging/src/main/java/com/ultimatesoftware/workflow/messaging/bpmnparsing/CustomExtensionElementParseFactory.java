@@ -1,6 +1,5 @@
 package com.ultimatesoftware.workflow.messaging.bpmnparsing;
 
-import com.jayway.jsonpath.JsonPath;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.exceptions.ExtensionElementNotParsableException;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.engine.impl.util.xml.Element;
@@ -32,10 +31,6 @@ public class CustomExtensionElementParseFactory {
 
         String token = parts[TOKEN_INDEX];
 
-        if (!token.equals(TOPIC)) {
-            assertIsValidJsonPath(value);
-        }
-
         switch (token) {
             case TOPIC:
                 builder.withTopic(value);
@@ -60,16 +55,6 @@ public class CustomExtensionElementParseFactory {
                 break;
             default:
                 throw new ExtensionElementNotParsableException("unknown token \"" + token + "\"");
-        }
-    }
-
-    private static void assertIsValidJsonPath(String value) {
-        try {
-            JsonPath.compile(value);
-        } catch (Exception e) {
-            throw new ExtensionElementNotParsableException("Provided expression \""
-                    + value + "\" is not a valid JSON path: "
-                    + e.getMessage());
         }
     }
 }
