@@ -23,13 +23,13 @@ public final class CorrelationDataUtils {
         DocumentContext documentContext = JsonPath.parse(genericMessage.getBody(), configuration);
 
         String messageType = genericMessage.getMessageType();
-        String businessKey = evaluateExpression(documentContext, messageTypeExtensionData.getBusinessKeyExpression());
+        String businessKey = evaluateExpression(documentContext, messageTypeExtensionData.getBusinessKeyExpression()).toString();
         String tenantId = genericMessage.getTenantId();
         boolean isStartEvent = messageTypeExtensionData.isStartEvent();
         String processDefinitionKey = messageTypeExtensionData.getProcessDefinitionKey();
 
         Map<String, String> matchVariables = createMatchVariablesFromExtensionData(documentContext, messageTypeExtensionData.getMatchVariableExpressions());
-        Map<String, String> inputVariables = createInputVariablesFromExtensionData(documentContext, messageTypeExtensionData.getInputVariableExpressions());
+        Map<String, Object> inputVariables = createInputVariablesFromExtensionData(documentContext, messageTypeExtensionData.getInputVariableExpressions());
 
         return new CorrelationData(messageType, tenantId, businessKey, processDefinitionKey, isStartEvent, matchVariables, inputVariables);
     }
@@ -39,14 +39,14 @@ public final class CorrelationDataUtils {
         Map<String, String> matchVariables = new HashMap<>();
 
         matchVariableExpressions.forEach((entry) ->
-            matchVariables.put(entry.getKey(), evaluateExpression(documentContext, entry.getValue())));
+            matchVariables.put(entry.getKey(), evaluateExpression(documentContext, entry.getValue()).toString()));
 
         return matchVariables;
     }
 
-    private static Map<String, String> createInputVariablesFromExtensionData(DocumentContext documentContext,
+    private static Map<String, Object> createInputVariablesFromExtensionData(DocumentContext documentContext,
                                                                              Iterable<Map.Entry<String, String>> inputVariableExpressions) {
-        Map<String, String> inputVariables = new HashMap<>();
+        Map<String, Object> inputVariables = new HashMap<>();
 
         inputVariableExpressions.forEach((entry) ->
             inputVariables.put(entry.getKey(), evaluateExpression(documentContext, entry.getValue())));
@@ -54,10 +54,11 @@ public final class CorrelationDataUtils {
         return inputVariables;
     }
 
-    private static String evaluateExpression(DocumentContext documentContext, String expression) {
+    private static Object evaluateExpression(DocumentContext documentContext, String expression) {
         // Since we are using JacksonJsonNodeJsonProvider we need to convert
         // the result of the JsonPath into the value we need
         JsonNode node = documentContext.read(expression);
-        return node.textValue();
+
+        return new JsonNodeEvaluator().evaluateNode(node);
     }
 }
