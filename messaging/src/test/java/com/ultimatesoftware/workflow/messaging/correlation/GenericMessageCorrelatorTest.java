@@ -3,6 +3,7 @@ package com.ultimatesoftware.workflow.messaging.correlation;
 import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_BUSINESS_PROCESS_KEY_VALUE;
 import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_MESSAGE_TYPE;
 import static com.ultimatesoftware.workflow.messaging.TestConstants.PROCESS_INSTANCE_ID;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -164,7 +165,7 @@ public class GenericMessageCorrelatorTest {
         MessageCorrelationBuilder messageCorrelationBuilder = mockMessageCorrelationBuilder();
 
         when(messageCorrelationBuilder.processInstanceBusinessKey(anyString())).thenReturn(messageCorrelationBuilder);
-        when(messageCorrelationBuilder.setVariable(anyString(), anyString())).thenReturn(messageCorrelationBuilder);
+        when(messageCorrelationBuilder.setVariable(anyString(), any())).thenReturn(messageCorrelationBuilder);
         when(messageCorrelationBuilder.startMessageOnly()).thenReturn(messageCorrelationBuilder);
         when(messageCorrelationBuilder.correlateWithResult()).thenReturn(mock(MessageCorrelationResult.class));
 
@@ -175,7 +176,7 @@ public class GenericMessageCorrelatorTest {
         MessageCorrelationBuilder messageCorrelationBuilder = mockMessageCorrelationBuilder();
 
         when(messageCorrelationBuilder.processInstanceId(anyString())).thenReturn(messageCorrelationBuilder);
-        when(messageCorrelationBuilder.setVariable(anyString(), anyString())).thenReturn(messageCorrelationBuilder);
+        when(messageCorrelationBuilder.setVariable(anyString(), any())).thenReturn(messageCorrelationBuilder);
         when(messageCorrelationBuilder.correlateWithResult()).thenReturn(mock(MessageCorrelationResult.class));
 
         return messageCorrelationBuilder;
