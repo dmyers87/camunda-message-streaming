@@ -9,7 +9,7 @@ class CorrelationData {
     private String businessKey;
     private String processDefinitionKey;
     private boolean isStartEvent;
-    private Map<String, String> matchVariables;
+    private Map<String, Object> matchVariables;
     private Map<String, Object> inputVariables;
 
     public CorrelationData(String messageType, String businessKey) {
@@ -20,7 +20,7 @@ class CorrelationData {
     }
 
     public CorrelationData(String messageType, String tenantId, String businessKey, String processDefinitionKey, boolean isStartEvent,
-                           Map<String, String> matchVariables, Map<String, Object> inputVariables) {
+                           Map<String, Object> matchVariables, Map<String, Object> inputVariables) {
         this.messageType = messageType;
         this.tenantId = tenantId;
         this.businessKey = businessKey;
@@ -54,7 +54,7 @@ class CorrelationData {
         return this.processDefinitionKey;
     }
 
-    public Map<String, String> getMatchVariables() {
+    public Map<String, Object> getMatchVariables() {
         return matchVariables;
     }
 

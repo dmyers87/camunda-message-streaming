@@ -7,19 +7,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.POJONode;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 public final class JsonNodeEvaluator {
 
-    private ObjectMapper objectMapper = new ObjectMapper()
+    private static final ObjectMapper objectMapper = new ObjectMapper()
         .configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 
     public JsonNodeEvaluator() {
     }
 
     public Object evaluateNode(JsonNode node) {
+        if (node == null || node.isNull()) {
+            return null;
+        }
+
         if (node.isTextual()) {
             return node.textValue();
         } else if (node.isArray()) {
@@ -38,14 +41,9 @@ public final class JsonNodeEvaluator {
     }
 
     private Object evaluateArrayNode(ArrayNode arrayNode) {
-        Iterator<JsonNode> jsonNodeList = arrayNode.elements();
         List<Object> list = new ArrayList<>(arrayNode.size());
 
-        while (jsonNodeList.hasNext()) {
-            JsonNode jsonNode = jsonNodeList.next();
-            list.add(evaluateNode(jsonNode));
-        }
-
+        arrayNode.forEach(element -> list.add(evaluateNode(element)));
         return list;
     }
 
@@ -55,8 +53,8 @@ public final class JsonNodeEvaluator {
             Map<String, Object> objectMap = objectMapper.readValue(jsonString, Map.class);
             return objectMap;
         } catch (JsonProcessingException ex) {
-            throw new RuntimeException(String.format("Unable to parse POJONode value %s into Map, the following exception occurred: %s",
-                pojoNode.getPojo().toString(), ex.getMessage()));
+            throw new RuntimeException(String.format("Unable to parse POJONode value %s into Map",
+                pojoNode.getPojo().toString()), ex);
         }
     }
 }

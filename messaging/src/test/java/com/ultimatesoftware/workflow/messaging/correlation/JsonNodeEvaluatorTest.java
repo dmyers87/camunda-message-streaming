@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.IntNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,6 +23,18 @@ public class JsonNodeEvaluatorTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final JsonNodeEvaluator jsonNodeEvaluator = new JsonNodeEvaluator();
+
+    @Test
+    public void whenJsonNodeIsNull_shouldReturnNull() {
+        Object object = jsonNodeEvaluator.evaluateNode(null);
+
+        assertThat(object).isNull();
+
+        JsonNode node = NullNode.getInstance();
+        object = jsonNodeEvaluator.evaluateNode(node);
+
+        assertThat(object).isNull();
+    }
 
     @Test
     public void whenJsonNodeIsString_shouldReturnString() {

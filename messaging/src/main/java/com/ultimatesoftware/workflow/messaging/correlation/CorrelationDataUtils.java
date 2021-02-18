@@ -12,6 +12,8 @@ import java.util.Map;
 
 public final class CorrelationDataUtils {
 
+    private static final JsonNodeEvaluator jsonNodeEvaluator = new JsonNodeEvaluator();
+
     private CorrelationDataUtils() {}
 
     public static CorrelationData buildCorrelationData(GenericMessage genericMessage, MessageTypeExtensionData messageTypeExtensionData) {
@@ -28,15 +30,15 @@ public final class CorrelationDataUtils {
         boolean isStartEvent = messageTypeExtensionData.isStartEvent();
         String processDefinitionKey = messageTypeExtensionData.getProcessDefinitionKey();
 
-        Map<String, String> matchVariables = createMatchVariablesFromExtensionData(documentContext, messageTypeExtensionData.getMatchVariableExpressions());
+        Map<String, Object> matchVariables = createMatchVariablesFromExtensionData(documentContext, messageTypeExtensionData.getMatchVariableExpressions());
         Map<String, Object> inputVariables = createInputVariablesFromExtensionData(documentContext, messageTypeExtensionData.getInputVariableExpressions());
 
         return new CorrelationData(messageType, tenantId, businessKey, processDefinitionKey, isStartEvent, matchVariables, inputVariables);
     }
 
-    private static Map<String, String> createMatchVariablesFromExtensionData(DocumentContext documentContext,
+    private static Map<String, Object> createMatchVariablesFromExtensionData(DocumentContext documentContext,
                                                                              Iterable<Map.Entry<String, String>> matchVariableExpressions) {
-        Map<String, String> matchVariables = new HashMap<>();
+        Map<String, Object> matchVariables = new HashMap<>();
 
         matchVariableExpressions.forEach((entry) ->
             matchVariables.put(entry.getKey(), evaluateExpression(documentContext, entry.getValue()).toString()));
@@ -59,6 +61,6 @@ public final class CorrelationDataUtils {
         // the result of the JsonPath into the value we need
         JsonNode node = documentContext.read(expression);
 
-        return new JsonNodeEvaluator().evaluateNode(node);
+        return jsonNodeEvaluator.evaluateNode(node);
     }
 }
