@@ -9,8 +9,11 @@ import com.ultimatesoftware.workflow.messaging.GenericMessage;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public final class CorrelationDataUtils {
+
+    private static final Logger LOGGER = Logger.getLogger(CorrelationDataUtils.class.getName());
 
     private static final JsonNodeEvaluator jsonNodeEvaluator = new JsonNodeEvaluator();
 
@@ -61,6 +64,14 @@ public final class CorrelationDataUtils {
         // the result of the JsonPath into the value we need
         JsonNode node = documentContext.read(expression);
 
-        return jsonNodeEvaluator.evaluateNode(node);
+        Object parsedObject = jsonNodeEvaluator.evaluateNode(node);
+
+        if (parsedObject == null) {
+            String errorMessage = String.format("Unable to resolve expression %s in context %s", expression, documentContext.toString());
+            LOGGER.severe(errorMessage);
+            throw new RuntimeException(errorMessage);
+        }
+
+        return parsedObject;
     }
 }

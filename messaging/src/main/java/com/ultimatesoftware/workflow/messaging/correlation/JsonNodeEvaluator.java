@@ -12,7 +12,7 @@ import java.util.Map;
 
 public final class JsonNodeEvaluator {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper()
+    private final ObjectMapper objectMapper = new ObjectMapper()
         .configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 
     public JsonNodeEvaluator() {
