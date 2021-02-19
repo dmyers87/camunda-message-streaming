@@ -78,6 +78,12 @@
                 <artifactId>camunda-bpm-spring-boot-starter-rest</artifactId>
                 <version>${camunda.spring.boot.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.camunda.bpm.extension.mockito</groupId>
+                <artifactId>camunda-bpm-mockito</artifactId>
+                <scope>test</scope>
+                <version>4.12.0</version>
+            </dependency>
 
             <!-- JSON PATH -->
             <dependency>

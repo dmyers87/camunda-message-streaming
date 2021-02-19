@@ -35,6 +35,11 @@
             <artifactId>camunda-message-streaming</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.ultimatesoftware.workflow</groupId>
+            <artifactId>camunda-message-streaming-kafka</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
 
         <!-- CAMUNDA -->
         <dependency>

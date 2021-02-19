@@ -1,4 +1,4 @@
-package com.ultimatesoftware.workflow.messaging.consumer.kafka;
+package com.ultimatesoftware.workflow.messaging.kafka;
 
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
 import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;

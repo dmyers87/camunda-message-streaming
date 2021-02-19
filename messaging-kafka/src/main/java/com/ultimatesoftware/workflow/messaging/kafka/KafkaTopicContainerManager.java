@@ -1,4 +1,4 @@
-package com.ultimatesoftware.workflow.messaging.consumer.kafka;
+package com.ultimatesoftware.workflow.messaging.kafka;
 
 import com.ultimatesoftware.workflow.messaging.consumer.TopicContainerManager;
 import java.util.HashMap;
