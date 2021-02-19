@@ -1,4 +1,4 @@
-package com.ultimatesoftware.workflow.messaging.consumer;
+package com.ultimatesoftware.workflow.messaging.kafka;
 
 import org.springframework.context.Lifecycle;
 

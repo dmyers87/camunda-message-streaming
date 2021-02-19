@@ -1,13 +1,7 @@
 package com.ultimatesoftware.workflow.webapp;
 
-import com.ultimatesoftware.workflow.messaging.consumer.TopicContainerManager;
-import com.ultimatesoftware.workflow.messaging.kafka.CorrelatingMessageListener;
-import com.ultimatesoftware.workflow.messaging.correlation.GenericMessageCorrelator;
-import com.ultimatesoftware.workflow.messaging.kafka.KafkaTopicContainerManager;
-import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.stream.binder.kafka.config.KafkaBinderConfiguration;
 import org.springframework.cloud.stream.binder.kafka.properties.KafkaBinderConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -24,19 +18,10 @@ import java.util.Map;
 public class KafkaConsumerFactoryConfiguration {
 
   @Bean
-  @ConditionalOnMissingBean({CorrelatingMessageListener.class})
-  public CorrelatingMessageListener correlatingMessageListener(GenericMessageCorrelator messageCorrelator, MessageTypeMapper messageTypeMapper) {
-    return new CorrelatingMessageListener(messageCorrelator, messageTypeMapper);
-  }
-
-  @Bean
   public ConsumerFactory<String, String> consumerFactory(KafkaBinderConfigurationProperties binderConfigurationProperties) {
-    return new DefaultKafkaConsumerFactory<>(consumerConfig(binderConfigurationProperties));
-  }
-
-  @Bean
-  public TopicContainerManager topicContainerManager(ConsumerFactory<String, String> consumerFactory) {
-    return new KafkaTopicContainerManager(consumerFactory);
+    return new DefaultKafkaConsumerFactory<>(
+            consumerConfig(binderConfigurationProperties)
+    );
   }
 
   public Map<String, Object> consumerConfig(KafkaBinderConfigurationProperties binderConfigurationProperties) {

@@ -1,6 +1,5 @@
 package com.ultimatesoftware.workflow.messaging.kafka;
 
-import com.ultimatesoftware.workflow.messaging.consumer.TopicContainerManager;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -15,16 +14,16 @@ import org.springframework.kafka.listener.ContainerProperties;
 
  * Potentially interesting: https://howtoprogram.xyz/2016/09/25/spring-kafka-multi-threaded-message-consumption/
  */
-public class KafkaTopicContainerManager implements TopicContainerManager {
+class KafkaTopicContainerManager<K, V> implements TopicContainerManager {
 
     private final Logger LOGGER = Logger.getLogger(KafkaTopicContainerManager.class.getName());
 
-    private final ConsumerFactory<String, String> factory;
+    private final ConsumerFactory<K, V> factory;
 
-    private final Map<String, ConcurrentMessageListenerContainer<String, String>> consumersMap =
+    private final Map<String, ConcurrentMessageListenerContainer<K, V>> consumersMap =
             new HashMap<>();
 
-    public KafkaTopicContainerManager(ConsumerFactory<String, String> factory) {
+    public KafkaTopicContainerManager(ConsumerFactory<K, V> factory) {
         this.factory = factory;
     }
 
@@ -46,7 +45,7 @@ public class KafkaTopicContainerManager implements TopicContainerManager {
     @Override
     public void stopConsumer(String topic) {
         LOGGER.fine("stopping consumer for topic \"" + topic + "\"");
-        ConcurrentMessageListenerContainer<String, String> container = consumersMap.get(topic);
+        ConcurrentMessageListenerContainer<K, V> container = consumersMap.get(topic);
         if (container == null) {
             return;
         }
@@ -62,7 +61,7 @@ public class KafkaTopicContainerManager implements TopicContainerManager {
     private void createOrStartConsumer(String topic, Object messageListener, Map<String, Object> consumerConfig) {
         LOGGER.fine("creating kafka consumer for topic \"" + topic + "\"");
 
-        ConcurrentMessageListenerContainer<String, String> container = consumersMap.get(topic);
+        ConcurrentMessageListenerContainer<K, V> container = consumersMap.get(topic);
 
         if (container != null) {
             startConsumer(container, topic);
@@ -83,7 +82,7 @@ public class KafkaTopicContainerManager implements TopicContainerManager {
         LOGGER.fine("created and started kafka consumer for topic \"" + topic + "\"");
     }
 
-    private void startConsumer(ConcurrentMessageListenerContainer<String, String> container, String topic) {
+    private void startConsumer(ConcurrentMessageListenerContainer<K, V> container, String topic) {
         if (container.isRunning()) {
             LOGGER.fine("Consumer for topic \"" + topic + "\" is already running.");
             return;
@@ -94,8 +93,8 @@ public class KafkaTopicContainerManager implements TopicContainerManager {
         LOGGER.fine("Consumer for topic \"" + topic + "\" started!!!!");
     }
 
-    private ConcurrentMessageListenerContainer<String, String> createConsumer(String topic, Object messageListener, Map<String, Object> consumerConfig) {
-        ConcurrentMessageListenerContainer<String, String> container;
+    private ConcurrentMessageListenerContainer<K, V> createConsumer(String topic, Object messageListener, Map<String, Object> consumerConfig) {
+        ConcurrentMessageListenerContainer<K, V> container;
         ContainerProperties containerProps = new ContainerProperties(topic);
 
         container = new ConcurrentMessageListenerContainer<>(factory, containerProps);
