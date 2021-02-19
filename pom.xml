@@ -11,9 +11,9 @@
     </parent>
 
     <groupId>com.ultimatesoftware.workflow</groupId>
-    <artifactId>camunda-message-streaming</artifactId>
+    <artifactId>camunda-message-streaming-parent</artifactId>
     <version>0.3.6-SNAPSHOT</version>
-    <name>camunda-message-streaming</name>
+    <name>parent</name>
     <description>
         Allows BPMN designers to declaratively define what values, from an incoming JSON based message,
         will be used to correlate to a Process or a Process Instance (e.g. Execution).
@@ -34,6 +34,7 @@
     <modules>
         <module>webapp</module>
         <module>messaging</module>
+        <module>messaging-kafka</module>
     </modules>
 
     <dependencyManagement>
