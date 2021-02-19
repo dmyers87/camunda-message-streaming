@@ -14,7 +14,7 @@ import org.springframework.kafka.listener.ContainerProperties;
 
  * Potentially interesting: https://howtoprogram.xyz/2016/09/25/spring-kafka-multi-threaded-message-consumption/
  */
-class KafkaTopicContainerManager<K, V> implements TopicContainerManager {
+public class KafkaTopicContainerManager<K, V> implements TopicContainerManager {
 
     private final Logger LOGGER = Logger.getLogger(KafkaTopicContainerManager.class.getName());
 

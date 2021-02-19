@@ -19,10 +19,4 @@ public class CamundaMessagingKafkaAutoConfiguration {
         return new CorrelatingMessageListener(messageCorrelator, messageTypeMapper);
     }
 
-    @Bean
-    @ConditionalOnMissingBean({TopicContainerManager.class})
-    public TopicContainerManager topicContainerManager(ConsumerFactory<String, String> consumerFactory) {
-        return new KafkaTopicContainerManager(consumerFactory);
-    }
-
 }

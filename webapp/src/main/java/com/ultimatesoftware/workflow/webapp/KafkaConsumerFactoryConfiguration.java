@@ -1,5 +1,7 @@
 package com.ultimatesoftware.workflow.webapp;
 
+import com.ultimatesoftware.workflow.messaging.kafka.KafkaTopicContainerManager;
+import com.ultimatesoftware.workflow.messaging.kafka.TopicContainerManager;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.cloud.stream.binder.kafka.config.KafkaBinderConfiguration;
@@ -16,6 +18,11 @@ import java.util.Map;
 @Configuration
 @Import(KafkaBinderConfiguration.class)
 public class KafkaConsumerFactoryConfiguration {
+
+  @Bean
+  public TopicContainerManager topicContainerManager(ConsumerFactory<String, String> consumerFactory) {
+    return new KafkaTopicContainerManager(consumerFactory);
+  }
 
   @Bean
   public ConsumerFactory<String, String> consumerFactory(KafkaBinderConfigurationProperties binderConfigurationProperties) {
