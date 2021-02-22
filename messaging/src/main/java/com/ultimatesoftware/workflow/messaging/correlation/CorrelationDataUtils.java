@@ -7,13 +7,16 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.ultimatesoftware.workflow.messaging.GenericMessage;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+
 
 public final class CorrelationDataUtils {
 
-    private static final Logger LOGGER = Logger.getLogger(CorrelationDataUtils.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(CorrelationDataUtils.class.getName());
 
     private static final JsonNodeEvaluator jsonNodeEvaluator = new JsonNodeEvaluator();
 
@@ -68,7 +71,7 @@ public final class CorrelationDataUtils {
 
         if (parsedObject == null) {
             String errorMessage = String.format("Unable to resolve expression %s in context %s", expression, documentContext.toString());
-            LOGGER.severe(errorMessage);
+            LOGGER.error(errorMessage);
             throw new RuntimeException(errorMessage);
         }
 

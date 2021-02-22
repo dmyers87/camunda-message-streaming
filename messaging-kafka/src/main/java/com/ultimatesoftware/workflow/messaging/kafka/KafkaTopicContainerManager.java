@@ -2,7 +2,9 @@ package com.ultimatesoftware.workflow.messaging.kafka;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.Lifecycle;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
@@ -16,7 +18,7 @@ import org.springframework.kafka.listener.ContainerProperties;
  */
 public class KafkaTopicContainerManager<K, V> implements TopicContainerManager {
 
-    private final Logger LOGGER = Logger.getLogger(KafkaTopicContainerManager.class.getName());
+    private final Logger LOGGER = LoggerFactory.getLogger(KafkaTopicContainerManager.class.getName());
 
     private final ConsumerFactory<K, V> factory;
 
@@ -44,13 +46,13 @@ public class KafkaTopicContainerManager<K, V> implements TopicContainerManager {
 
     @Override
     public void stopConsumer(String topic) {
-        LOGGER.fine("stopping consumer for topic \"" + topic + "\"");
+        LOGGER.debug("stopping consumer for topic \"{}\"", topic);
         ConcurrentMessageListenerContainer<K, V> container = consumersMap.get(topic);
         if (container == null) {
             return;
         }
         container.stop();
-        LOGGER.fine("consumer for topic \"" + topic + "\" stopped!!");
+        LOGGER.debug("consumer for topic \"{}\" stopped!!", topic);
     }
 
     @Override
@@ -59,7 +61,7 @@ public class KafkaTopicContainerManager<K, V> implements TopicContainerManager {
     }
 
     private void createOrStartConsumer(String topic, Object messageListener, Map<String, Object> consumerConfig) {
-        LOGGER.fine("creating kafka consumer for topic \"" + topic + "\"");
+        LOGGER.debug("creating kafka consumer for topic \"{}\"", topic);
 
         ConcurrentMessageListenerContainer<K, V> container = consumersMap.get(topic);
 
@@ -73,24 +75,24 @@ public class KafkaTopicContainerManager<K, V> implements TopicContainerManager {
         try {
             container.start();
         } catch (Exception e) {
-            LOGGER.warning("There was a problem starting a consumer for topic: \"" + topic + "\". Exception: " + e);
+            LOGGER.warn("There was a problem starting a consumer for topic: \"{}\"", topic, e);
             return;
         }
 
         consumersMap.put(topic, container);
 
-        LOGGER.fine("created and started kafka consumer for topic \"" + topic + "\"");
+        LOGGER.debug("Created and started kafka consumer for topic \"{}\"", topic);
     }
 
     private void startConsumer(ConcurrentMessageListenerContainer<K, V> container, String topic) {
         if (container.isRunning()) {
-            LOGGER.fine("Consumer for topic \"" + topic + "\" is already running.");
+            LOGGER.debug("Consumer for topic \"{}\" is already running.", topic);
             return;
         }
 
-        LOGGER.fine("Consumer already created for topic \"" + topic + ",\" starting consumer!!");
+        LOGGER.debug("Consumer already created for topic \"{}\" starting consumer!!", topic);
         container.start();
-        LOGGER.fine("Consumer for topic \"" + topic + "\" started!!!!");
+        LOGGER.debug("Consumer for topic \"{}\" started!!!!", topic);
     }
 
     private ConcurrentMessageListenerContainer<K, V> createConsumer(String topic, Object messageListener, Map<String, Object> consumerConfig) {
