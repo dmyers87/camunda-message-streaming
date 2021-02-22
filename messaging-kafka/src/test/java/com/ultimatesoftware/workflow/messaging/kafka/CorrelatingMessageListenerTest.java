@@ -1,28 +1,22 @@
-package com.ultimatesoftware.workflow.messaging.correlation;
-
-import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_MESSAGE_TYPE;
-import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_TENANT_ID;
-import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_TOPIC_NAME;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+package com.ultimatesoftware.workflow.messaging.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ultimatesoftware.workflow.messaging.GenericMessage;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
-import com.ultimatesoftware.workflow.messaging.builders.GenericMessageBuilder;
+import com.ultimatesoftware.workflow.messaging.correlation.GenericMessageCorrelator;
 import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;
-import java.util.Arrays;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CorrelatingMessageListenerTest {
@@ -48,17 +42,17 @@ public class CorrelatingMessageListenerTest {
         ConsumerRecord<String, String> record = mock(ConsumerRecord.class);
         GenericMessage genericMessage = new GenericMessageBuilder().build();
 
-        when(record.topic()).thenReturn(GENERIC_TOPIC_NAME);
+        when(record.topic()).thenReturn(TestConstants.GENERIC_TOPIC_NAME);
         when(record.value()).thenReturn(objectMapper.writeValueAsString(genericMessage));
 
         MessageTypeExtensionData data = MessageTypeExtensionData
-            .builder("processDefinitionKey", GENERIC_MESSAGE_TYPE)
+            .builder("processDefinitionKey", TestConstants.GENERIC_MESSAGE_TYPE)
             .withBusinessKeyExpression("$.checkNumber")
-            .withTopic(GENERIC_TOPIC_NAME)
+            .withTopic(TestConstants.GENERIC_TOPIC_NAME)
             .build();
 
         Iterable<MessageTypeExtensionData> messageTypeExtensionDataList = Arrays.asList(data);
-        when(messageTypeMapper.find(GENERIC_TOPIC_NAME, GENERIC_TENANT_ID, GENERIC_MESSAGE_TYPE))
+        when(messageTypeMapper.find(TestConstants.GENERIC_TOPIC_NAME, TestConstants.GENERIC_TENANT_ID, TestConstants.GENERIC_MESSAGE_TYPE))
             .thenReturn(messageTypeExtensionDataList);
 
         correlatingMessageListener.onMessage(record);
@@ -71,7 +65,7 @@ public class CorrelatingMessageListenerTest {
     public void whenMessageReceived_AndCannotDeserialize_shouldThrowException() {
         ConsumerRecord<String, String> record = mock(ConsumerRecord.class);
 
-        when(record.topic()).thenReturn(GENERIC_TOPIC_NAME);
+        when(record.topic()).thenReturn(TestConstants.GENERIC_TOPIC_NAME);
         when(record.value()).thenReturn("bad string");
 
 

@@ -1,4 +1,4 @@
-package com.ultimatesoftware.workflow.messaging.correlation;
+package com.ultimatesoftware.workflow.messaging.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ultimatesoftware.workflow.messaging.GenericMessage;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
+import com.ultimatesoftware.workflow.messaging.correlation.GenericMessageCorrelator;
 import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult;

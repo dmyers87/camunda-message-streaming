@@ -1,4 +1,4 @@
-package com.ultimatesoftware.workflow.messaging.consumer.kafka;
+package com.ultimatesoftware.workflow.webapp;
 
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
 import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;
@@ -6,7 +6,7 @@ import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;
 import java.util.HashSet;
 import java.util.Set;
 
-public final class KafkaUtils {
+final class TopicUtil {
 
     public static Set<String> getTopics(MessageTypeMapper mapper) {
         Set<String> topics = new HashSet<>();

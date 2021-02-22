@@ -1,4 +1,4 @@
-package com.ultimatesoftware.workflow.messaging.correlation;
+package com.ultimatesoftware.workflow.messaging;
 
 import static com.ultimatesoftware.workflow.messaging.Constants.ZERO_UUID;
 

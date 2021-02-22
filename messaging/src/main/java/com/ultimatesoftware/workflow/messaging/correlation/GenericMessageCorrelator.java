@@ -1,6 +1,7 @@
 package com.ultimatesoftware.workflow.messaging.correlation;
 
 import com.ultimatesoftware.workflow.messaging.GenericMessage;
+import com.ultimatesoftware.workflow.messaging.TenantUtils;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
 import java.util.ArrayList;
 import java.util.Collections;

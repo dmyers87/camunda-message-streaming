@@ -1,35 +1,37 @@
 package com.ultimatesoftware.workflow.webapp;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.ultimatesoftware.workflow.messaging.kafka.KafkaTopicContainerManager;
+import com.ultimatesoftware.workflow.messaging.kafka.TopicContainerManager;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.binder.kafka.config.KafkaBinderConfiguration;
 import org.springframework.cloud.stream.binder.kafka.properties.KafkaBinderConfigurationProperties;
-import org.springframework.cloud.stream.binder.kafka.properties.KafkaExtendedBindingProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 @Import(KafkaBinderConfiguration.class)
 public class KafkaConsumerFactoryConfiguration {
 
-  @Autowired
-  public KafkaBinderConfigurationProperties binderConfigurationProperties;
-
-  @Autowired
-  public KafkaExtendedBindingProperties bindingProperties;
-
   @Bean
-  public ConsumerFactory<String, String> consumerFactory() {
-    return new DefaultKafkaConsumerFactory<>(consumerConfig());
+  public TopicContainerManager topicContainerManager(ConsumerFactory<String, String> consumerFactory) {
+    return new KafkaTopicContainerManager(consumerFactory);
   }
 
-  public Map<String, Object> consumerConfig() {
+  @Bean
+  public ConsumerFactory<String, String> consumerFactory(KafkaBinderConfigurationProperties binderConfigurationProperties) {
+    return new DefaultKafkaConsumerFactory<>(
+            consumerConfig(binderConfigurationProperties)
+    );
+  }
+
+  public Map<String, Object> consumerConfig(KafkaBinderConfigurationProperties binderConfigurationProperties) {
     Map<String, Object> propsMap = new HashMap<>();
     propsMap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, binderConfigurationProperties.getKafkaProperties().getBootstrapServers());
     propsMap.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
