@@ -6,7 +6,6 @@ import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionD
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.camunda.bpm.engine.RuntimeService;
@@ -14,10 +13,12 @@ import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ExecutionQuery;
 import org.camunda.bpm.engine.runtime.MessageCorrelationBuilder;
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GenericMessageCorrelator {
 
-    private final Logger LOGGER = Logger.getLogger(GenericMessageCorrelator.class.getName());
+    private final Logger LOGGER = LoggerFactory.getLogger(GenericMessageCorrelator.class.getName());
 
     private final RuntimeService runtimeService;
 
@@ -96,7 +97,7 @@ public class GenericMessageCorrelator {
         try{
             return messageCorrelationBuilder.correlateWithResult();
         } catch (Exception ex) {
-            LOGGER.warning(ex.toString());
+            LOGGER.warn("Failed to correlate request", ex);
             throw ex;
         }
     }

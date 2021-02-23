@@ -2,12 +2,12 @@ package com.ultimatesoftware.workflow.webapp;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoggerDelegate implements JavaDelegate {
 
-    private final Logger LOGGER = Logger.getLogger(LoggerDelegate.class.getName());
+    private final Logger LOGGER = LoggerFactory.getLogger(LoggerDelegate.class.getName());
 
     public void execute(DelegateExecution execution) throws Exception {
 
@@ -23,7 +23,6 @@ public class LoggerDelegate implements JavaDelegate {
                 //+ "\n elementId" + execution.getBpmnModelElementInstance().getId() + ","
                 + "\n variables=" + execution.getVariables().toString().replaceAll("\n", "\n ")
                 + "\n} \n\n");
-
     }
 
 }

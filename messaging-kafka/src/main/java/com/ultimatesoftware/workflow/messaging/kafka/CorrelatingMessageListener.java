@@ -11,15 +11,16 @@ import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult;
 import org.camunda.bpm.engine.runtime.MessageCorrelationResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.listener.MessageListener;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 public class CorrelatingMessageListener implements MessageListener<String, String> {
 
-    private final Logger LOGGER = Logger.getLogger(CorrelatingMessageListener.class.getName());
+    private final Logger LOGGER = LoggerFactory.getLogger(CorrelatingMessageListener.class.getName());
 
     private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -37,7 +38,7 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
     @Override
     public void onMessage(ConsumerRecord<String, String> record) {
         if (record.value().isEmpty()) {
-            LOGGER.warning("Consumer received an empty record from topic: " + record.topic());
+            LOGGER.warn("Consumer received an empty record from topic: {}", record.topic());
             return;
         }
         onMessage(record.topic(), record.value());
@@ -57,14 +58,14 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
 
             logResults(genericMessage.getTenantId(), genericMessage.getMessageType(), results);
         } catch (RuntimeException ex) {
-            LOGGER.warning(ex.toString());
+            LOGGER.warn("A runtime exception occurred while processing the message", ex);
             throw ex;
         } catch (JsonProcessingException ex) {
-            LOGGER.warning(ex.toString());
+            LOGGER.warn("Error parse message body", ex);
             throw new RuntimeException("Error parse message body", ex);
         } catch (Throwable ex) {
-            LOGGER.warning(ex.toString());
-            throw new RuntimeException("Converting to runtime exception", ex);
+            LOGGER.warn("Converting throwable to runtime exception", ex);
+            throw new RuntimeException("Converting throwable to runtime exception", ex);
         }
     }
 
@@ -91,16 +92,17 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
                     businessKey = "unknown";
                 }
 
-                LOGGER.fine("\n\n  ... Correlated"
-                        + " message type \"" + messageType + "\""
-                        + " for tenant \"" + tenantId + "\""
-                        + " to a \"" + result.getResultType().name() + "\""
-                        + " with process instance identifier \"" + identifier + "\""
-                        + " for definition \"" + definitionId + "\""
-                        + " with business key \"" + businessKey +"\"");
+                LOGGER.debug("\n\n  ... Correlated message type \"{}\" for tenant \"{}\" to a \"{}\" with process"
+                        + " instance identifier \"{}\" for definition \"{}\" with business key \"{}\"",
+                        messageType,
+                        tenantId,
+                        result.getResultType().name(),
+                        identifier,
+                        definitionId,
+                        businessKey);
             }
         } catch (Exception ex) {
-            LOGGER.warning(ex.toString());
+            LOGGER.warn("An exception occurred while logging the results", ex);
         }
     }
 }
