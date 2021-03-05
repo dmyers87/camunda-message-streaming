@@ -116,11 +116,14 @@ public class MessageTypeExtensionData {
             this.inputVariableExpressions = new HashMap<>();
         }
 
-        public MessageTypeExtensionDataBuilder addFieldFromPropertyElement(ProcessDefinitionEntity processDefinition, Element propertyElement) {
+        public MessageTypeExtensionDataBuilder addFieldFromPropertyElement(ProcessDefinitionEntity processDefinition,
+                                                                           Element propertyElement,
+                                                                           TopicValueEvaluator topicValueEvaluator) {
             CustomExtensionElementParseFactory.parseExtensionElement(
-                processDefinition,
-                propertyElement,
-                this);
+                    processDefinition,
+                    propertyElement,
+                    topicValueEvaluator,
+                    this);
             return this;
         }
 

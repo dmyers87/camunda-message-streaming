@@ -14,6 +14,7 @@ public class CustomExtensionElementParseFactory {
 
     public static void parseExtensionElement(ProcessDefinitionEntity processDefinition,
                                              Element propertyElement,
+                                             TopicValueEvaluator topicValueEvaluator,
                                              MessageTypeExtensionData.MessageTypeExtensionDataBuilder builder) {
         String name = propertyElement.attribute("name");
         String value = propertyElement.attribute("value");
@@ -33,7 +34,7 @@ public class CustomExtensionElementParseFactory {
 
         switch (token) {
             case TOPIC:
-                builder.withTopic(value);
+                builder.withTopic(topicValueEvaluator.evaluate(value));
                 break;
             case BUSINESS_PROCESS_KEY:
                 builder.withBusinessKeyExpression(value);

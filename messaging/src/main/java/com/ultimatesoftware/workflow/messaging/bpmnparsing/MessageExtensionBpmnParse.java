@@ -13,11 +13,16 @@ import org.camunda.bpm.engine.impl.util.xml.Element;
 public class MessageExtensionBpmnParse extends BpmnParse {
     private final MessageTypeMapper mapper;
     private final String extensionPrefix;
+    private final TopicValueEvaluator topicValueEvaluator;
 
-    public MessageExtensionBpmnParse(BpmnParser bpmnParser, MessageTypeMapper mapper, String extensionPrefix) {
+    public MessageExtensionBpmnParse(BpmnParser bpmnParser,
+                                     MessageTypeMapper mapper,
+                                     String extensionPrefix,
+                                     TopicValueEvaluator topicValueEvaluator) {
         super(bpmnParser);
         this.mapper = mapper;
         this.extensionPrefix = extensionPrefix;
+        this.topicValueEvaluator = topicValueEvaluator;
     }
 
     @Override
@@ -115,7 +120,7 @@ public class MessageExtensionBpmnParse extends BpmnParse {
         for (Element propertyElement : propertiesElement.elementsNS(CAMUNDA_BPMN_EXTENSIONS_NS, "property")) {
             if (attributeNameStartsWith(propertyElement, "name", this.extensionPrefix + ".")) {
                 try {
-                    builder.addFieldFromPropertyElement(processDefinition, propertyElement);
+                    builder.addFieldFromPropertyElement(processDefinition, propertyElement, topicValueEvaluator);
                 } catch (ExtensionElementNotParsableException ex) {
                     addError(ex.getMessage(), propertyElement);
                 }
