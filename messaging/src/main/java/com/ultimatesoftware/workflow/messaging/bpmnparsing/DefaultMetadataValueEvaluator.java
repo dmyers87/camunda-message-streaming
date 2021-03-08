@@ -7,12 +7,12 @@ import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-public class DefaultTopicValueEvaluator implements TopicValueEvaluator {
+public class DefaultMetadataValueEvaluator implements MetadataValueEvaluator {
 
     private final EvaluationContext evaluationContext;
     private final ExpressionParser expressionParser;
 
-    public DefaultTopicValueEvaluator(Environment environment) {
+    public DefaultMetadataValueEvaluator(Environment environment) {
         evaluationContext = new StandardEvaluationContext(environment);
         expressionParser = new SpelExpressionParser();
     }

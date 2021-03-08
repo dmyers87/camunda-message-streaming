@@ -118,11 +118,11 @@ public class MessageTypeExtensionData {
 
         public MessageTypeExtensionDataBuilder addFieldFromPropertyElement(ProcessDefinitionEntity processDefinition,
                                                                            Element propertyElement,
-                                                                           TopicValueEvaluator topicValueEvaluator) {
+                                                                           MetadataValueEvaluator metadataValueEvaluator) {
             CustomExtensionElementParseFactory.parseExtensionElement(
                     processDefinition,
                     propertyElement,
-                    topicValueEvaluator,
+                    metadataValueEvaluator,
                     this);
             return this;
         }

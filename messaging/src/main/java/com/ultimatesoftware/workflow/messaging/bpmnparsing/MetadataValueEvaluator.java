@@ -1,5 +1,5 @@
 package com.ultimatesoftware.workflow.messaging.bpmnparsing;
 
-public interface TopicValueEvaluator {
+public interface MetadataValueEvaluator {
     String evaluate(String value);
 }

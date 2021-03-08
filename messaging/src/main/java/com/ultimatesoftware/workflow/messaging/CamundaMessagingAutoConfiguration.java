@@ -1,9 +1,9 @@
 package com.ultimatesoftware.workflow.messaging;
 
-import com.ultimatesoftware.workflow.messaging.bpmnparsing.DefaultTopicValueEvaluator;
+import com.ultimatesoftware.workflow.messaging.bpmnparsing.DefaultMetadataValueEvaluator;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageExtensionBpmnParseFactory;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessagingProperties;
-import com.ultimatesoftware.workflow.messaging.bpmnparsing.TopicValueEvaluator;
+import com.ultimatesoftware.workflow.messaging.bpmnparsing.MetadataValueEvaluator;
 import com.ultimatesoftware.workflow.messaging.correlation.GenericMessageCorrelator;
 import com.ultimatesoftware.workflow.messaging.topicmapping.MemoryMessageTypeMapper;
 import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;
@@ -38,13 +38,13 @@ public class CamundaMessagingAutoConfiguration {
     @ConditionalOnMissingBean({BpmnParseFactory.class})
     public BpmnParseFactory bpmnParseFactory(MessageTypeMapper mapper,
                                              MessagingProperties messagingProperties,
-                                             TopicValueEvaluator topicValueEvaluator) {
-        return new MessageExtensionBpmnParseFactory(mapper, messagingProperties, topicValueEvaluator);
+                                             MetadataValueEvaluator metadataValueEvaluator) {
+        return new MessageExtensionBpmnParseFactory(mapper, messagingProperties, metadataValueEvaluator);
     }
 
     @Bean
-    @ConditionalOnMissingBean({TopicValueEvaluator.class})
-    public TopicValueEvaluator topicValueEvaluator(Environment environment) {
-        return new DefaultTopicValueEvaluator(environment);
+    @ConditionalOnMissingBean({MetadataValueEvaluator.class})
+    public MetadataValueEvaluator topicValueEvaluator(Environment environment) {
+        return new DefaultMetadataValueEvaluator(environment);
     }
 }

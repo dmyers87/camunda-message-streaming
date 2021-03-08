@@ -14,15 +14,16 @@ public class CustomExtensionElementParseFactory {
 
     public static void parseExtensionElement(ProcessDefinitionEntity processDefinition,
                                              Element propertyElement,
-                                             TopicValueEvaluator topicValueEvaluator,
+                                             MetadataValueEvaluator metadataValueEvaluator,
                                              MessageTypeExtensionData.MessageTypeExtensionDataBuilder builder) {
         String name = propertyElement.attribute("name");
-        String value = propertyElement.attribute("value");
+        String rawValue = propertyElement.attribute("value");
 
-        if (name == null || value == null) {
+        if (name == null || rawValue == null) {
             throw new ExtensionElementNotParsableException(
                 "Name and value cannot be null, please correct " + processDefinition.getName() + " message definition");
         }
+        String value = metadataValueEvaluator.evaluate(rawValue);
 
         String[] parts = name.split("[.]");
         if (parts.length < 3 || parts.length > 4) {
@@ -34,7 +35,7 @@ public class CustomExtensionElementParseFactory {
 
         switch (token) {
             case TOPIC:
-                builder.withTopic(topicValueEvaluator.evaluate(value));
+                builder.withTopic(value);
                 break;
             case BUSINESS_PROCESS_KEY:
                 builder.withBusinessKeyExpression(value);

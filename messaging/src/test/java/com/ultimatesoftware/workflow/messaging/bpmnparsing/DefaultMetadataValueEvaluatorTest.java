@@ -18,47 +18,47 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
         CamundaMessagingAutoConfiguration.class},
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ExtendWith(SpringExtension.class)
-public class DefaultTopicValueEvaluatorTest {
+public class DefaultMetadataValueEvaluatorTest {
 
     @Autowired
-    private TopicValueEvaluator topicValueEvaluator;
+    private MetadataValueEvaluator metadataValueEvaluator;
 
     @Test
-    public void whenValueForTopicIsHardcoded_shouldEvaluateToSameValue() {
+    public void whenMetadataValueIsHardcoded_itShouldEvaluateToTheSameValue() {
         String topicValue = "poc";
 
-        String evaluatedValue = topicValueEvaluator.evaluate(topicValue);
+        String evaluatedValue = metadataValueEvaluator.evaluate(topicValue);
 
         assertThat(evaluatedValue).isNotNull();
         assertThat(evaluatedValue).isEqualTo(topicValue);
     }
 
     @Test
-    void whenValueForTopicContainsValidSpelExpression_shouldEvaluateExpressionToValue() {
+    void whenMetadataValueContainsAValidSpelExpression_itShouldEvaluateTheExpressionToAValue() {
         String topicValue = "#{systemProperties['java.runtime.name']}";
 
-        String evaluatedValue = topicValueEvaluator.evaluate(topicValue);
+        String evaluatedValue = metadataValueEvaluator.evaluate(topicValue);
 
         assertThat(evaluatedValue).isNotNull();
         assertThat(evaluatedValue).isNotEqualTo(topicValue);
     }
 
     @Test
-    void whenTopicValueContainsUndefinedEnvironmentVariable_shouldStillEvaluateValue() {
+    void whenMetadataValueContainsAnUndefinedEnvironmentVariable_itShouldStillEvaluateValue() {
         String prefix = "#{systemEnvironment['SOME_UNDEFINED_ENVIRONMENT_VARIABLE']}";
         String postfix = ".aPostfix";
         String topicValue = prefix + postfix;
 
-        String evaluatedValue = topicValueEvaluator.evaluate(topicValue);
+        String evaluatedValue = metadataValueEvaluator.evaluate(topicValue);
 
         assertThat(evaluatedValue).isNotNull();
         assertThat(evaluatedValue).isEqualTo(postfix);
     }
 
     @Test
-    void whenValueForTopicContainsInvalidSpelExpression_shouldThrowAnException() {
+    void whenMetadataValueContainsAnInvalidSpelExpression_ItShouldThrowAnException() {
         String topicValue = "#{Invalid${expression";
-        assertThrows(RuntimeException.class, () -> topicValueEvaluator.evaluate(topicValue));
+        assertThrows(RuntimeException.class, () -> metadataValueEvaluator.evaluate(topicValue));
     }
 
 }

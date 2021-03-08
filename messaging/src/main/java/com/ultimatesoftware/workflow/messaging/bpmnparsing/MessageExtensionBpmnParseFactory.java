@@ -7,14 +7,14 @@ import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParser;
 public class MessageExtensionBpmnParseFactory implements org.camunda.bpm.engine.impl.cfg.BpmnParseFactory {
     private final MessageTypeMapper mapper;
     private final MessagingProperties messagingProperties;
-    private final TopicValueEvaluator topicValueEvaluator;
+    private final MetadataValueEvaluator metadataValueEvaluator;
 
     public MessageExtensionBpmnParseFactory(MessageTypeMapper mapper,
                                             MessagingProperties messagingProperties,
-                                            TopicValueEvaluator topicValueEvaluator) {
+                                            MetadataValueEvaluator metadataValueEvaluator) {
         this.mapper = mapper;
         this.messagingProperties = messagingProperties;
-        this.topicValueEvaluator = topicValueEvaluator;
+        this.metadataValueEvaluator = metadataValueEvaluator;
     }
 
     @Override
@@ -22,6 +22,6 @@ public class MessageExtensionBpmnParseFactory implements org.camunda.bpm.engine.
         return new MessageExtensionBpmnParse(bpmnParser,
                 mapper,
                 messagingProperties.getParser().getExtensionPrefix(),
-                topicValueEvaluator);
+                metadataValueEvaluator);
     }
 }
