@@ -44,7 +44,7 @@ public class CamundaMessagingAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean({TopicValueEvaluator.class})
-    public TopicValueEvaluator metadataValueEvaluator(Environment environment) {
+    public TopicValueEvaluator topicValueEvaluator(Environment environment) {
         return new DefaultTopicValueEvaluator(environment);
     }
 }

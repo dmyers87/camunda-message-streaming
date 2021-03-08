@@ -21,6 +21,5 @@ public class DefaultTopicValueEvaluator implements TopicValueEvaluator {
     public String evaluate(String value) {
         return expressionParser.parseExpression(value, ParserContext.TEMPLATE_EXPRESSION)
                 .getValue(evaluationContext, String.class);
-
     }
 }
