@@ -14,7 +14,7 @@ public class CustomExtensionElementParseFactory {
 
     public static void parseExtensionElement(ProcessDefinitionEntity processDefinition,
                                              Element propertyElement,
-                                             MetadataValueEvaluator metadataValueEvaluator,
+                                             MetadataValueEvaluator<String> metadataValueEvaluator,
                                              MessageTypeExtensionData.MessageTypeExtensionDataBuilder builder) {
         String name = propertyElement.attribute("name");
         String rawValue = propertyElement.attribute("value");

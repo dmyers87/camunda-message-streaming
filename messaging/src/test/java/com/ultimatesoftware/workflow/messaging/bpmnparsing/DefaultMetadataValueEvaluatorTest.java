@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class DefaultMetadataValueEvaluatorTest {
 
     @Autowired
-    private MetadataValueEvaluator metadataValueEvaluator;
+    private MetadataValueEvaluator<String> metadataValueEvaluator;
 
     @Test
     public void whenMetadataValueIsHardcoded_itShouldEvaluateToTheSameValue() {
@@ -47,9 +47,9 @@ public class DefaultMetadataValueEvaluatorTest {
     void whenMetadataValueContainsAnUndefinedEnvironmentVariable_itShouldStillEvaluateValue() {
         String prefix = "#{systemEnvironment['SOME_UNDEFINED_ENVIRONMENT_VARIABLE']}";
         String postfix = ".aPostfix";
-        String topicValue = prefix + postfix;
+        String metadataValue = prefix + postfix;
 
-        String evaluatedValue = metadataValueEvaluator.evaluate(topicValue);
+        String evaluatedValue = metadataValueEvaluator.evaluate(metadataValue);
 
         assertThat(evaluatedValue).isNotNull();
         assertThat(evaluatedValue).isEqualTo(postfix);
@@ -57,8 +57,8 @@ public class DefaultMetadataValueEvaluatorTest {
 
     @Test
     void whenMetadataValueContainsAnInvalidSpelExpression_ItShouldThrowAnException() {
-        String topicValue = "#{Invalid${expression";
-        assertThrows(RuntimeException.class, () -> metadataValueEvaluator.evaluate(topicValue));
+        String metadataValue = "#{Invalid${expression";
+        assertThrows(RuntimeException.class, () -> metadataValueEvaluator.evaluate(metadataValue));
     }
 
 }
