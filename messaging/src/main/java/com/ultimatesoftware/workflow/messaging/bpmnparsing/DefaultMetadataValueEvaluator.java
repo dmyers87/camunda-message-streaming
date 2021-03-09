@@ -18,8 +18,8 @@ public class DefaultMetadataValueEvaluator implements MetadataValueEvaluator {
     }
 
     @Override
-    public String evaluate(String value) {
+    public <T> T evaluate(String key, String value, Class<T> clazz) {
         return expressionParser.parseExpression(value, ParserContext.TEMPLATE_EXPRESSION)
-                .getValue(evaluationContext, String.class);
+                .getValue(evaluationContext, clazz);
     }
 }

@@ -23,7 +23,7 @@ public class CustomExtensionElementParseFactory {
             throw new ExtensionElementNotParsableException(
                 "Name and value cannot be null, please correct " + processDefinition.getName() + " message definition");
         }
-        String value = metadataValueEvaluator.evaluate(rawValue);
+        String value = metadataValueEvaluator.evaluate(name, rawValue, String.class);
 
         String[] parts = name.split("[.]");
         if (parts.length < 3 || parts.length > 4) {
