@@ -7,7 +7,7 @@ import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-public class DefaultMetadataValueEvaluator implements MetadataValueEvaluator<String> {
+public class DefaultMetadataValueEvaluator implements MetadataValueEvaluator {
 
     private final EvaluationContext evaluationContext;
     private final ExpressionParser expressionParser;
@@ -17,12 +17,9 @@ public class DefaultMetadataValueEvaluator implements MetadataValueEvaluator<Str
         expressionParser = new SpelExpressionParser();
     }
 
-    public String evaluate(String value) {
-        return evaluate(null, value);
-    }
-
-    public String evaluate(String key, String value) {
+    @Override
+    public <T> T evaluate(String key, String value, Class<T> clazz) {
         return expressionParser.parseExpression(value, ParserContext.TEMPLATE_EXPRESSION)
-                .getValue(evaluationContext, String.class);
+                .getValue(evaluationContext, clazz);
     }
 }

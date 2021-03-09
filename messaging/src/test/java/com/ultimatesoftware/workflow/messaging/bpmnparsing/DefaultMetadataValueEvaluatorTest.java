@@ -20,14 +20,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ExtendWith(SpringExtension.class)
 public class DefaultMetadataValueEvaluatorTest {
 
+    private static final String genericKey = "name";
+
     @Autowired
-    private MetadataValueEvaluator<String> metadataValueEvaluator;
+    private MetadataValueEvaluator metadataValueEvaluator;
 
     @Test
     public void whenMetadataValueIsHardcoded_itShouldEvaluateToTheSameValue() {
         String topicValue = "poc";
 
-        String evaluatedValue = metadataValueEvaluator.evaluate(topicValue);
+        String evaluatedValue = metadataValueEvaluator.evaluate(genericKey, topicValue, String.class);
 
         assertThat(evaluatedValue).isNotNull();
         assertThat(evaluatedValue).isEqualTo(topicValue);
@@ -37,7 +39,7 @@ public class DefaultMetadataValueEvaluatorTest {
     void whenMetadataValueContainsAValidSpelExpression_itShouldEvaluateTheExpressionToAValue() {
         String topicValue = "#{systemProperties['java.runtime.name']}";
 
-        String evaluatedValue = metadataValueEvaluator.evaluate(topicValue);
+        String evaluatedValue = metadataValueEvaluator.evaluate(genericKey, topicValue, String.class);
 
         assertThat(evaluatedValue).isNotNull();
         assertThat(evaluatedValue).isNotEqualTo(topicValue);
@@ -49,7 +51,7 @@ public class DefaultMetadataValueEvaluatorTest {
         String postfix = ".aPostfix";
         String metadataValue = prefix + postfix;
 
-        String evaluatedValue = metadataValueEvaluator.evaluate(metadataValue);
+        String evaluatedValue = metadataValueEvaluator.evaluate(genericKey, metadataValue, String.class);
 
         assertThat(evaluatedValue).isNotNull();
         assertThat(evaluatedValue).isEqualTo(postfix);
@@ -58,7 +60,8 @@ public class DefaultMetadataValueEvaluatorTest {
     @Test
     void whenMetadataValueContainsAnInvalidSpelExpression_ItShouldThrowAnException() {
         String metadataValue = "#{Invalid${expression";
-        assertThrows(RuntimeException.class, () -> metadataValueEvaluator.evaluate(metadataValue));
+        assertThrows(RuntimeException.class, () ->
+                metadataValueEvaluator.evaluate(genericKey, metadataValue, String.class));
     }
 
 }
