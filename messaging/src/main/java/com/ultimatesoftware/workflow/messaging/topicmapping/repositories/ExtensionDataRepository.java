@@ -10,4 +10,6 @@ import java.util.List;
 public interface ExtensionDataRepository extends CrudRepository<ExtensionData, Integer> {
 
     List<ExtensionData> findAllByTopicAndTenantIdAndMessageType(String topic, String tenantId, String messageType);
+
+    List<ExtensionData> findAllByTenantIdAndProcessDefinitionKey(String tenantId, String processDefinitionKey);
 }
