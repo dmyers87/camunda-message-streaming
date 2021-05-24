@@ -6,10 +6,9 @@ import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
-import com.ultimatesoftware.workflow.messaging.CorrelatingMessageListener;
-import com.ultimatesoftware.workflow.messaging.MessageTypeMapper;
-import com.ultimatesoftware.workflow.messaging.TopicContainerManager;
-import com.ultimatesoftware.workflow.messaging.kafka.KafkaUtils;
+import com.ultimatesoftware.workflow.messaging.kafka.CorrelatingMessageListener;
+import com.ultimatesoftware.workflow.messaging.kafka.TopicContainerManager;
+import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -65,7 +64,7 @@ public class WebappApplication implements ApplicationListener<ApplicationReadyEv
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         topicContainerManager.createOrStartConsumers(
-                KafkaUtils.getTopics(messageTypeMapper),
+                TopicUtil.getTopics(messageTypeMapper),
                 listener);
     }
 

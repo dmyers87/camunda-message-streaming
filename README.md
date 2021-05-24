@@ -2,7 +2,7 @@ Allows BPMN designers to declaratively define what values, from an incoming JSON
 
 The following Message Events are supported:
 =====
-#### Start events
+#### Start Events
 ![Start Event Message](docs/images/start-message.png "Start Event Message")
 
 #### Intermediate Catch Events
@@ -11,11 +11,29 @@ The following Message Events are supported:
 #### Interrupting & Non-interrupting Boundary Catch Events
 ![Interupting Boundary Message](docs/images/interupting-boundary.png "Interupting Boundary Message")
 
+#### Receive Tasks
+![Receive Task](docs/images/receive-task.png "Receive Task")
+
+
 The following extension semantics are currently supported
 ====== 
-Using the modeler you can assign extensions to the message catch
+Using the modeler you can assign extensions to a 
+Start Event, Message Catch Event, Boundary Event, or a Receive Task.
 ![Extension Sample](docs/images/extension-example.png "Extension Sample")
 > Note: {prefix} defaults to `ultimate.workflow` but can be configured via the application properties
+
+##### {prefix}.topic={topic-name}
+Sets the topic value you wish to save with the extension data, 
+to be used for message consumers to establish connections for correlation messages.
+
+Example usage: 
+```
+String topic = messageTypeExtensionData.getTopic();
+
+topicContainerManager.createOrStartConsumer(topic, listener);
+```
+
+
 
 ##### {prefix}.business-process-key={json-path}
 Assigns the business process key that will be used to start a new process or match on a currently running process
