@@ -12,7 +12,10 @@ public class MessageTypeExtensionDataBuilder {
 
     private boolean isStartEvent = false;
     private Map<String, String> inputVariables =
-        new HashMap<String, String>() {{put("name", "$.name");}};
+        new HashMap<String, String>() {{
+            put("name", "$.name");
+            put("constant", "constant");
+    }};
 
     public MessageTypeExtensionDataBuilder isStartEvent() {
         this.isStartEvent = true;
