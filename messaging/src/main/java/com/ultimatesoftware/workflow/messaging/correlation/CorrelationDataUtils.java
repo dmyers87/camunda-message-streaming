@@ -63,6 +63,11 @@ public final class CorrelationDataUtils {
     }
 
     private static Object evaluateExpression(DocumentContext documentContext, String expression) {
+        if (isExpressionConstant(expression)) {
+            LOGGER.debug("Expression '{}' is constant, returning value", expression);
+            return expression;
+        }
+
         // Since we are using JacksonJsonNodeJsonProvider we need to convert
         // the result of the JsonPath into the value we need
         JsonNode node = documentContext.read(expression);
@@ -76,5 +81,9 @@ public final class CorrelationDataUtils {
         }
 
         return parsedObject;
+    }
+
+    private static boolean isExpressionConstant(String expression) {
+        return expression.charAt(0) != '$';
     }
 }
