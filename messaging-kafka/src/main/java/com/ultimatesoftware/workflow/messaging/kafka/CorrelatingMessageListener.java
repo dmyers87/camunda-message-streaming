@@ -41,6 +41,9 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
             LOGGER.warn("Consumer received an empty record from topic: {}", record.topic());
             return;
         }
+
+        LOGGER.debug("Consumer message with key {} and value {} received under topic {}",
+            record.key(), record.value(), record.topic());
         onMessage(record.topic(), record.value());
     }
 
@@ -54,7 +57,17 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
             Iterable<MessageTypeExtensionData> messageTypeExtensionDataList =
                     messageTypeMapper.find(topic, tenantId, messageType);
 
+            if (!messageTypeExtensionDataList.iterator().hasNext()) {
+                LOGGER.debug("No Message Extension Element found for topic {}, tenant {} and messageType {}",
+                    topic, tenantId, messageType);
+            }
+
             List<MessageCorrelationResult> results = correlator.correlate(genericMessage, messageTypeExtensionDataList);
+
+            if (results.size() == 0) {
+                LOGGER.debug("No correlations were made for Message {} and Message Extension List {}",
+                    genericMessage.toString(), messageTypeExtensionDataList.toString());
+            }
 
             logResults(genericMessage.getTenantId(), genericMessage.getMessageType(), results);
         } catch (RuntimeException ex) {
