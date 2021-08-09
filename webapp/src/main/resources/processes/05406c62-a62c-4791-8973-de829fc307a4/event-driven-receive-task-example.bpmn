@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0kicdg7" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="EventDrivenReceiveTaskExample" name="Event Driven Receive Task Example Process" isExecutable="true">
+    <bpmn:endEvent id="EndEvent_09arwkt" name="End Event">
+      <bpmn:incoming>Flow_0qxc84j</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:startEvent id="EmployeePaycheckPaid" name="Employee Paycheck Paid">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="ultimate.workflow.topic" value="#{systemEnvironment[&#39;KAFKA_TOPIC_ENV&#39;]}.business-events.workflow.event-driven-demo1" />
+          <camunda:property name="ultimate.workflow.business-process-key" value="$.checkNumber" />
+          <camunda:property name="ultimate.workflow.input-var.amount" value="$.dollarAmount" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_0m3ouor</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1se5gjn" messageRef="Message_060ixtc" />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0qxc84j" sourceRef="PaycheckDeposited" targetRef="EndEvent_09arwkt" />
+    <bpmn:receiveTask id="PaycheckDeposited" name="Paycheck Deposited" messageRef="Message_10v9fsw">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="ultimate.workflow.topic" value="#{systemEnvironment[&#39;KAFKA_TOPIC_ENV&#39;]}.business-events.workflow.event-driven-demo2" />
+          <camunda:property name="ultimate.workflow.business-process-key" value="$.checkNumber" />
+          <camunda:property name="ultimate.workflow.match-var.amount" value="$.dollarAmount" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0m3ouor</bpmn:incoming>
+      <bpmn:outgoing>Flow_0qxc84j</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0m3ouor" sourceRef="EmployeePaycheckPaid" targetRef="PaycheckDeposited" />
+  </bpmn:process>
+  <bpmn:message id="Message_060ixtc" name="payment.employee-paycheck.paid" />
+  <bpmn:message id="Message_10v9fsw" name="payment.employee-paycheck.deposited" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="EventDrivenReceiveTaskExample">
+      <bpmndi:BPMNEdge id="Flow_0qxc84j_di" bpmnElement="Flow_0qxc84j">
+        <di:waypoint x="350" y="117" />
+        <di:waypoint x="422" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0m3ouor_di" bpmnElement="SequenceFlow_0m3ouor">
+        <di:waypoint x="188" y="117" />
+        <di:waypoint x="250" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_09arwkt_di" bpmnElement="EndEvent_09arwkt">
+        <dc:Bounds x="422" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="415" y="142" width="51" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_0by6jlq_di" bpmnElement="EmployeePaycheckPaid">
+        <dc:Bounds x="152" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="135" y="142" width="73" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1v1rs7d_di" bpmnElement="PaycheckDeposited">
+        <dc:Bounds x="250" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
