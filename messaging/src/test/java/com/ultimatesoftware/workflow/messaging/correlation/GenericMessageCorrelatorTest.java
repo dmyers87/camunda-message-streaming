@@ -61,12 +61,29 @@ public class GenericMessageCorrelatorTest {
         verify(runtimeService).createMessageCorrelation(GENERIC_MESSAGE_TYPE);
         verifyNoMoreInteractions(runtimeService);
 
-        verify(messageCorrelationBuilder).processInstanceBusinessKey("\"" + GENERIC_BUSINESS_PROCESS_KEY_VALUE + "\"");
+        verifyProcessInstanceBusinessKey();
+
         verify(messageCorrelationBuilder).tenantId(genericMessage.getTenantId());
         verify(messageCorrelationBuilder).startMessageOnly();
 
         verifyMessageCorrelationBuilder();
 
+    }
+
+    @Test
+    public void whenCorrelateNestedJson_shouldCorrelateSuccessfully() {
+        GenericMessage genericMessage = new GenericMessageBuilder()
+            .build();
+
+        MessageTypeExtensionData data = new MessageTypeExtensionDataBuilder()
+            .isStartEvent()
+            .build();
+        messageCorrelationBuilder = mockStartMessageCorrelationBuilder();
+        genericMessageCorrelator.correlate(genericMessage, Collections.singletonList(data));
+
+        verify(messageCorrelationBuilder).setVariable(GENERIC_NESTED_VARIABLE_FIELD,
+            GENERIC_NESTED_VARIABLE_VALUE_PARSED);
+        verify(messageCorrelationBuilder).correlateWithResult();
     }
 
     @Test
@@ -85,11 +102,12 @@ public class GenericMessageCorrelatorTest {
         verify(runtimeService).createMessageCorrelation(GENERIC_MESSAGE_TYPE);
         verifyNoMoreInteractions(runtimeService);
 
-        verify(messageCorrelationBuilder).processInstanceBusinessKey("\"" + GENERIC_BUSINESS_PROCESS_KEY_VALUE + "\"");
+        verifyProcessInstanceBusinessKey();
         verify(messageCorrelationBuilder).startMessageOnly();
 
         verifyMessageCorrelationBuilder();
     }
+
 
     @Test
     public void whenCorrelateCalledForCatchEvent_shouldCallRuntimeServiceToCorrelate() {
@@ -154,10 +172,12 @@ public class GenericMessageCorrelatorTest {
         verifyNoMoreInteractions(runtimeService);
     }
 
+    private void verifyProcessInstanceBusinessKey() {
+        verify(messageCorrelationBuilder).processInstanceBusinessKey("\"" + GENERIC_BUSINESS_PROCESS_KEY_VALUE + "\"");
+    }
+
     private void verifyMessageCorrelationBuilder() {
         verify(messageCorrelationBuilder).setVariable("name", "\"" + "name" + "\"");
-        verify(messageCorrelationBuilder).setVariable(GENERIC_NESTED_VARIABLE_FIELD,
-            GENERIC_NESTED_VARIABLE_VALUE_PARSED);
         verify(messageCorrelationBuilder).setVariable("constant", "constant");
         verify(messageCorrelationBuilder).correlateWithResult();
         verifyNoMoreInteractions(messageCorrelationBuilder);

@@ -71,11 +71,15 @@ public final class CorrelationDataUtils {
 
     private static String evaluateExpression(DocumentContext documentContext, String expression) {
         if (isExpressionConstant(expression)) {
-            LOGGER.debug("Expression '{}' is constant, returning immediately", expression);
-            // By returning without parsing, this assumes constant expressions are strings only
-            // Parsing the expression can get messy since it might not be valid JSON
+            LOGGER.debug("Expression '{}' is a constant expression, the value will be evaluated as a string and " +
+                "returned immediately", expression);
             return expression;
         }
+        return getOrderedJsonString(documentContext, expression);
+
+    }
+
+    private static String getOrderedJsonString(DocumentContext documentContext, String expression) {
         try {
             // Since we are using JacksonJsonNodeJsonProvider we need to convert
             // the result of the JsonPath into the value we need
@@ -85,11 +89,11 @@ public final class CorrelationDataUtils {
                 LOGGER.error(errorMessage);
                 throw new RuntimeException(errorMessage);
             }
-            // Returns evaluated JSON string with the keys of the map being ordered
             return SORTED_MAPPER.writeValueAsString(SORTED_MAPPER.treeToValue(node, Object.class));
         } catch (JsonProcessingException ex) {
-            // This error shouldn't ever occur
-            LOGGER.error("Unable to process JSON expression {} in context {}", expression, documentContext);
+            LOGGER.error("Unable to process JSON expression {} in context {}. This message should never occur," +
+                " if you see this error message then there is probably a bug somewhere.", expression,
+                documentContext);
             throw new RuntimeException(ex);
         }
     }
