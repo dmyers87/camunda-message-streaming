@@ -2,6 +2,7 @@ package com.ultimatesoftware.workflow.messaging.builders;
 
 import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_BUSINESS_PROCESS_KEY_FIELD;
 import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_MESSAGE_TYPE;
+import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_NESTED_VARIABLE_FIELD;
 import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_TOPIC_NAME;
 
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
@@ -11,10 +12,11 @@ import java.util.Map;
 public class MessageTypeExtensionDataBuilder {
 
     private boolean isStartEvent = false;
-    private Map<String, String> inputVariables =
+    private final Map<String, String> inputVariables =
         new HashMap<String, String>() {{
             put("name", "$.name");
             put("constant", "constant");
+            put(GENERIC_NESTED_VARIABLE_FIELD, "$." + GENERIC_NESTED_VARIABLE_FIELD);
     }};
 
     public MessageTypeExtensionDataBuilder isStartEvent() {
