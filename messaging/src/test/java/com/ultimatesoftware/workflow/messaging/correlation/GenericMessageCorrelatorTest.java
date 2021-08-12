@@ -1,20 +1,9 @@
 package com.ultimatesoftware.workflow.messaging.correlation;
 
-import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_BUSINESS_PROCESS_KEY_VALUE;
-import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_MESSAGE_TYPE;
-import static com.ultimatesoftware.workflow.messaging.TestConstants.PROCESS_INSTANCE_ID;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import com.ultimatesoftware.workflow.messaging.GenericMessage;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
 import com.ultimatesoftware.workflow.messaging.builders.GenericMessageBuilder;
 import com.ultimatesoftware.workflow.messaging.builders.MessageTypeExtensionDataBuilder;
-import java.util.Collections;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.MessageCorrelationBuilder;
@@ -25,6 +14,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Collections;
+
+import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_BUSINESS_PROCESS_KEY_VALUE;
+import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_MESSAGE_TYPE;
+import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_NESTED_VARIABLE_FIELD;
+import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_NESTED_VARIABLE_VALUE_PARSED;
+import static com.ultimatesoftware.workflow.messaging.TestConstants.PROCESS_INSTANCE_ID;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class GenericMessageCorrelatorTest {
@@ -58,12 +61,29 @@ public class GenericMessageCorrelatorTest {
         verify(runtimeService).createMessageCorrelation(GENERIC_MESSAGE_TYPE);
         verifyNoMoreInteractions(runtimeService);
 
-        verify(messageCorrelationBuilder).processInstanceBusinessKey(GENERIC_BUSINESS_PROCESS_KEY_VALUE);
+        verifyProcessInstanceBusinessKey();
+
         verify(messageCorrelationBuilder).tenantId(genericMessage.getTenantId());
-        verify(messageCorrelationBuilder).setVariable("name", "name");
         verify(messageCorrelationBuilder).startMessageOnly();
+
+        verifyMessageCorrelationBuilder();
+
+    }
+
+    @Test
+    public void whenCorrelateNestedJson_shouldCorrelateSuccessfully() {
+        GenericMessage genericMessage = new GenericMessageBuilder()
+            .build();
+
+        MessageTypeExtensionData data = new MessageTypeExtensionDataBuilder()
+            .isStartEvent()
+            .build();
+        messageCorrelationBuilder = mockStartMessageCorrelationBuilder();
+        genericMessageCorrelator.correlate(genericMessage, Collections.singletonList(data));
+
+        verify(messageCorrelationBuilder).setVariable(GENERIC_NESTED_VARIABLE_FIELD,
+            GENERIC_NESTED_VARIABLE_VALUE_PARSED);
         verify(messageCorrelationBuilder).correlateWithResult();
-        verifyNoMoreInteractions(messageCorrelationBuilder);
     }
 
     @Test
@@ -82,12 +102,12 @@ public class GenericMessageCorrelatorTest {
         verify(runtimeService).createMessageCorrelation(GENERIC_MESSAGE_TYPE);
         verifyNoMoreInteractions(runtimeService);
 
-        verify(messageCorrelationBuilder).processInstanceBusinessKey(GENERIC_BUSINESS_PROCESS_KEY_VALUE);
-        verify(messageCorrelationBuilder).setVariable("name", "name");
+        verifyProcessInstanceBusinessKey();
         verify(messageCorrelationBuilder).startMessageOnly();
-        verify(messageCorrelationBuilder).correlateWithResult();
-        verifyNoMoreInteractions(messageCorrelationBuilder);
+
+        verifyMessageCorrelationBuilder();
     }
+
 
     @Test
     public void whenCorrelateCalledForCatchEvent_shouldCallRuntimeServiceToCorrelate() {
@@ -108,9 +128,8 @@ public class GenericMessageCorrelatorTest {
         verify(runtimeService).createMessageCorrelation(GENERIC_MESSAGE_TYPE);
 
         verify(messageCorrelationBuilder).processInstanceId(PROCESS_INSTANCE_ID);
-        verify(messageCorrelationBuilder).setVariable("name", "name");
-        verify(messageCorrelationBuilder).correlateWithResult();
-        verifyNoMoreInteractions(messageCorrelationBuilder);
+
+        verifyMessageCorrelationBuilder();
     }
 
     @Test
@@ -133,9 +152,8 @@ public class GenericMessageCorrelatorTest {
         verify(runtimeService).createMessageCorrelation(GENERIC_MESSAGE_TYPE);
 
         verify(messageCorrelationBuilder).processInstanceId(PROCESS_INSTANCE_ID);
-        verify(messageCorrelationBuilder).setVariable("name", "name");
-        verify(messageCorrelationBuilder).correlateWithResult();
-        verifyNoMoreInteractions(messageCorrelationBuilder);
+
+        verifyMessageCorrelationBuilder();
     }
 
     @Test
@@ -152,6 +170,17 @@ public class GenericMessageCorrelatorTest {
 
         verify(runtimeService).createExecutionQuery();
         verifyNoMoreInteractions(runtimeService);
+    }
+
+    private void verifyProcessInstanceBusinessKey() {
+        verify(messageCorrelationBuilder).processInstanceBusinessKey("\"" + GENERIC_BUSINESS_PROCESS_KEY_VALUE + "\"");
+    }
+
+    private void verifyMessageCorrelationBuilder() {
+        verify(messageCorrelationBuilder).setVariable("name", "\"" + "name" + "\"");
+        verify(messageCorrelationBuilder).setVariable("constant", "constant");
+        verify(messageCorrelationBuilder).correlateWithResult();
+        verifyNoMoreInteractions(messageCorrelationBuilder);
     }
 
     private MessageCorrelationBuilder mockMessageCorrelationBuilder() {
