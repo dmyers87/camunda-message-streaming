@@ -5,6 +5,7 @@ name: camunda-message-streaming-develop
       - develop
 jobs:
   build:
+    needs: get-cluster
     env:
       TEMPLATE_TYPE: lib
       IS_PIPELINE: 'true'
@@ -20,7 +21,7 @@ jobs:
       PROJECT_NAME: camunda-message-streaming
       PIPELINE_NAME: camunda-message-streaming
       PROJECT_DIR: ''
-    runs-on: self-hosted
+    runs-on: '${{needs.get-cluster.outputs.cluster}}'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -32,7 +33,7 @@ jobs:
       - name: package
         run: |-
           fnd tanagra:build:package \
-            --environment_json=
+            --environment_json='{}'
       - name: publish-library
         run: >-
           fnd tanagra:deploy:library \
@@ -46,10 +47,28 @@ jobs:
           --artifactory_password=secrets.mia-dev::artifactory/opp_workflow:password
           \
 
-          --environment_json=
+          --environment_json='{}'
       - name: succeeded
         run: 'fnd tanagra:status:report --pipeline_status=SUCCEEDED'
         if: '${{ success() }}'
       - name: failed
         run: 'fnd tanagra:status:report --pipeline_status=FAILED'
         if: '${{failure() || cancelled()}}'
+  get-cluster:
+    runs-on: self-hosted
+    outputs:
+      cluster: '${{ steps.get-cluster-step.outputs.cluster}}'
+    steps:
+      - id: get-cluster-step
+        run: >-
+          echo -n "::set-output name=cluster::cluster=" ; echo
+          ${{secrets.CLUSTER_NAME}} | base64 --decode
+    env:
+      GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      NAMESPACE: opp-workflow
+      NAMESPACE_AIRLOCK_HOST: 'https://gateway.quark-airlock.dlas1.ucloud.int/opp-workflow'
+      NAMESPACE_AIRLOCK_HASH: '${{ secrets.AIRLOCK_HASH }}'
+      NAMESPACE_AIRLOCK_NAME: mia-dev
+      PROJECT_NAME: camunda-message-streaming
+      PIPELINE_NAME: camunda-message-streaming
+      PROJECT_DIR: ''
