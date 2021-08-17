@@ -96,8 +96,9 @@
 
     <distributionManagement>
         <repository>
-            <id>artifactory.mia.ulti.io</id>
-            <url>https://artifactory.mia.ulti.io/artifactory/opp-workflow-dev</url>
+            <id>github</id>
+            <name>GitHub UKG Workflow Packages</name>
+            <url>https://maven.pkg.github.com/UltimateSoftware/camunda-message-streaming</url>
         </repository>
     </distributionManagement>
 
