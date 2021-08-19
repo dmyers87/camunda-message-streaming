@@ -84,15 +84,10 @@ public final class CorrelationDataUtils {
             // Since we are using JacksonJsonNodeJsonProvider we need to convert
             // the result of the JsonPath into the value we need
             JsonNode node = documentContext.read(expression);
-            if (node == null || node.isNull()) {
-                String errorMessage = String.format("Unable to resolve expression %s in context %s", expression, documentContext);
-                LOGGER.error(errorMessage);
-                throw new RuntimeException(errorMessage);
-            }
             return SORTED_MAPPER.writeValueAsString(SORTED_MAPPER.treeToValue(node, Object.class));
         } catch (JsonProcessingException ex) {
             LOGGER.error("Unable to process JSON expression {} in context {}. This message should never occur," +
-                " if you see this error message then there is probably a bug somewhere.", expression,
+                    " this signifies there is an internal bug.", expression,
                 documentContext);
             throw new RuntimeException(ex);
         }

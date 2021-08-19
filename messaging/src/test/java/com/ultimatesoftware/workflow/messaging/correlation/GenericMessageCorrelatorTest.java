@@ -1,5 +1,6 @@
 package com.ultimatesoftware.workflow.messaging.correlation;
 
+import com.jayway.jsonpath.PathNotFoundException;
 import com.ultimatesoftware.workflow.messaging.GenericMessage;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
 import com.ultimatesoftware.workflow.messaging.builders.GenericMessageBuilder;
@@ -22,6 +23,7 @@ import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_MESS
 import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_NESTED_VARIABLE_FIELD;
 import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_NESTED_VARIABLE_VALUE_PARSED;
 import static com.ultimatesoftware.workflow.messaging.TestConstants.PROCESS_INSTANCE_ID;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -87,6 +89,36 @@ public class GenericMessageCorrelatorTest {
     }
 
     @Test
+    public void whenCorrelateNullKey_shouldCorrelateSuccessfully() {
+        GenericMessage genericMessage = new GenericMessageBuilder()
+            .build();
+
+        MessageTypeExtensionData data = new MessageTypeExtensionDataBuilder()
+            .isStartEvent()
+            .withInputVariable("nullKey", "$.nullKey")
+            .build();
+        messageCorrelationBuilder = mockStartMessageCorrelationBuilder();
+        genericMessageCorrelator.correlate(genericMessage, Collections.singletonList(data));
+
+        verify(messageCorrelationBuilder).setVariable("nullKey",
+            "null");
+        verify(messageCorrelationBuilder).correlateWithResult();
+    }
+
+    @Test
+    public void whenCorrelateWithMissingField_shouldNotCorrelateSuccessfully() {
+        GenericMessage genericMessage = new GenericMessageBuilder()
+            .build();
+
+        MessageTypeExtensionData data = new MessageTypeExtensionDataBuilder()
+            .isStartEvent()
+            .withInputVariable("missingField", "$.missingField")
+            .build();
+        assertThrows(PathNotFoundException.class, () -> genericMessageCorrelator.correlate(genericMessage,
+            Collections.singletonList(data)));
+    }
+
+    @Test
     public void whenCorrelateCalledForStartEvent_withZeroTenantId_shouldCallRuntimeServiceToCorrelate() {
         GenericMessage genericMessage = new GenericMessageBuilder()
             .withSystemTenant()
@@ -107,7 +139,6 @@ public class GenericMessageCorrelatorTest {
 
         verifyMessageCorrelationBuilder();
     }
-
 
     @Test
     public void whenCorrelateCalledForCatchEvent_shouldCallRuntimeServiceToCorrelate() {
