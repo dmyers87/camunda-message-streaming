@@ -17,6 +17,7 @@ public class MessageTypeExtensionDataBuilder {
             put("name", "$.name");
             put("constant", "constant");
             put(GENERIC_NESTED_VARIABLE_FIELD, "$." + GENERIC_NESTED_VARIABLE_FIELD);
+            put("nullField", "$.nullKey");
     }};
 
     public MessageTypeExtensionDataBuilder isStartEvent() {

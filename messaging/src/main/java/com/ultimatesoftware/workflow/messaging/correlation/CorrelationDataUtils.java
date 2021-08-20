@@ -21,13 +21,9 @@ public final class CorrelationDataUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(CorrelationDataUtils.class.getName());
     private static final ObjectMapper SORTED_MAPPER = new ObjectMapper();
 
-    static {
-        SORTED_MAPPER
-            .configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
-    }
+    private static final JsonNodeEvaluator jsonNodeEvaluator = new JsonNodeEvaluator();
 
-    private CorrelationDataUtils() {
-    }
+    private CorrelationDataUtils() {}
 
     public static CorrelationData buildCorrelationData(GenericMessage genericMessage, MessageTypeExtensionData messageTypeExtensionData) {
         Configuration configuration = Configuration.builder()
@@ -38,7 +34,7 @@ public final class CorrelationDataUtils {
         DocumentContext documentContext = JsonPath.parse(genericMessage.getBody(), configuration);
 
         String messageType = genericMessage.getMessageType();
-        String businessKey = evaluateExpression(documentContext, messageTypeExtensionData.getBusinessKeyExpression());
+        String businessKey = evaluateExpression(documentContext, messageTypeExtensionData.getBusinessKeyExpression()).toString();
         String tenantId = genericMessage.getTenantId();
         boolean isStartEvent = messageTypeExtensionData.isStartEvent();
         String processDefinitionKey = messageTypeExtensionData.getProcessDefinitionKey();
@@ -69,28 +65,17 @@ public final class CorrelationDataUtils {
         return inputVariables;
     }
 
-    private static String evaluateExpression(DocumentContext documentContext, String expression) {
+    private static Object evaluateExpression(DocumentContext documentContext, String expression) {
         if (isExpressionConstant(expression)) {
             LOGGER.debug("Expression '{}' is a constant expression, the value will be evaluated as a string and " +
                 "returned immediately", expression);
             return expression;
         }
-        return getOrderedJsonString(documentContext, expression);
 
-    }
-
-    private static String getOrderedJsonString(DocumentContext documentContext, String expression) {
-        try {
-            // Since we are using JacksonJsonNodeJsonProvider we need to convert
-            // the result of the JsonPath into the value we need
-            JsonNode node = documentContext.read(expression);
-            return SORTED_MAPPER.writeValueAsString(SORTED_MAPPER.treeToValue(node, Object.class));
-        } catch (JsonProcessingException ex) {
-            LOGGER.error("Unable to process JSON expression {} in context {}. This message should never occur," +
-                    " this signifies there is an internal bug.", expression,
-                documentContext);
-            throw new RuntimeException(ex);
-        }
+        // Since we are using JacksonJsonNodeJsonProvider we need to convert
+        // the result of the JsonPath into the value we need
+        JsonNode node = documentContext.read(expression);
+        return jsonNodeEvaluator.evaluateNode(node);
     }
 
     private static boolean isExpressionConstant(String expression) {
