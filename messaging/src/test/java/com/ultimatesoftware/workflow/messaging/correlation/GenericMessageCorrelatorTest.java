@@ -21,7 +21,7 @@ import java.util.Collections;
 import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_BUSINESS_PROCESS_KEY_VALUE;
 import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_MESSAGE_TYPE;
 import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_NESTED_VARIABLE_FIELD;
-import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_NESTED_VARIABLE_VALUE_PARSED;
+import static com.ultimatesoftware.workflow.messaging.TestConstants.GENERIC_NESTED_VARIABLE_VALUE;
 import static com.ultimatesoftware.workflow.messaging.TestConstants.PROCESS_INSTANCE_ID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -84,7 +84,7 @@ public class GenericMessageCorrelatorTest {
         genericMessageCorrelator.correlate(genericMessage, Collections.singletonList(data));
 
         verify(messageCorrelationBuilder).setVariable(GENERIC_NESTED_VARIABLE_FIELD,
-            GENERIC_NESTED_VARIABLE_VALUE_PARSED);
+            GENERIC_NESTED_VARIABLE_VALUE);
         verify(messageCorrelationBuilder).correlateWithResult();
     }
 
@@ -100,8 +100,7 @@ public class GenericMessageCorrelatorTest {
         messageCorrelationBuilder = mockStartMessageCorrelationBuilder();
         genericMessageCorrelator.correlate(genericMessage, Collections.singletonList(data));
 
-        verify(messageCorrelationBuilder).setVariable("nullKey",
-            "null");
+        verify(messageCorrelationBuilder).setVariable("nullKey", null);
         verify(messageCorrelationBuilder).correlateWithResult();
     }
 
@@ -204,12 +203,14 @@ public class GenericMessageCorrelatorTest {
     }
 
     private void verifyProcessInstanceBusinessKey() {
-        verify(messageCorrelationBuilder).processInstanceBusinessKey("\"" + GENERIC_BUSINESS_PROCESS_KEY_VALUE + "\"");
+        verify(messageCorrelationBuilder).processInstanceBusinessKey(GENERIC_BUSINESS_PROCESS_KEY_VALUE);
     }
 
     private void verifyMessageCorrelationBuilder() {
-        verify(messageCorrelationBuilder).setVariable("name", "\"" + "name" + "\"");
+        verify(messageCorrelationBuilder).setVariable("name", "name");
         verify(messageCorrelationBuilder).setVariable("constant", "constant");
+        verify(messageCorrelationBuilder).setVariable("nullField", null);
+        verify(messageCorrelationBuilder).setVariable(GENERIC_NESTED_VARIABLE_FIELD, GENERIC_NESTED_VARIABLE_VALUE);
         verify(messageCorrelationBuilder).correlateWithResult();
         verifyNoMoreInteractions(messageCorrelationBuilder);
     }

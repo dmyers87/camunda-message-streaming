@@ -23,7 +23,7 @@ public class GenericMessageBuilder {
     private ObjectNode body = new ObjectMapper().createObjectNode()
         .put(GENERIC_BUSINESS_PROCESS_KEY_FIELD, GENERIC_BUSINESS_PROCESS_KEY_VALUE)
         .put("name", "name")
-        .put(GENERIC_NESTED_VARIABLE_FIELD, GENERIC_NESTED_VARIABLE_VALUE)
+        .putPOJO(GENERIC_NESTED_VARIABLE_FIELD, GENERIC_NESTED_VARIABLE_VALUE)
         .put("nullKey", (Boolean) null);
 
     public GenericMessageBuilder withSystemTenant() {
