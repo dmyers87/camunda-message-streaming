@@ -12,7 +12,7 @@
 
     <groupId>com.ultimatesoftware.workflow</groupId>
     <artifactId>camunda-message-streaming-parent</artifactId>
-    <version>0.4.5-SNAPSHOT</version>
+    <version>0.4.9-SNAPSHOT</version>
     <name>parent</name>
     <description>
         Allows BPMN designers to declaratively define what values, from an incoming JSON based message,
@@ -96,8 +96,9 @@
 
     <distributionManagement>
         <repository>
-            <id>artifactory.mia.ulti.io</id>
-            <url>https://artifactory.mia.ulti.io/artifactory/opp-workflow-dev</url>
+            <id>github</id>
+            <name>GitHub UKG Workflow Packages</name>
+            <url>https://maven.pkg.github.com/UltimateSoftware/camunda-message-streaming</url>
         </repository>
     </distributionManagement>
 

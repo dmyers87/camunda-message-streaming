@@ -1,6 +1,9 @@
 package com.ultimatesoftware.workflow.messaging.correlation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -13,10 +16,10 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public final class CorrelationDataUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CorrelationDataUtils.class.getName());
+    private static final ObjectMapper SORTED_MAPPER = new ObjectMapper();
 
     private static final JsonNodeEvaluator jsonNodeEvaluator = new JsonNodeEvaluator();
 
@@ -46,8 +49,8 @@ public final class CorrelationDataUtils {
                                                                              Iterable<Map.Entry<String, String>> matchVariableExpressions) {
         Map<String, Object> matchVariables = new HashMap<>();
 
-        matchVariableExpressions.forEach((entry) ->
-            matchVariables.put(entry.getKey(), evaluateExpression(documentContext, entry.getValue()).toString()));
+        matchVariableExpressions.forEach(entry ->
+            matchVariables.put(entry.getKey(), evaluateExpression(documentContext, entry.getValue())));
 
         return matchVariables;
     }
@@ -64,26 +67,19 @@ public final class CorrelationDataUtils {
 
     private static Object evaluateExpression(DocumentContext documentContext, String expression) {
         if (isExpressionConstant(expression)) {
-            LOGGER.debug("Expression '{}' is constant, returning value", expression);
+            LOGGER.debug("Expression '{}' is a constant expression, the value will be evaluated as a string and " +
+                "returned immediately", expression);
             return expression;
         }
 
         // Since we are using JacksonJsonNodeJsonProvider we need to convert
         // the result of the JsonPath into the value we need
         JsonNode node = documentContext.read(expression);
-
-        Object parsedObject = jsonNodeEvaluator.evaluateNode(node);
-
-        if (parsedObject == null) {
-            String errorMessage = String.format("Unable to resolve expression %s in context %s", expression, documentContext.toString());
-            LOGGER.error(errorMessage);
-            throw new RuntimeException(errorMessage);
-        }
-
-        return parsedObject;
+        return jsonNodeEvaluator.evaluateNode(node);
     }
 
     private static boolean isExpressionConstant(String expression) {
         return expression.charAt(0) != '$';
     }
+
 }
