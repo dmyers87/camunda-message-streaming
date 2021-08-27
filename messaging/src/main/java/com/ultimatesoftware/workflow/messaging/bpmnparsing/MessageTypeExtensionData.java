@@ -100,6 +100,19 @@ public class MessageTypeExtensionData {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "MessageTypeExtensionData{" +
+            "processDefinitionKey='" + processDefinitionKey + '\'' +
+            ", messageType='" + messageType + '\'' +
+            ", topic='" + topic + '\'' +
+            ", businessKeyExpression='" + businessKeyExpression + '\'' +
+            ", isStartEvent=" + isStartEvent +
+            ", matchVariableExpressions=" + matchVariableExpressions +
+            ", inputVariableExpressions=" + inputVariableExpressions +
+            '}';
+    }
+
     public static class MessageTypeExtensionDataBuilder {
         private String topic;
         private String messageType;
