@@ -9,6 +9,7 @@ import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionD
 import com.ultimatesoftware.workflow.messaging.correlation.GenericMessageCorrelator;
 import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult;
 import org.camunda.bpm.engine.runtime.MessageCorrelationResultType;
 import org.slf4j.Logger;
@@ -100,9 +101,10 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
                     definitionId = result.getProcessInstance().getProcessDefinitionId();
                     businessKey = result.getProcessInstance().getBusinessKey();
                 } else {
-                    identifier = result.getExecution().getProcessInstanceId();
-                    definitionId = "unknown";
-                    businessKey = "unknown";
+                    ExecutionEntity executionEntity = (ExecutionEntity) result.getExecution();
+                    identifier = executionEntity.getProcessInstanceId();
+                    definitionId = executionEntity.getProcessDefinitionId();
+                    businessKey = executionEntity.getProcessBusinessKey();
                 }
 
                 LOGGER.debug("\n\n  ... Correlated message type \"{}\" for tenant \"{}\" to a \"{}\" with process"

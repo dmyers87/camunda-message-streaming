@@ -10,6 +10,7 @@ class CorrelationData {
     private String processDefinitionKey;
     private boolean isStartEvent;
     private Map<String, Object> matchVariables;
+    private Map<String, Object> matchLocalVariables;
     private Map<String, Object> inputVariables;
 
     public CorrelationData(String messageType, String businessKey) {
@@ -20,13 +21,14 @@ class CorrelationData {
     }
 
     public CorrelationData(String messageType, String tenantId, String businessKey, String processDefinitionKey, boolean isStartEvent,
-                           Map<String, Object> matchVariables, Map<String, Object> inputVariables) {
+                           Map<String, Object> matchVariables, Map<String, Object> matchLocalVariables, Map<String, Object> inputVariables) {
         this.messageType = messageType;
         this.tenantId = tenantId;
         this.businessKey = businessKey;
         this.processDefinitionKey = processDefinitionKey;
         this.isStartEvent = isStartEvent;
         this.matchVariables = matchVariables;
+        this.matchLocalVariables = matchLocalVariables;
         this.inputVariables = inputVariables;
     }
 
@@ -62,6 +64,14 @@ class CorrelationData {
         this.matchVariables = new HashMap<>(value);
     }
 
+    public Map<String, Object> getMatchLocalVariables() {
+        return matchLocalVariables;
+    }
+
+    public void setMatchLocalVariables(Map<String, String> value) {
+        this.matchVariables = new HashMap<>(value);
+    }
+
     public Map<String, Object> getInputVariables() {
         return inputVariables;
     }
@@ -76,5 +86,19 @@ class CorrelationData {
 
     public void setStartEvent(boolean startEvent) {
         isStartEvent = startEvent;
+    }
+
+    @Override
+    public String toString() {
+        return "CorrelationData{" +
+            "messageType='" + messageType + '\'' +
+            ", tenantId='" + tenantId + '\'' +
+            ", businessKey='" + businessKey + '\'' +
+            ", processDefinitionKey='" + processDefinitionKey + '\'' +
+            ", isStartEvent=" + isStartEvent +
+            ", matchVariables=" + matchVariables +
+            ", matchLocalVariables=" + matchLocalVariables +
+            ", inputVariables=" + inputVariables +
+            '}';
     }
 }

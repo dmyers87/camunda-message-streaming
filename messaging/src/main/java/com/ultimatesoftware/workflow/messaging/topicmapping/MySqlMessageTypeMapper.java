@@ -44,6 +44,7 @@ public class MySqlMessageTypeMapper implements MessageTypeMapper {
                             .setStartEvent(e.getStartEvent())
                             .withInputVariables(e.getInputVariableExpressions())
                             .withMatchVariables(e.getMatchVariableExpressions())
+                            .withMatchLocalVariables(e.getMatchLocalVariableExpressions())
                             .build();
             messageTypeExtensionDataSet.add(messageTypeExtensionData);
         });

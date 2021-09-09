@@ -237,6 +237,7 @@ public class GenericMessageCorrelatorTest {
         MessageCorrelationBuilder messageCorrelationBuilder = mockMessageCorrelationBuilder();
 
         when(messageCorrelationBuilder.processInstanceId(anyString())).thenReturn(messageCorrelationBuilder);
+        when(messageCorrelationBuilder.processInstanceBusinessKey(anyString())).thenReturn(messageCorrelationBuilder);
         when(messageCorrelationBuilder.setVariable(anyString(), any())).thenReturn(messageCorrelationBuilder);
         when(messageCorrelationBuilder.correlateWithResult()).thenReturn(mock(MessageCorrelationResult.class));
 

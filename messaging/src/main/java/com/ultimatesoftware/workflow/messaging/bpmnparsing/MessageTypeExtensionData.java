@@ -15,6 +15,7 @@ public class MessageTypeExtensionData {
     private final String businessKeyExpression;
     private final boolean isStartEvent;
     private final Map<String, String> matchVariableExpressions = new HashMap<>();
+    private final Map<String, String> matchLocalVariableExpressions = new HashMap<>();
     private final Map<String, String> inputVariableExpressions = new HashMap<>();
 
     public static MessageTypeExtensionDataBuilder builder(String processDefinitionKey, String messageType) {
@@ -28,12 +29,14 @@ public class MessageTypeExtensionData {
             @NotNull String businessKeyExpression,
             boolean isStartEvent,
             @NotNull Map<String, String> matchVariableExpressions,
+            @NotNull Map<String, String> matchLocalVariableExpressions,
             @NotNull Map<String, String> inputVariableExpressions) {
         Assert.notNull(processDefinitionKey, "processDefinitionKey can not be null");
         Assert.notNull(topic, "topic can not be null");
         Assert.notNull(messageType, "messageType can not be null");
         Assert.notNull(businessKeyExpression, "businessKeyExpression can not be null");
         Assert.notNull(matchVariableExpressions, "matchVariableExpressions can not be null");
+        Assert.notNull(matchLocalVariableExpressions, "matchLocalVariableExpressions can not be null");
         Assert.notNull(inputVariableExpressions, "inputVariableExpressions can not be null");
         this.processDefinitionKey = processDefinitionKey;
         this.topic = topic;
@@ -41,6 +44,7 @@ public class MessageTypeExtensionData {
         this.businessKeyExpression = businessKeyExpression;
         this.isStartEvent = isStartEvent;
         this.matchVariableExpressions.putAll(matchVariableExpressions);
+        this.matchLocalVariableExpressions.putAll(matchLocalVariableExpressions);
         this.inputVariableExpressions.putAll(inputVariableExpressions);
     }
 
@@ -68,6 +72,10 @@ public class MessageTypeExtensionData {
         return this.matchVariableExpressions.entrySet();
     }
 
+    public Iterable<Map.Entry<String, String>> getMatchLocalVariableExpressions() {
+        return this.matchLocalVariableExpressions.entrySet();
+    }
+
     public Iterable<Map.Entry<String, String>> getInputVariableExpressions() {
         return this.inputVariableExpressions.entrySet();
     }
@@ -85,6 +93,7 @@ public class MessageTypeExtensionData {
         if (!topic.equals(that.topic)) return false;
         if (!businessKeyExpression.equals(that.businessKeyExpression)) return false;
         if (!matchVariableExpressions.equals(that.matchVariableExpressions)) return false;
+        if (!matchLocalVariableExpressions.equals(that.matchLocalVariableExpressions)) return false;
         return inputVariableExpressions.equals(that.inputVariableExpressions);
     }
 
@@ -96,6 +105,7 @@ public class MessageTypeExtensionData {
         result = 31 * result + businessKeyExpression.hashCode();
         result = 31 * result + (isStartEvent ? 1 : 0);
         result = 31 * result + matchVariableExpressions.hashCode();
+        result = 31 * result + matchLocalVariableExpressions.hashCode();
         result = 31 * result + inputVariableExpressions.hashCode();
         return result;
     }
@@ -109,6 +119,7 @@ public class MessageTypeExtensionData {
             ", businessKeyExpression='" + businessKeyExpression + '\'' +
             ", isStartEvent=" + isStartEvent +
             ", matchVariableExpressions=" + matchVariableExpressions +
+            ", matchLocalVariableExpressions=" + matchLocalVariableExpressions +
             ", inputVariableExpressions=" + inputVariableExpressions +
             '}';
     }
@@ -120,12 +131,14 @@ public class MessageTypeExtensionData {
         private String businessKeyExpression;
         private boolean isStartEvent;
         private Map<String, String> matchVariableExpressions;
+        private Map<String, String> matchLocalVariableExpressions;
         private Map<String, String> inputVariableExpressions;
 
         public MessageTypeExtensionDataBuilder(String processDefinitionKey, String messageType) {
             this.processDefinitionKey = processDefinitionKey;
             this.messageType = messageType;
             this.matchVariableExpressions = new HashMap<>();
+            this.matchLocalVariableExpressions = new HashMap<>();
             this.inputVariableExpressions = new HashMap<>();
         }
 
@@ -165,6 +178,16 @@ public class MessageTypeExtensionData {
             return this;
         }
 
+        public MessageTypeExtensionDataBuilder withMatchLocalVariable(String name, String expression) {
+            this.matchLocalVariableExpressions.put(name, expression);
+            return this;
+        }
+
+        public MessageTypeExtensionDataBuilder withMatchLocalVariables(Map<String, String> matchLocalVariableExpressions) {
+            this.matchLocalVariableExpressions.putAll(matchLocalVariableExpressions);
+            return this;
+        }
+
         public MessageTypeExtensionDataBuilder withInputVariable(String name, String expression) {
             this.inputVariableExpressions.put(name, expression);
             return this;
@@ -189,12 +212,13 @@ public class MessageTypeExtensionData {
                     businessKeyExpression,
                     isStartEvent,
                     matchVariableExpressions,
+                    matchLocalVariableExpressions,
                     inputVariableExpressions);
             return data;
         }
 
         private void ensureMatchVariablesNotSetOnStartEvent() {
-            if (isStartEvent && !matchVariableExpressions.isEmpty()) {
+            if (isStartEvent && !matchVariableExpressions.isEmpty() && !matchLocalVariableExpressions.isEmpty()) {
                 throw new IllegalArgumentException("Match variables cannot be provided on start events");
             }
         }

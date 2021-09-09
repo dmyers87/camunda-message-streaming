@@ -20,7 +20,7 @@ public class ExtensionData {
 
     public ExtensionData() {
     }
-    
+
     public ExtensionData(String tenantId, MessageTypeExtensionData messageTypeExtensionData) {
         this.tenantId = tenantId;
         processDefinitionKey = messageTypeExtensionData.getProcessDefinitionKey();
@@ -32,6 +32,10 @@ public class ExtensionData {
         matchVariableExpressions = new HashMap<>();
         messageTypeExtensionData.getMatchVariableExpressions().forEach(mv ->
                 this.matchVariableExpressions.put(mv.getKey(),mv.getValue()));
+
+        matchLocalVariableExpressions = new HashMap<>();
+        messageTypeExtensionData.getMatchLocalVariableExpressions().forEach(mv ->
+            this.matchLocalVariableExpressions.put(mv.getKey(),mv.getValue()));
 
         inputVariableExpressions = new HashMap<>();
         messageTypeExtensionData.getInputVariableExpressions().forEach(iv ->
@@ -69,6 +73,13 @@ public class ExtensionData {
     @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(name = "name")
     @Column(name = "expression")
+    @CollectionTable(name = "matchLocalVariableExpressions")
+    Map<String, String> matchLocalVariableExpressions;
+
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @MapKeyColumn(name = "name")
+    @Column(name = "expression")
     @CollectionTable(name = "inputVariableExpressions")
     Map<String, String> inputVariableExpressions;
 
@@ -98,6 +109,10 @@ public class ExtensionData {
 
     public Map<String, String> getMatchVariableExpressions() {
         return matchVariableExpressions;
+    }
+
+    public Map<String, String> getMatchLocalVariableExpressions() {
+        return matchLocalVariableExpressions;
     }
 
     public Map<String, String> getInputVariableExpressions() {

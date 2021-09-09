@@ -10,6 +10,7 @@ public class CustomExtensionElementParseFactory {
     private static final String INPUT_VAR = "input-var";
     private static final String TOPIC = "topic";
     private static final String MATCH_VAR = "match-var";
+    private static final String MATCH_LOCAL_VAR = "match-local-var";
     private static final String BUSINESS_PROCESS_KEY = "business-process-key";
 
     public static void parseExtensionElement(ProcessDefinitionEntity processDefinition,
@@ -49,6 +50,11 @@ public class CustomExtensionElementParseFactory {
                 } else {
                     builder.withMatchVariable(matchVariableName, value);
                 }
+                break;
+            case MATCH_LOCAL_VAR:
+                // match variable mappings
+                String matchLocalVariableName = parts[3];
+                builder.withMatchLocalVariable(matchLocalVariableName, value);
                 break;
             case INPUT_VAR:
                 // match variable mappings

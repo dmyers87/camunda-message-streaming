@@ -6,9 +6,12 @@ import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionD
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.camunda.bpm.engine.MismatchingMessageCorrelationException;
 import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.impl.MessageCorrelationBuilderImpl;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ExecutionQuery;
 import org.camunda.bpm.engine.runtime.MessageCorrelationBuilder;
@@ -57,12 +60,13 @@ public class GenericMessageCorrelator {
         correlationData.getInputVariables()
             .forEach(messageCorrelationBuilder::setVariable);
 
-        return correlate(messageCorrelationBuilder.startMessageOnly());
+        return correlate(messageCorrelationBuilder.startMessageOnly(), correlationData);
     }
 
     private List<MessageCorrelationResult> executeCatchMessageEventCorrelation(CorrelationData correlationData) {
         return determineCorrelatableProcessesInstances(correlationData)
             .map((execution -> executeCatchMessageEventCorrelationByExecution(correlationData, execution)))
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
 
@@ -76,8 +80,8 @@ public class GenericMessageCorrelator {
             executionQuery.tenantIdIn(correlationData.getTenantId());
         }
 
-        // search using match variables
         correlationData.getMatchVariables().forEach(executionQuery::processVariableValueEquals);
+        correlationData.getMatchLocalVariables().forEach(executionQuery::variableValueEquals);
 
         return executionQuery.list().stream();
     }
@@ -85,17 +89,23 @@ public class GenericMessageCorrelator {
     private MessageCorrelationResult executeCatchMessageEventCorrelationByExecution(CorrelationData correlationData, Execution execution) {
         MessageCorrelationBuilder messageCorrelationBuilder =
             runtimeService.createMessageCorrelation(correlationData.getMessageType())
-                .processInstanceId(execution.getProcessInstanceId());
+                .processInstanceId(execution.getProcessInstanceId())
+                .processInstanceBusinessKey(correlationData.getBusinessKey());
 
-        correlationData.getInputVariables()
-            .forEach(messageCorrelationBuilder::setVariable);
+        correlationData.getMatchVariables().forEach(messageCorrelationBuilder::processInstanceVariableEquals);
+        correlationData.getMatchLocalVariables().forEach(messageCorrelationBuilder::localVariableEquals);
+        correlationData.getInputVariables().forEach(messageCorrelationBuilder::setVariable);
 
-        return correlate(messageCorrelationBuilder);
+        return correlate(messageCorrelationBuilder, correlationData);
     }
 
-    public MessageCorrelationResult correlate(MessageCorrelationBuilder messageCorrelationBuilder) {
-        try{
+    public MessageCorrelationResult correlate(MessageCorrelationBuilder messageCorrelationBuilder, CorrelationData correlationData) {
+        try {
             return messageCorrelationBuilder.correlateWithResult();
+        } catch (MismatchingMessageCorrelationException ex) {
+            LOGGER.warn("No correlation result was found with Message Type {} on Tenant {} for Correlation Data {}",
+                correlationData.getMessageType(), correlationData.getTenantId(), correlationData);
+            return null;
         } catch (Exception ex) {
             LOGGER.warn("Failed to correlate request", ex);
             throw ex;
