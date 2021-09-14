@@ -7,9 +7,11 @@ import org.springframework.util.Assert;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class MessageTypeExtensionData {
     private final String processDefinitionKey;
+    private final String activityId;
     private final String messageType;
     private final String topic;
     private final String businessKeyExpression;
@@ -24,6 +26,7 @@ public class MessageTypeExtensionData {
 
     private MessageTypeExtensionData(
             @NotNull String processDefinitionKey,
+            @NotNull String activityId,
             @NotNull String topic,
             @NotNull String messageType,
             @NotNull String businessKeyExpression,
@@ -32,6 +35,7 @@ public class MessageTypeExtensionData {
             @NotNull Map<String, String> matchLocalVariableExpressions,
             @NotNull Map<String, String> inputVariableExpressions) {
         Assert.notNull(processDefinitionKey, "processDefinitionKey can not be null");
+        Assert.notNull(activityId, "activityId can not be null");
         Assert.notNull(topic, "topic can not be null");
         Assert.notNull(messageType, "messageType can not be null");
         Assert.notNull(businessKeyExpression, "businessKeyExpression can not be null");
@@ -39,6 +43,7 @@ public class MessageTypeExtensionData {
         Assert.notNull(matchLocalVariableExpressions, "matchLocalVariableExpressions can not be null");
         Assert.notNull(inputVariableExpressions, "inputVariableExpressions can not be null");
         this.processDefinitionKey = processDefinitionKey;
+        this.activityId = activityId;
         this.topic = topic;
         this.messageType = messageType;
         this.businessKeyExpression = businessKeyExpression;
@@ -58,6 +63,10 @@ public class MessageTypeExtensionData {
 
     public String getProcessDefinitionKey() {
         return this.processDefinitionKey;
+    }
+
+    public String getActivityId() {
+        return activityId;
     }
 
     public String getBusinessKeyExpression() {
@@ -89,6 +98,7 @@ public class MessageTypeExtensionData {
 
         if (isStartEvent != that.isStartEvent) return false;
         if (!processDefinitionKey.equals(that.processDefinitionKey)) return false;
+        if (!activityId.equals(that.activityId)) return false;
         if (!messageType.equals(that.messageType)) return false;
         if (!topic.equals(that.topic)) return false;
         if (!businessKeyExpression.equals(that.businessKeyExpression)) return false;
@@ -99,21 +109,15 @@ public class MessageTypeExtensionData {
 
     @Override
     public int hashCode() {
-        int result = processDefinitionKey.hashCode();
-        result = 31 * result + messageType.hashCode();
-        result = 31 * result + topic.hashCode();
-        result = 31 * result + businessKeyExpression.hashCode();
-        result = 31 * result + (isStartEvent ? 1 : 0);
-        result = 31 * result + matchVariableExpressions.hashCode();
-        result = 31 * result + matchLocalVariableExpressions.hashCode();
-        result = 31 * result + inputVariableExpressions.hashCode();
-        return result;
+        return Objects.hash(processDefinitionKey, activityId, messageType, topic, businessKeyExpression, isStartEvent, matchVariableExpressions,
+            matchLocalVariableExpressions, inputVariableExpressions);
     }
 
     @Override
     public String toString() {
         return "MessageTypeExtensionData{" +
             "processDefinitionKey='" + processDefinitionKey + '\'' +
+            ", activityId='" + activityId + '\'' +
             ", messageType='" + messageType + '\'' +
             ", topic='" + topic + '\'' +
             ", businessKeyExpression='" + businessKeyExpression + '\'' +
@@ -128,6 +132,7 @@ public class MessageTypeExtensionData {
         private String topic;
         private String messageType;
         private String processDefinitionKey;
+        private String activityId;
         private String businessKeyExpression;
         private boolean isStartEvent;
         private Map<String, String> matchVariableExpressions;
@@ -160,6 +165,11 @@ public class MessageTypeExtensionData {
 
         public MessageTypeExtensionDataBuilder withBusinessKeyExpression(String businessKeyExpression) {
             this.businessKeyExpression = businessKeyExpression;
+            return this;
+        }
+
+        public MessageTypeExtensionDataBuilder withActivityId(String activityId) {
+            this.activityId = activityId;
             return this;
         }
 
@@ -207,6 +217,7 @@ public class MessageTypeExtensionData {
 
             MessageTypeExtensionData data = new MessageTypeExtensionData(
                     processDefinitionKey,
+                    activityId,
                     topic,
                     messageType,
                     businessKeyExpression,

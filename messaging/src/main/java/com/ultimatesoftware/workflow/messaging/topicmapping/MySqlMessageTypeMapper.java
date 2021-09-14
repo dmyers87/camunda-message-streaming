@@ -39,13 +39,14 @@ public class MySqlMessageTypeMapper implements MessageTypeMapper {
         extensionDataList.forEach(e -> {
             MessageTypeExtensionData messageTypeExtensionData =
                     MessageTypeExtensionData.builder(e.getProcessDefinitionKey(), e.getMessageType())
-                            .withBusinessKeyExpression(e.getBusinessKeyExpression())
-                            .withTopic(e.getTopic())
-                            .setStartEvent(e.getStartEvent())
-                            .withInputVariables(e.getInputVariableExpressions())
-                            .withMatchVariables(e.getMatchVariableExpressions())
-                            .withMatchLocalVariables(e.getMatchLocalVariableExpressions())
-                            .build();
+                        .withActivityId(e.getActivityId())
+                        .withBusinessKeyExpression(e.getBusinessKeyExpression())
+                        .withTopic(e.getTopic())
+                        .setStartEvent(e.getStartEvent())
+                        .withInputVariables(e.getInputVariableExpressions())
+                        .withMatchVariables(e.getMatchVariableExpressions())
+                        .withMatchLocalVariables(e.getMatchLocalVariableExpressions())
+                        .build();
             messageTypeExtensionDataSet.add(messageTypeExtensionData);
         });
         return messageTypeExtensionDataSet;

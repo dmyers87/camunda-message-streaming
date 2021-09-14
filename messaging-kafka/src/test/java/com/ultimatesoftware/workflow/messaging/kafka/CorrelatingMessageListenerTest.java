@@ -47,6 +47,7 @@ public class CorrelatingMessageListenerTest {
 
         MessageTypeExtensionData data = MessageTypeExtensionData
             .builder("processDefinitionKey", TestConstants.GENERIC_MESSAGE_TYPE)
+            .withActivityId("activityId")
             .withBusinessKeyExpression("$.checkNumber")
             .withTopic(TestConstants.GENERIC_TOPIC_NAME)
             .build();

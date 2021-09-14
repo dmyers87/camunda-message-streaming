@@ -76,6 +76,10 @@ public class GenericMessageCorrelator {
                 .messageEventSubscriptionName(correlationData.getMessageType())
                 .processInstanceBusinessKey(correlationData.getBusinessKey());
 
+        if (correlationData.getActivityId() != null) {
+            executionQuery.activityId(correlationData.getActivityId());
+        }
+
         if (!TenantUtils.isSystemTenant(correlationData.getTenantId())) {
             executionQuery.tenantIdIn(correlationData.getTenantId());
         }

@@ -13,12 +13,12 @@
       <bpmn:incoming>SequenceFlow_1yxr9wr</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1548pcy</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:sequenceFlow id="SequenceFlow_05uzsfh" sourceRef="IntermediateThrowEvent_1aymib6" targetRef="Task_13u5hqq" />
+    <bpmn:sequenceFlow id="SequenceFlow_05uzsfh" sourceRef="simpleBoundaryEvent" targetRef="Task_13u5hqq" />
     <bpmn:endEvent id="EndEvent_005wxdu">
       <bpmn:incoming>SequenceFlow_0sk8r1l</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_0sk8r1l" sourceRef="Task_13u5hqq" targetRef="EndEvent_005wxdu" />
-    <bpmn:boundaryEvent id="IntermediateThrowEvent_1aymib6" attachedToRef="Task_0p73u1w">
+    <bpmn:boundaryEvent id="simpleBoundaryEvent" attachedToRef="Task_0p73u1w">
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="ultimate.workflow.topic" value="poc" />
@@ -66,7 +66,7 @@
         <di:waypoint x="500" y="240" />
         <di:waypoint x="552" y="240" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="BoundaryEvent_0icaxaw_di" bpmnElement="IntermediateThrowEvent_1aymib6">
+      <bpmndi:BPMNShape id="BoundaryEvent_0icaxaw_di" bpmnElement="simpleBoundaryEvent">
         <dc:Bounds x="332" y="139" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_02k8hhl_di" bpmnElement="Task_13u5hqq">

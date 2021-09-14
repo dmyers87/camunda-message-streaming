@@ -12,7 +12,7 @@
     <bpmn:startEvent id="StartEvent_09k3zhp">
       <bpmn:outgoing>Flow_0uxmyvx</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:receiveTask id="Activity_17qnicp" name="Receive Task" messageRef="Message_060ixtc">
+    <bpmn:receiveTask id="simpleReceiveTask" name="Receive Task" messageRef="Message_060ixtc">
     	<bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="ultimate.workflow.topic" value="poc" />
@@ -23,8 +23,8 @@
       <bpmn:incoming>Flow_0uxmyvx</bpmn:incoming>
       <bpmn:outgoing>Flow_0qyi1da</bpmn:outgoing>
     </bpmn:receiveTask>
-    <bpmn:sequenceFlow id="Flow_0uxmyvx" sourceRef="StartEvent_09k3zhp" targetRef="Activity_17qnicp" />
-    <bpmn:sequenceFlow id="Flow_0qyi1da" sourceRef="Activity_17qnicp" targetRef="Task_0p73u1w" />
+    <bpmn:sequenceFlow id="Flow_0uxmyvx" sourceRef="StartEvent_09k3zhp" targetRef="simpleReceiveTask" />
+    <bpmn:sequenceFlow id="Flow_0qyi1da" sourceRef="simpleReceiveTask" targetRef="Task_0p73u1w" />
   </bpmn:process>
   <bpmn:message id="Message_060ixtc" name="payment.employee-pay-check.paid" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
@@ -50,7 +50,7 @@
       <bpmndi:BPMNShape id="StartEvent_0nqxthf_di" bpmnElement="StartEvent_09k3zhp">
         <dc:Bounds x="152" y="99" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1evguoi_di" bpmnElement="Activity_17qnicp">
+      <bpmndi:BPMNShape id="Activity_1evguoi_di" bpmnElement="simpleReceiveTask">
         <dc:Bounds x="250" y="77" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>

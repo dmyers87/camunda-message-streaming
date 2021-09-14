@@ -24,6 +24,7 @@ public class ExtensionData {
     public ExtensionData(String tenantId, MessageTypeExtensionData messageTypeExtensionData) {
         this.tenantId = tenantId;
         processDefinitionKey = messageTypeExtensionData.getProcessDefinitionKey();
+        activityId = messageTypeExtensionData.getActivityId();
         topic = messageTypeExtensionData.getTopic();
         messageType = messageTypeExtensionData.getMessageType();
         businessKeyExpression = messageTypeExtensionData.getBusinessKeyExpression();
@@ -51,6 +52,9 @@ public class ExtensionData {
 
     @NotNull
     private String processDefinitionKey;
+
+    @NotNull
+    private String activityId;
 
     @NotNull
     private String topic;
@@ -97,6 +101,10 @@ public class ExtensionData {
 
     public String getProcessDefinitionKey() {
         return processDefinitionKey;
+    }
+
+    public String getActivityId() {
+        return activityId;
     }
 
     public String getBusinessKeyExpression() {

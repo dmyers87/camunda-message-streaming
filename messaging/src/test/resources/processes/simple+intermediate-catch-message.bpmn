@@ -12,8 +12,8 @@
     <bpmn:startEvent id="StartEvent_09k3zhp">
       <bpmn:outgoing>SequenceFlow_1yxr9wr</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_1yxr9wr" sourceRef="StartEvent_09k3zhp" targetRef="IntermediateThrowEvent_01q0yhz" />
-    <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_01q0yhz">
+    <bpmn:sequenceFlow id="SequenceFlow_1yxr9wr" sourceRef="StartEvent_09k3zhp" targetRef="simpleIntermediateCatchEvent" />
+    <bpmn:intermediateCatchEvent id="simpleIntermediateCatchEvent">
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="ultimate.workflow.topic" value="poc" />
@@ -25,7 +25,7 @@
       <bpmn:outgoing>SequenceFlow_0by3erj</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_0411cyw" messageRef="Message_060ixtc" />
     </bpmn:intermediateCatchEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_0by3erj" sourceRef="IntermediateThrowEvent_01q0yhz" targetRef="Task_0p73u1w" />
+    <bpmn:sequenceFlow id="SequenceFlow_0by3erj" sourceRef="simpleIntermediateCatchEvent" targetRef="Task_0p73u1w" />
   </bpmn:process>
   <bpmn:message id="Message_060ixtc" name="payment.employee-pay-check.paid" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
@@ -47,7 +47,7 @@
         <di:waypoint x="188" y="117" />
         <di:waypoint x="262" y="117" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="IntermediateCatchEvent_1njcjrr_di" bpmnElement="IntermediateThrowEvent_01q0yhz">
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_1njcjrr_di" bpmnElement="simpleIntermediateCatchEvent">
         <dc:Bounds x="262" y="99" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0by3erj_di" bpmnElement="SequenceFlow_0by3erj">
