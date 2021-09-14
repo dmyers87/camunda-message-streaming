@@ -59,6 +59,7 @@ public class MessageExtensionBpmnParseTest {
                 .iterator().next();
 
         assertThat(messageTypeExtensionData).isNotNull();
+        assertThat(messageTypeExtensionData.getActivityId()).isEqualTo("simpleStartEvent");
     }
 
     @Test
@@ -73,6 +74,7 @@ public class MessageExtensionBpmnParseTest {
                 .iterator().next();
 
         assertThat(messageTypeExtensionData).isNotNull();
+        assertThat(messageTypeExtensionData.getActivityId()).isEqualTo("simpleIntermediateCatchEvent");
     }
 
     @Test
@@ -87,6 +89,7 @@ public class MessageExtensionBpmnParseTest {
                 .iterator().next();
 
         assertThat(messageTypeExtensionData).isNotNull();
+        assertThat(messageTypeExtensionData.getActivityId()).isEqualTo("simpleBoundaryEvent");
     }
 
     @Test
@@ -101,5 +104,6 @@ public class MessageExtensionBpmnParseTest {
                 .iterator().next();
 
         assertThat(messageTypeExtensionData).isNotNull();
+        assertThat(messageTypeExtensionData.getActivityId()).isEqualTo("simpleReceiveTask");
     }
 }

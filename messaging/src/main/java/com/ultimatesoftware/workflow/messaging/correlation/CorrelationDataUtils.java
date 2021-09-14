@@ -1,26 +1,21 @@
 package com.ultimatesoftware.workflow.messaging.correlation;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.ultimatesoftware.workflow.messaging.GenericMessage;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class CorrelationDataUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CorrelationDataUtils.class.getName());
-    private static final ObjectMapper SORTED_MAPPER = new ObjectMapper();
-
     private static final JsonNodeEvaluator jsonNodeEvaluator = new JsonNodeEvaluator();
 
     private CorrelationDataUtils() {}
@@ -38,12 +33,13 @@ public final class CorrelationDataUtils {
         String tenantId = genericMessage.getTenantId();
         boolean isStartEvent = messageTypeExtensionData.isStartEvent();
         String processDefinitionKey = messageTypeExtensionData.getProcessDefinitionKey();
+        String activityId = messageTypeExtensionData.getActivityId();
 
         Map<String, Object> matchVariables = createMatchVariablesFromExtensionData(documentContext, messageTypeExtensionData.getMatchVariableExpressions());
         Map<String, Object> matchLocalVariables = createMatchLocalVariablesFromExtensionData(documentContext, messageTypeExtensionData.getMatchLocalVariableExpressions());
         Map<String, Object> inputVariables = createInputVariablesFromExtensionData(documentContext, messageTypeExtensionData.getInputVariableExpressions());
 
-        return new CorrelationData(messageType, tenantId, businessKey, processDefinitionKey, isStartEvent, matchVariables, matchLocalVariables, inputVariables);
+        return new CorrelationData(messageType, tenantId, businessKey, processDefinitionKey, activityId, isStartEvent, matchVariables, matchLocalVariables, inputVariables);
     }
 
     private static Map<String, Object> createMatchVariablesFromExtensionData(DocumentContext documentContext,

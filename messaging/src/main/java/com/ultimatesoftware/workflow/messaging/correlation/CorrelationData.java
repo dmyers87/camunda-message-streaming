@@ -8,6 +8,7 @@ class CorrelationData {
     private String tenantId;
     private String businessKey;
     private String processDefinitionKey;
+    private String activityId;
     private boolean isStartEvent;
     private Map<String, Object> matchVariables;
     private Map<String, Object> matchLocalVariables;
@@ -20,12 +21,13 @@ class CorrelationData {
         this.inputVariables = new HashMap<>();
     }
 
-    public CorrelationData(String messageType, String tenantId, String businessKey, String processDefinitionKey, boolean isStartEvent,
+    public CorrelationData(String messageType, String tenantId, String businessKey, String processDefinitionKey, String activityId, boolean isStartEvent,
                            Map<String, Object> matchVariables, Map<String, Object> matchLocalVariables, Map<String, Object> inputVariables) {
         this.messageType = messageType;
         this.tenantId = tenantId;
         this.businessKey = businessKey;
         this.processDefinitionKey = processDefinitionKey;
+        this.activityId = activityId;
         this.isStartEvent = isStartEvent;
         this.matchVariables = matchVariables;
         this.matchLocalVariables = matchLocalVariables;
@@ -54,6 +56,10 @@ class CorrelationData {
 
     public String getProcessDefinitionKey() {
         return this.processDefinitionKey;
+    }
+
+    public String getActivityId() {
+        return activityId;
     }
 
     public Map<String, Object> getMatchVariables() {
