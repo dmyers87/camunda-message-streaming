@@ -8,6 +8,7 @@ import com.ultimatesoftware.workflow.messaging.GenericMessage;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
 import com.ultimatesoftware.workflow.messaging.correlation.GenericMessageCorrelator;
 import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;
+import java.util.stream.StreamSupport;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult;
@@ -57,6 +58,14 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
 
             Iterable<MessageTypeExtensionData> messageTypeExtensionDataList =
                     messageTypeMapper.find(topic, tenantId, messageType);
+            
+            LOGGER.debug(
+                    "The size of messageTypeExtensionDataList is: {}", 
+                    StreamSupport.stream(messageTypeExtensionDataList.spliterator(), false).count()
+            );
+
+            //if iterable is null/empty, 'find' must not have returned anything, added full pre-parsing message here to hopefully get info on why:
+            LOGGER.debug(messageJson);
 
             if (!messageTypeExtensionDataList.iterator().hasNext()) {
                 LOGGER.debug("No Message Extension Element found for topic {}, tenant {} and messageType {}",
@@ -72,7 +81,7 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
 
             logResults(genericMessage.getTenantId(), genericMessage.getMessageType(), results);
         } catch (RuntimeException ex) {
-            LOGGER.warn("A runtime exception occurred while processing the message", ex);
+            LOGGER.warn("A runtime exception occurred while processing the message: {}", ex.getMessage());
             throw ex;
         } catch (JsonProcessingException ex) {
             LOGGER.warn("Error parse message body", ex);
