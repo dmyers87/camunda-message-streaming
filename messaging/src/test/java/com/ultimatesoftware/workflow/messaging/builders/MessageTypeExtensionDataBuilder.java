@@ -32,7 +32,7 @@ public class MessageTypeExtensionDataBuilder {
 
     public MessageTypeExtensionData build() {
         MessageTypeExtensionData.MessageTypeExtensionDataBuilder builder = MessageTypeExtensionData
-            .builder("processDefinitionKey", GENERIC_MESSAGE_TYPE)
+            .builder("deploymentId", "processDefinitionKey", GENERIC_MESSAGE_TYPE)
             .withActivityId("activityId")
             .withBusinessKeyExpression("$." + GENERIC_BUSINESS_PROCESS_KEY_FIELD)
             .withTopic(GENERIC_TOPIC_NAME);

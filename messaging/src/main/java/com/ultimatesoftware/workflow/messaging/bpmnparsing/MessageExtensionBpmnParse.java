@@ -107,7 +107,7 @@ public class MessageExtensionBpmnParse extends BpmnParse {
         String messageType = getMessageTypeFromElement(messageEventDefinition);
 
         MessageTypeExtensionData.MessageTypeExtensionDataBuilder builder =
-                MessageTypeExtensionData.builder(processDefinition.getKey(), messageType)
+                MessageTypeExtensionData.builder(deployment.getId(), processDefinition.getKey(), messageType)
             .withActivityId(parseElement.attribute("id"));
         builder.setStartEvent(isStartEvent);
 

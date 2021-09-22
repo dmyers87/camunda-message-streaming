@@ -4,6 +4,7 @@ import com.ultimatesoftware.workflow.messaging.bpmnparsing.DefaultMetadataValueE
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageExtensionBpmnParseFactory;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessagingProperties;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MetadataValueEvaluator;
+import com.ultimatesoftware.workflow.messaging.bpmnparsing.PostBpmnDeployExtensionDataInitializerPlugin;
 import com.ultimatesoftware.workflow.messaging.correlation.GenericMessageCorrelator;
 import com.ultimatesoftware.workflow.messaging.topicmapping.MemoryMessageTypeMapper;
 import com.ultimatesoftware.workflow.messaging.topicmapping.MessageTypeMapper;
@@ -46,5 +47,11 @@ public class CamundaMessagingAutoConfiguration {
     @ConditionalOnMissingBean({MetadataValueEvaluator.class})
     public MetadataValueEvaluator topicValueEvaluator(Environment environment) {
         return new DefaultMetadataValueEvaluator(environment);
+    }
+
+    @Bean
+    public PostBpmnDeployExtensionDataInitializerPlugin extensionDataInitializerPlugin(MessageTypeMapper messageTypeMapper) {
+        return new PostBpmnDeployExtensionDataInitializerPlugin(messageTypeMapper);
+
     }
 }

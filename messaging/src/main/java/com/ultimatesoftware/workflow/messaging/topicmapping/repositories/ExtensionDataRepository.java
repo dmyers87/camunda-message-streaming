@@ -11,5 +11,5 @@ public interface ExtensionDataRepository extends CrudRepository<ExtensionData, I
 
     List<ExtensionData> findAllByTopicAndTenantIdAndMessageType(String topic, String tenantId, String messageType);
 
-    List<ExtensionData> findAllByTenantIdAndProcessDefinitionKey(String tenantId, String processDefinitionKey);
+    List<ExtensionData> findAllByDeploymentId(String deploymentId);
 }

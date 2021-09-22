@@ -1,4 +1,6 @@
-Allows BPMN designers to declaratively define what values, from an incoming JSON based message, will be used to correlate to a Process or a Process Instance (e.g. Execution).  Message values are evaluated at runtime using JSON Path expressions which are stored within the BPMN.
+## Camunda Message Streaming
+
+This library allows BPMN designers to declaratively define what values, from an incoming JSON based message, will be used to correlate to a Process or a Process Instance (e.g. Execution).  Message values are evaluated at runtime using JSON Path expressions which are stored within the BPMN.
 
 The following Message Events are supported:
 =====
@@ -53,6 +55,16 @@ Java equivalent:
 processEngine.getRuntimeService()
     .createMessageCorrelation("com.acme.messages.important-event")
     .processVariableValueEquals("key", "value")
+```         
+
+##### {prefix}.match-local-var.{variable-name}={json-path}
+Creates a match requirement on a local variable whose name is defined by {variable-name}
+
+Java equivalent:
+```
+processEngine.getRuntimeService()
+    .createMessageCorrelation("com.acme.messages.important-event")
+    .variableValueEquals("key", "value")
 ```
 
 ##### {prefix}.input-var.{variable-name}={json-path}
@@ -69,4 +81,5 @@ processEngine.getRuntimeService()
 Links
 =====
 * [Getting Started Guide](docs/GET_STARTED.md)
+* [Correlation Logic Example](docs/correlation-logic-example.md)
 * [References](docs/REFERENCES.md)

@@ -32,6 +32,8 @@ public final class CorrelationDataUtils {
         String businessKey = evaluateExpression(documentContext, messageTypeExtensionData.getBusinessKeyExpression()).toString();
         String tenantId = genericMessage.getTenantId();
         boolean isStartEvent = messageTypeExtensionData.isStartEvent();
+        String processDefinitionId = messageTypeExtensionData.getProcessDefinitionId();
+        int version = messageTypeExtensionData.getVersion();
         String processDefinitionKey = messageTypeExtensionData.getProcessDefinitionKey();
         String activityId = messageTypeExtensionData.getActivityId();
 
@@ -39,7 +41,8 @@ public final class CorrelationDataUtils {
         Map<String, Object> matchLocalVariables = createMatchLocalVariablesFromExtensionData(documentContext, messageTypeExtensionData.getMatchLocalVariableExpressions());
         Map<String, Object> inputVariables = createInputVariablesFromExtensionData(documentContext, messageTypeExtensionData.getInputVariableExpressions());
 
-        return new CorrelationData(messageType, tenantId, businessKey, processDefinitionKey, activityId, isStartEvent, matchVariables, matchLocalVariables, inputVariables);
+        return new CorrelationData(messageType, tenantId, businessKey, processDefinitionId, version, processDefinitionKey,
+            activityId, isStartEvent, matchVariables, matchLocalVariables, inputVariables);
     }
 
     private static Map<String, Object> createMatchVariablesFromExtensionData(DocumentContext documentContext,

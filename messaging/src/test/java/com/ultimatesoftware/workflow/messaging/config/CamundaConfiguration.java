@@ -1,6 +1,7 @@
 package com.ultimatesoftware.workflow.messaging.config;
 
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessagingProperties;
+import com.ultimatesoftware.workflow.messaging.bpmnparsing.PostBpmnDeployExtensionDataInitializerPlugin;
 import org.camunda.bpm.engine.impl.cfg.BpmnParseFactory;
 import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.camunda.bpm.spring.boot.starter.util.CamundaSpringBootUtil;
@@ -18,12 +19,15 @@ public class CamundaConfiguration {
     @Bean
     public SpringProcessEngineConfiguration processEngineConfiguration(BpmnParseFactory bpmnParseFactory,
                                                                        DataSourceTransactionManager transactionManager,
-                                                                       SimpleDriverDataSource dataSource) {
+                                                                       SimpleDriverDataSource dataSource,
+                                                                       PostBpmnDeployExtensionDataInitializerPlugin extensionDataInitializerPlugin) {
         CustomSpringProcessEngineConfiguration processEngineConfiguration =
             new CustomSpringProcessEngineConfiguration(bpmnParseFactory);
         processEngineConfiguration.setTransactionManager(transactionManager);
         processEngineConfiguration.setDataSource(dataSource);
         processEngineConfiguration.setDatabaseSchemaUpdate("create-drop");
+
+        processEngineConfiguration.getProcessEnginePlugins().add(extensionDataInitializerPlugin);
 
         return CamundaSpringBootUtil.initCustomFields(processEngineConfiguration);
     }

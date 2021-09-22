@@ -4,14 +4,14 @@ import com.ultimatesoftware.workflow.messaging.GenericMessage;
 import com.ultimatesoftware.workflow.messaging.TenantUtils;
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.camunda.bpm.engine.MismatchingMessageCorrelationException;
 import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.impl.MessageCorrelationBuilderImpl;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ExecutionQuery;
 import org.camunda.bpm.engine.runtime.MessageCorrelationBuilder;
@@ -29,23 +29,55 @@ public class GenericMessageCorrelator {
         this.runtimeService = runtimeService;
     }
 
-    public List<MessageCorrelationResult> correlate(GenericMessage genericMessage, Iterable<MessageTypeExtensionData> messageTypeExtensionDataList) {
-        List<MessageCorrelationResult> results = new ArrayList<>();
-        for (MessageTypeExtensionData messageTypeExtensionData : messageTypeExtensionDataList) {
-            CorrelationData correlationData = CorrelationDataUtils.buildCorrelationData(genericMessage, messageTypeExtensionData);
+    public List<MessageCorrelationResult> correlate(GenericMessage genericMessage, Iterable<MessageTypeExtensionData> messageTypeExtensionDataIterable) {
+        List<MessageTypeExtensionData> messageTypeExtensionDataList =
+            StreamSupport.stream(messageTypeExtensionDataIterable.spliterator(), false)
+                .collect(Collectors.toList());
 
-            results.addAll(executeCorrelation(correlationData));
-        }
-
-        return results;
+        return Stream.concat(
+            correlateStartMessages(genericMessage, messageTypeExtensionDataList).stream(),
+            correlateCatchMessages(genericMessage, messageTypeExtensionDataList).stream())
+            .collect(Collectors.toList());
     }
 
-    private List<MessageCorrelationResult> executeCorrelation(CorrelationData correlationData) {
-        if (correlationData.isStartEvent()) {
-            return Collections.singletonList(executeStartMessageEventCorrelation(correlationData));
-        } else {
-            return executeCatchMessageEventCorrelation(correlationData);
-        }
+    private List<MessageCorrelationResult> correlateStartMessages(GenericMessage genericMessage,
+                                                                  List<MessageTypeExtensionData> messageTypeExtensionDataList) {
+        return messageTypeExtensionDataList.stream()
+            .filter(MessageTypeExtensionData::isStartEvent)
+            .map(MessageTypeExtensionData::getProcessDefinitionKey)
+            .distinct()
+            .map(processDefinitionKey -> correlateLatestStartMessage(processDefinitionKey, genericMessage, messageTypeExtensionDataList))
+            .collect(Collectors.toList());
+    }
+
+    private MessageCorrelationResult correlateLatestStartMessage(String processDefinitionKey,
+                                                                 GenericMessage genericMessage,
+                                                                 List<MessageTypeExtensionData> messageTypeExtensionDataStream) {
+
+        MessageTypeExtensionData latestVersionExtensionData = getLatestVersionExtensionData(processDefinitionKey, messageTypeExtensionDataStream);
+        CorrelationData correlationData = CorrelationDataUtils.buildCorrelationData(genericMessage, latestVersionExtensionData);
+        return executeStartMessageEventCorrelation(correlationData);
+    }
+
+    private MessageTypeExtensionData getLatestVersionExtensionData(String processDefinitionKey,
+                                                                   List<MessageTypeExtensionData> messageTypeExtensionDataList) {
+        return messageTypeExtensionDataList.stream()
+            .filter(messageTypeExtensionData -> messageTypeExtensionData.getProcessDefinitionKey().equals(processDefinitionKey))
+            .max(Comparator.comparing(MessageTypeExtensionData::getVersion))
+            .get();
+    }
+
+    private List<MessageCorrelationResult> correlateCatchMessages(GenericMessage genericMessage, List<MessageTypeExtensionData> messageTypeExtensionDataList) {
+        List<MessageCorrelationResult> results = new ArrayList<>();
+
+        messageTypeExtensionDataList.stream()
+            .filter(MessageTypeExtensionData::isCatchEvent)
+            .forEach(messageTypeExtensionData -> {
+                CorrelationData correlationData = CorrelationDataUtils.buildCorrelationData(genericMessage, messageTypeExtensionData);
+                results.addAll(executeCatchMessageEventCorrelation(correlationData));
+        });
+
+        return results;
     }
 
     private MessageCorrelationResult executeStartMessageEventCorrelation(CorrelationData correlationData) {
@@ -72,13 +104,11 @@ public class GenericMessageCorrelator {
 
     private Stream<Execution> determineCorrelatableProcessesInstances(CorrelationData correlationData) {
         ExecutionQuery executionQuery = this.runtimeService
-                .createExecutionQuery()
-                .messageEventSubscriptionName(correlationData.getMessageType())
-                .processInstanceBusinessKey(correlationData.getBusinessKey());
-
-        if (correlationData.getActivityId() != null) {
-            executionQuery.activityId(correlationData.getActivityId());
-        }
+            .createExecutionQuery()
+            .messageEventSubscriptionName(correlationData.getMessageType())
+            .processInstanceBusinessKey(correlationData.getBusinessKey())
+            .processDefinitionId(correlationData.getProcessDefinitionId())
+            .activityId(correlationData.getActivityId());
 
         if (!TenantUtils.isSystemTenant(correlationData.getTenantId())) {
             executionQuery.tenantIdIn(correlationData.getTenantId());

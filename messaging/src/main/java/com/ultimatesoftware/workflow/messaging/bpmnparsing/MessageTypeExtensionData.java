@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class MessageTypeExtensionData {
+    private final String deploymentId;
+    private String processDefinitionId;
+    private final int version;
     private final String processDefinitionKey;
     private final String activityId;
     private final String messageType;
@@ -20,12 +23,15 @@ public class MessageTypeExtensionData {
     private final Map<String, String> matchLocalVariableExpressions = new HashMap<>();
     private final Map<String, String> inputVariableExpressions = new HashMap<>();
 
-    public static MessageTypeExtensionDataBuilder builder(String processDefinitionKey, String messageType) {
-        return new MessageTypeExtensionDataBuilder(processDefinitionKey, messageType);
+    public static MessageTypeExtensionDataBuilder builder(String deploymentId, String processDefinitionKey, String messageType) {
+        return new MessageTypeExtensionDataBuilder(deploymentId, processDefinitionKey, messageType);
     }
 
     private MessageTypeExtensionData(
+            @NotNull String deploymentId,
             @NotNull String processDefinitionKey,
+            String processDefinitionId,
+            int version,
             @NotNull String activityId,
             @NotNull String topic,
             @NotNull String messageType,
@@ -34,6 +40,7 @@ public class MessageTypeExtensionData {
             @NotNull Map<String, String> matchVariableExpressions,
             @NotNull Map<String, String> matchLocalVariableExpressions,
             @NotNull Map<String, String> inputVariableExpressions) {
+        Assert.notNull(deploymentId, "deploymentId can not be null");
         Assert.notNull(processDefinitionKey, "processDefinitionKey can not be null");
         Assert.notNull(activityId, "activityId can not be null");
         Assert.notNull(topic, "topic can not be null");
@@ -42,6 +49,9 @@ public class MessageTypeExtensionData {
         Assert.notNull(matchVariableExpressions, "matchVariableExpressions can not be null");
         Assert.notNull(matchLocalVariableExpressions, "matchLocalVariableExpressions can not be null");
         Assert.notNull(inputVariableExpressions, "inputVariableExpressions can not be null");
+        this.deploymentId = deploymentId;
+        this.processDefinitionId = processDefinitionId;
+        this.version = version;
         this.processDefinitionKey = processDefinitionKey;
         this.activityId = activityId;
         this.topic = topic;
@@ -61,6 +71,22 @@ public class MessageTypeExtensionData {
         return topic;
     }
 
+    public String getDeploymentId() {
+        return deploymentId;
+    }
+
+    public String getProcessDefinitionId() {
+        return processDefinitionId;
+    }
+
+    public void setProcessDefinitionId(String processDefinitionId) {
+        this.processDefinitionId = processDefinitionId;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
     public String getProcessDefinitionKey() {
         return this.processDefinitionKey;
     }
@@ -77,6 +103,10 @@ public class MessageTypeExtensionData {
         return isStartEvent;
     }
 
+    public boolean isCatchEvent() {
+        return !isStartEvent;
+    }
+
     public Iterable<Map.Entry<String, String>> getMatchVariableExpressions() {
         return this.matchVariableExpressions.entrySet();
     }
@@ -91,32 +121,40 @@ public class MessageTypeExtensionData {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof MessageTypeExtensionData)) {
+            return false;
+        }
         MessageTypeExtensionData that = (MessageTypeExtensionData) o;
-
-        if (isStartEvent != that.isStartEvent) return false;
-        if (!processDefinitionKey.equals(that.processDefinitionKey)) return false;
-        if (!activityId.equals(that.activityId)) return false;
-        if (!messageType.equals(that.messageType)) return false;
-        if (!topic.equals(that.topic)) return false;
-        if (!businessKeyExpression.equals(that.businessKeyExpression)) return false;
-        if (!matchVariableExpressions.equals(that.matchVariableExpressions)) return false;
-        if (!matchLocalVariableExpressions.equals(that.matchLocalVariableExpressions)) return false;
-        return inputVariableExpressions.equals(that.inputVariableExpressions);
+        return version == that.version &&
+            isStartEvent == that.isStartEvent &&
+            Objects.equals(deploymentId, that.deploymentId) &&
+            Objects.equals(processDefinitionId, that.processDefinitionId) &&
+            Objects.equals(processDefinitionKey, that.processDefinitionKey) &&
+            Objects.equals(activityId, that.activityId) &&
+            Objects.equals(messageType, that.messageType) &&
+            Objects.equals(topic, that.topic) &&
+            Objects.equals(businessKeyExpression, that.businessKeyExpression) &&
+            Objects.equals(matchVariableExpressions, that.matchVariableExpressions) &&
+            Objects.equals(matchLocalVariableExpressions, that.matchLocalVariableExpressions) &&
+            Objects.equals(inputVariableExpressions, that.inputVariableExpressions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(processDefinitionKey, activityId, messageType, topic, businessKeyExpression, isStartEvent, matchVariableExpressions,
-            matchLocalVariableExpressions, inputVariableExpressions);
+        return Objects.hash(deploymentId, processDefinitionId, version, processDefinitionKey, activityId, messageType, topic, businessKeyExpression,
+            isStartEvent, matchVariableExpressions, matchLocalVariableExpressions, inputVariableExpressions);
     }
 
     @Override
     public String toString() {
         return "MessageTypeExtensionData{" +
-            "processDefinitionKey='" + processDefinitionKey + '\'' +
+            "deploymentId='" + deploymentId + '\'' +
+            ", processDefinitionId='" + processDefinitionId + '\'' +
+            ", version=" + version +
+            ", processDefinitionKey='" + processDefinitionKey + '\'' +
             ", activityId='" + activityId + '\'' +
             ", messageType='" + messageType + '\'' +
             ", topic='" + topic + '\'' +
@@ -131,6 +169,9 @@ public class MessageTypeExtensionData {
     public static class MessageTypeExtensionDataBuilder {
         private String topic;
         private String messageType;
+        private String deploymentId;
+        private String processDefinitionId;
+        private int version;
         private String processDefinitionKey;
         private String activityId;
         private String businessKeyExpression;
@@ -139,7 +180,8 @@ public class MessageTypeExtensionData {
         private Map<String, String> matchLocalVariableExpressions;
         private Map<String, String> inputVariableExpressions;
 
-        public MessageTypeExtensionDataBuilder(String processDefinitionKey, String messageType) {
+        public MessageTypeExtensionDataBuilder(String deploymentId, String processDefinitionKey, String messageType) {
+            this.deploymentId = deploymentId;
             this.processDefinitionKey = processDefinitionKey;
             this.messageType = messageType;
             this.matchVariableExpressions = new HashMap<>();
@@ -165,6 +207,16 @@ public class MessageTypeExtensionData {
 
         public MessageTypeExtensionDataBuilder withBusinessKeyExpression(String businessKeyExpression) {
             this.businessKeyExpression = businessKeyExpression;
+            return this;
+        }
+
+        public MessageTypeExtensionDataBuilder withProcessDefinitionId(String processDefinitionId) {
+            this.processDefinitionId = processDefinitionId;
+            return this;
+        }
+
+        public MessageTypeExtensionDataBuilder withVersion(int version) {
+            this.version = version;
             return this;
         }
 
@@ -216,15 +268,18 @@ public class MessageTypeExtensionData {
             ensureMatchVariablesNotSetOnStartEvent();
 
             MessageTypeExtensionData data = new MessageTypeExtensionData(
-                    processDefinitionKey,
-                    activityId,
-                    topic,
-                    messageType,
-                    businessKeyExpression,
-                    isStartEvent,
-                    matchVariableExpressions,
-                    matchLocalVariableExpressions,
-                    inputVariableExpressions);
+                deploymentId,
+                processDefinitionKey,
+                processDefinitionId,
+                version,
+                activityId,
+                topic,
+                messageType,
+                businessKeyExpression,
+                isStartEvent,
+                matchVariableExpressions,
+                matchLocalVariableExpressions,
+                inputVariableExpressions);
             return data;
         }
 

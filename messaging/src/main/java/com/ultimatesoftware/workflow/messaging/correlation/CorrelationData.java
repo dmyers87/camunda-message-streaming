@@ -7,6 +7,8 @@ class CorrelationData {
     private String messageType;
     private String tenantId;
     private String businessKey;
+    private String processDefinitionId;
+    private int version;
     private String processDefinitionKey;
     private String activityId;
     private boolean isStartEvent;
@@ -21,11 +23,15 @@ class CorrelationData {
         this.inputVariables = new HashMap<>();
     }
 
-    public CorrelationData(String messageType, String tenantId, String businessKey, String processDefinitionKey, String activityId, boolean isStartEvent,
-                           Map<String, Object> matchVariables, Map<String, Object> matchLocalVariables, Map<String, Object> inputVariables) {
+    public CorrelationData(String messageType, String tenantId, String businessKey, String processDefinitionId, int version,
+                           String processDefinitionKey, String activityId, boolean isStartEvent,
+                           Map<String, Object> matchVariables, Map<String, Object> matchLocalVariables,
+                           Map<String, Object> inputVariables) {
         this.messageType = messageType;
         this.tenantId = tenantId;
         this.businessKey = businessKey;
+        this.processDefinitionId = processDefinitionId;
+        this.version = version;
         this.processDefinitionKey = processDefinitionKey;
         this.activityId = activityId;
         this.isStartEvent = isStartEvent;
@@ -48,6 +54,14 @@ class CorrelationData {
 
     public void setTenantId(String value) {
         this.tenantId = value;
+    }
+
+    public String getProcessDefinitionId() {
+        return processDefinitionId;
+    }
+
+    public int getVersion() {
+        return version;
     }
 
     public void setProcessDefinitionKey(String processDefinitionKey) {
@@ -100,7 +114,10 @@ class CorrelationData {
             "messageType='" + messageType + '\'' +
             ", tenantId='" + tenantId + '\'' +
             ", businessKey='" + businessKey + '\'' +
+            ", processDefinitionId='" + processDefinitionId + '\'' +
+            ", version=" + version +
             ", processDefinitionKey='" + processDefinitionKey + '\'' +
+            ", activityId='" + activityId + '\'' +
             ", isStartEvent=" + isStartEvent +
             ", matchVariables=" + matchVariables +
             ", matchLocalVariables=" + matchLocalVariables +

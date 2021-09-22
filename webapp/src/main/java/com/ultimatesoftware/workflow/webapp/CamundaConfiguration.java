@@ -1,5 +1,7 @@
 package com.ultimatesoftware.workflow.webapp;
 
+import java.io.IOException;
+import java.util.List;
 import org.camunda.bpm.engine.impl.cfg.BpmnParseFactory;
 import org.camunda.bpm.engine.impl.cfg.CompositeProcessEnginePlugin;
 import org.camunda.bpm.engine.impl.cfg.ProcessEnginePlugin;
@@ -8,9 +10,6 @@ import org.camunda.bpm.spring.boot.starter.util.CamundaSpringBootUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.io.IOException;
-import java.util.List;
 
 @Configuration
 public class CamundaConfiguration {
@@ -25,15 +24,7 @@ public class CamundaConfiguration {
                 CamundaSpringBootUtil.initCustomFields(
                         new CustomSpringProcessEngineConfiguration(bpmnParseFactory));
 
-        // TODO: need to check if this is coming in on the list above
-        processEnginePlugins.add(multiTenantProcessPlugin());
-
         config.getProcessEnginePlugins().add(new CompositeProcessEnginePlugin(processEnginePlugins));
         return config;
-    }
-
-    @Bean
-    public ProcessEnginePlugin multiTenantProcessPlugin() {
-        return new MultiTenantProcessEnginePlugin();
     }
 }
