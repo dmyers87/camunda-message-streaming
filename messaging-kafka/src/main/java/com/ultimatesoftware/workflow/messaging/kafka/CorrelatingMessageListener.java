@@ -58,14 +58,6 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
 
             Iterable<MessageTypeExtensionData> messageTypeExtensionDataList =
                     messageTypeMapper.find(topic, tenantId, messageType);
-            
-            LOGGER.debug(
-                    "The size of messageTypeExtensionDataList is: {}", 
-                    StreamSupport.stream(messageTypeExtensionDataList.spliterator(), false).count()
-            );
-
-            //if iterable is null/empty, 'find' must not have returned anything, added full pre-parsing message here to hopefully get info on why:
-            LOGGER.debug(messageJson);
 
             if (!messageTypeExtensionDataList.iterator().hasNext()) {
                 LOGGER.debug("No Message Extension Element found for topic {}, tenant {} and messageType {}",
