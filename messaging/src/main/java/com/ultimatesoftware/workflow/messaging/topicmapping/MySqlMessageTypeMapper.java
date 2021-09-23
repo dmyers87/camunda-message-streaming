@@ -44,6 +44,11 @@ public class MySqlMessageTypeMapper implements MessageTypeMapper {
                 tenantId, messageType));
     }
 
+    public Iterable<MessageTypeExtensionData> find(String tenantId, String processDefinitionKey) {
+        return getTypeExtensionDataSet(extensionDataRepository.findAllByTenantIdAndProcessDefinitionKey(tenantId,
+            processDefinitionKey));
+    }
+
     public Iterable<MessageTypeExtensionData> getAll() {
         return getTypeExtensionDataSet(extensionDataRepository.findAll());
     }
