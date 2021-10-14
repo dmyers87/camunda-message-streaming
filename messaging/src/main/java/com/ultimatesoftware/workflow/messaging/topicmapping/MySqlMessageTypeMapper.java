@@ -1,15 +1,20 @@
 package com.ultimatesoftware.workflow.messaging.topicmapping;
 
 import com.ultimatesoftware.workflow.messaging.bpmnparsing.MessageTypeExtensionData;
+import com.ultimatesoftware.workflow.messaging.correlation.GenericMessageCorrelator;
 import com.ultimatesoftware.workflow.messaging.topicmapping.entities.ExtensionData;
 import com.ultimatesoftware.workflow.messaging.topicmapping.repositories.ExtensionDataRepository;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class MySqlMessageTypeMapper implements MessageTypeMapper {
+
+    private final Logger LOGGER = LoggerFactory.getLogger(MySqlMessageTypeMapper.class.getName());
 
     @Autowired
     public ExtensionDataRepository extensionDataRepository;
@@ -23,13 +28,19 @@ public class MySqlMessageTypeMapper implements MessageTypeMapper {
     @Override
     public void initializeProcessDefinitionIds(String deploymentId, List<ProcessDefinition> processDefinitionEntities) {
         List<ExtensionData> extensionDataList = extensionDataRepository.findAllByDeploymentId(deploymentId);
+        LOGGER.debug("Initializing process definition ids under deployment {} for the following extension data: {}",
+            deploymentId, extensionDataList);
+
 
         for (ExtensionData extensionData : extensionDataList) {
             String processDefinitionId = processDefinitionEntities.stream()
                 .filter(processDefinition -> processDefinition.getKey()
                     .equals(extensionData.getProcessDefinitionKey()))
                 .findFirst()
-                .get()
+                .orElseThrow(() -> new RuntimeException(
+                    String.format("Unable to initialize Process Definition Ids for Extension Data. "
+                            + "No Process Definition with key %s found on deployment %s for tenant %s.",
+                        extensionData.getProcessDefinitionKey(), deploymentId, extensionData.getTenantId())))
                 .getId();
 
             extensionData.setProcessDefinitionId(processDefinitionId);

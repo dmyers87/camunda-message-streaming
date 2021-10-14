@@ -152,4 +152,20 @@ public class ExtensionData {
     public Map<String, String> getInputVariableExpressions() {
         return inputVariableExpressions;
     }
+
+    @Override
+    public String toString() {
+        return "ExtensionData{" +
+            "tenantId='" + tenantId + '\'' +
+            ", deploymentId='" + deploymentId + '\'' +
+            ", processDefinitionId='" + processDefinitionId + '\'' +
+            ", version=" + version +
+            ", processDefinitionKey='" + processDefinitionKey + '\'' +
+            ", activityId='" + activityId + '\'' +
+            ", topic='" + topic + '\'' +
+            ", messageType='" + messageType + '\'' +
+            ", businessKeyExpression='" + businessKeyExpression + '\'' +
+            ", isStartEvent=" + isStartEvent +
+            '}';
+    }
 }
