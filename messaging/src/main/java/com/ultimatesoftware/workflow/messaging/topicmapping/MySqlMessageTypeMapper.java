@@ -31,19 +31,16 @@ public class MySqlMessageTypeMapper implements MessageTypeMapper {
         LOGGER.debug("Initializing process definition ids under deployment {} for the following extension data: {}",
             deploymentId, extensionDataList);
 
-
         for (ExtensionData extensionData : extensionDataList) {
-            String processDefinitionId = processDefinitionEntities.stream()
-                .filter(processDefinition -> processDefinition.getKey()
-                    .equals(extensionData.getProcessDefinitionKey()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException(
-                    String.format("Unable to initialize Process Definition Ids for Extension Data. "
-                            + "No Process Definition with key %s found on deployment %s for tenant %s.",
-                        extensionData.getProcessDefinitionKey(), deploymentId, extensionData.getTenantId())))
-                .getId();
+            if (extensionData.getProcessDefinitionId() != null) {
+                LOGGER.trace("Extension data {} already has process definition id set. Skipping over data element",
+                    extensionData);
+            } else {
+                String processDefinitionId =
+                    getMatchProcessDefinitionIdForExtensionElement(deploymentId, processDefinitionEntities, extensionData);
 
-            extensionData.setProcessDefinitionId(processDefinitionId);
+                extensionData.setProcessDefinitionId(processDefinitionId);
+            }
         }
 
         extensionDataRepository.saveAll(extensionDataList);
@@ -62,6 +59,18 @@ public class MySqlMessageTypeMapper implements MessageTypeMapper {
 
     public Iterable<MessageTypeExtensionData> getAll() {
         return getTypeExtensionDataSet(extensionDataRepository.findAll());
+    }
+
+    private String getMatchProcessDefinitionIdForExtensionElement(String deploymentId, List<ProcessDefinition> processDefinitionEntities, ExtensionData extensionData) {
+        return processDefinitionEntities.stream()
+            .filter(processDefinition -> processDefinition.getKey()
+                .equals(extensionData.getProcessDefinitionKey()))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException(
+                String.format("Unable to initialize Process Definition Ids for Extension Data. "
+                        + "No Process Definition with key %s found on deployment %s for tenant %s.",
+                    extensionData.getProcessDefinitionKey(), deploymentId, extensionData.getTenantId())))
+            .getId();
     }
 
     private Set<MessageTypeExtensionData> getTypeExtensionDataSet(Iterable<ExtensionData> extensionDataList)  {
