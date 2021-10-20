@@ -16,8 +16,12 @@ public class MySqlMessageTypeMapper implements MessageTypeMapper {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MySqlMessageTypeMapper.class.getName());
 
-    @Autowired
     public ExtensionDataRepository extensionDataRepository;
+
+    @Autowired
+    public MySqlMessageTypeMapper(ExtensionDataRepository extensionDataRepository) {
+        this.extensionDataRepository = extensionDataRepository;
+    }
 
     @Override
     public void add(String tenantId, MessageTypeExtensionData messageTypeExtensionData) {
@@ -59,6 +63,13 @@ public class MySqlMessageTypeMapper implements MessageTypeMapper {
 
     public Iterable<MessageTypeExtensionData> getAll() {
         return getTypeExtensionDataSet(extensionDataRepository.findAll());
+    }
+
+    public void delete(String deploymentId) {
+        List<ExtensionData> extensionDataList = extensionDataRepository.findAllByDeploymentId(deploymentId);
+        extensionDataRepository.deleteAll(extensionDataList);
+
+        LOGGER.debug("Extension data {} successfully deleted for Deployment {}", extensionDataList, deploymentId);
     }
 
     private String getMatchProcessDefinitionIdForExtensionElement(String deploymentId, List<ProcessDefinition> processDefinitionEntities, ExtensionData extensionData) {
