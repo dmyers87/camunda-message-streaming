@@ -22,14 +22,14 @@ public class CustomExtensionElementParseFactory {
 
         if (name == null || rawValue == null) {
             throw new ExtensionElementNotParsableException(
-                "Name and value cannot be null, please correct " + processDefinition.getName() + " message definition");
+                "Name and value properties cannot be null, please correct " + processDefinition.getName() + " message definition");
         }
         String value = metadataValueEvaluator.evaluate(name, rawValue, String.class);
 
         String[] parts = name.split("[.]");
         if (parts.length < 3 || parts.length > 4) {
             throw new ExtensionElementNotParsableException(
-                "Unsupported number of parts in property name \"" + name + "\"");
+                "Unsupported number of parts in extension element property name \"" + name + "\"");
         }
 
         String token = parts[TOKEN_INDEX];
@@ -62,7 +62,7 @@ public class CustomExtensionElementParseFactory {
                 builder.withInputVariable(inputVariableName, value);
                 break;
             default:
-                throw new ExtensionElementNotParsableException("unknown token \"" + token + "\"");
+                throw new ExtensionElementNotParsableException("Unknown extension element property \"" + token + "\"");
         }
     }
 }
