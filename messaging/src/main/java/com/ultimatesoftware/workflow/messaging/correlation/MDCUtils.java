@@ -13,7 +13,7 @@ public class MDCUtils {
     public static final String PROCESS_DEFINITION_ID_KEY = "process_definition_id";
     public static final String DEPLOYMENT_ID_KEY = "deployment_id";
     public static final String MESSAGE_TYPE_EXTENSION_DATA_KEY = "message_type_extension_data";
-    public static final String MESSAGE_BODY_KEY = "deployment_id";
+    public static final String MESSAGE_BODY_KEY = "message_body";
 
     public static void addRelevantFieldsToContext(MessageTypeExtensionData messageTypeExtensionData, GenericMessage genericMessage) {
         addExtensionDataToContext(messageTypeExtensionData);
