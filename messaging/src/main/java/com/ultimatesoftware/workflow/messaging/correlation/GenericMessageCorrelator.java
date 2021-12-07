@@ -18,6 +18,7 @@ import org.camunda.bpm.engine.runtime.MessageCorrelationBuilder;
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 public class GenericMessageCorrelator {
 
@@ -55,8 +56,14 @@ public class GenericMessageCorrelator {
                                                                  List<MessageTypeExtensionData> messageTypeExtensionDataStream) {
 
         MessageTypeExtensionData latestVersionExtensionData = getLatestVersionExtensionData(processDefinitionKey, messageTypeExtensionDataStream);
+
+        MDCUtils.addRelevantFieldsToContext(latestVersionExtensionData, genericMessage);
+
         CorrelationData correlationData = CorrelationDataUtils.buildCorrelationData(genericMessage, latestVersionExtensionData);
-        return executeStartMessageEventCorrelation(correlationData);
+        MessageCorrelationResult messageCorrelationResult = executeStartMessageEventCorrelation(correlationData);
+
+        MDCUtils.clearCorrelationDataFieldsFromContext();
+        return messageCorrelationResult;
     }
 
     private MessageTypeExtensionData getLatestVersionExtensionData(String processDefinitionKey,
@@ -73,8 +80,12 @@ public class GenericMessageCorrelator {
         messageTypeExtensionDataList.stream()
             .filter(MessageTypeExtensionData::isCatchEvent)
             .forEach(messageTypeExtensionData -> {
+                MDCUtils.addRelevantFieldsToContext(messageTypeExtensionData, genericMessage);
+
                 CorrelationData correlationData = CorrelationDataUtils.buildCorrelationData(genericMessage, messageTypeExtensionData);
                 results.addAll(executeCatchMessageEventCorrelation(correlationData));
+
+                MDCUtils.clearCorrelationDataFieldsFromContext();
         });
 
         return results;

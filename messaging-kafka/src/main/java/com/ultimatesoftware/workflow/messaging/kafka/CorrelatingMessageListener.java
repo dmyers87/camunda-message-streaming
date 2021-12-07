@@ -15,10 +15,14 @@ import org.camunda.bpm.engine.runtime.MessageCorrelationResult;
 import org.camunda.bpm.engine.runtime.MessageCorrelationResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.kafka.listener.MessageListener;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.ultimatesoftware.workflow.messaging.correlation.MDCUtils.MESSAGE_TYPE_KEY;
+import static com.ultimatesoftware.workflow.messaging.correlation.MDCUtils.TENANT_ID_KEY;
 
 public class CorrelatingMessageListener implements MessageListener<String, String> {
 
@@ -47,6 +51,7 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
         LOGGER.debug("Consumer message with key {} and value {} received under topic {}",
             record.key(), record.value(), record.topic());
         onMessage(record.topic(), record.value());
+        MDC.clear();
     }
 
     private void onMessage(String topic, String messageJson) {
@@ -55,6 +60,9 @@ public class CorrelatingMessageListener implements MessageListener<String, Strin
 
             String tenantId = genericMessage.getTenantId();
             String messageType = genericMessage.getMessageType();
+
+            MDC.put(TENANT_ID_KEY, tenantId);
+            MDC.put(MESSAGE_TYPE_KEY, messageType);
 
             Iterable<MessageTypeExtensionData> messageTypeExtensionDataList =
                     messageTypeMapper.find(topic, tenantId, messageType);
